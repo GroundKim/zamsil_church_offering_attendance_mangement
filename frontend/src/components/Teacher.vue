@@ -5,7 +5,7 @@
         <v-row >
           <v-col v-for="n in attendanceCount" :key="n">
           <v-card class="pa-2 text-center" >
-            
+            1
           </v-card> 
           </v-col>
         </v-row>
