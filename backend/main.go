@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"zamsil_church_offering_attendance_mangement/mappings"
 	"zamsil_church_offering_attendance_mangement/models"
 )
 
@@ -11,5 +12,8 @@ func main() {
 
 	// db := database.InitDb(conf)
 	fmt.Println(conf)
+
+	mappings.CreateUrlMappings()
+	mappings.Router.Run()
 
 }

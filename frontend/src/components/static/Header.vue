@@ -46,3 +46,7 @@
     </v-app-bar>
   </div>
 </template>
+
+<script>
+
+</script>
