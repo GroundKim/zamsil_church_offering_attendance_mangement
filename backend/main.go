@@ -1,13 +1,15 @@
 package main
 
 import (
-	"zamsil_church_offering_attendance_mangement/backend/config"
-	"zamsil_church_offering_attendance_mangement/backend/database"
+	"fmt"
+	"zamsil_church_offering_attendance_mangement/models"
 )
 
 // Main program.
 func main() {
-	conf := config.GetConf("dev")
-	db := database.InitDb(conf)
+	conf := models.GetConf("dev")
+
+	// db := database.InitDb(conf)
+	fmt.Println(conf)
 
 }

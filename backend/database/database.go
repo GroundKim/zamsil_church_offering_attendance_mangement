@@ -2,7 +2,7 @@ package database
 
 import (
 	"fmt"
-	"zamsil_church_offering_attendance_mangement/backend/models"
+	"zamsil_church_offering_attendance_mangement/models"
 
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"

@@ -1,7 +1,7 @@
 package mappings
 
 import (
-	"zamsil_church_offering_attendance_mangement/backend/controllers"
+	"zamsil_church_offering_attendance_mangement/controllers"
 
 	"github.com/gin-gonic/gin"
 )

@@ -1,17 +1,22 @@
-package config
+package models
 
 import (
 	"fmt"
-	"zamsil_church_offering_attendance_mangement/backend/models"
 
 	"github.com/spf13/viper"
 )
 
-var conf *models.Config
+type Config struct {
+	DB_USERNAME string `yaml:"DB_USERNAME"`
+	DB_PASSWORD string `yaml:"DB_PASSWORD"`
+	DB_PORT     string `yaml:"DB_PORT"`
+	DB_HOST     string `yaml:"DB_HOST"`
+	DB_NAME     string `yaml:"DB_NAME"`
+}
 
 // Read the config file from the current directory and marshal
 // into the conf config struct.
-func GetConf(env string) *models.Config {
+func GetConf(env string) *Config {
 	filename := fmt.Sprintf("./%s_config", env)
 	viper.AddConfigPath("./config")
 	viper.SetConfigName(filename)
@@ -21,7 +26,7 @@ func GetConf(env string) *models.Config {
 		fmt.Printf("%v", err)
 	}
 
-	conf := &models.Config{}
+	conf := &Config{}
 	err = viper.Unmarshal(conf)
 	if err != nil {
 		fmt.Printf("unable to decode into config struct, %v", err)
