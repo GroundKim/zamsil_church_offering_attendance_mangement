@@ -23,6 +23,6 @@ func InitDb(conf *models.Config) *gorm.DB {
 		fmt.Println(err)
 		panic("Failed to connect to the database!")
 	}
-
+	models.Migrate(db)
 	return db
 }
