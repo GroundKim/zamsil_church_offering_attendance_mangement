@@ -8,63 +8,52 @@ import (
 )
 
 type attendanceInfo struct {
-	classID      int
-	departmentID int
-	teacherName  []string
-	studentsName []string
+	ClassID      int      `json:"classId"`
+	DepartmentID int      `json:"departmentId"`
+	TeacherName  []string `json:"teacherName"`
+	StudentsName []string `json:"studentName"`
 }
 
 // response with teacher, student , the number of classes
-func GetAttendanceInfoForDepartment1(c *gin.Context) {
-	c.Writer.Header().Add("Access-Control-Allow-Origin", "*")
+func GetAttendanceInfoByDepartment(department int) gin.HandlerFunc {
+	fn := func(c *gin.Context) {
+		c.Writer.Header().Add("Access-Control-Allow-Origin", "*")
 
-	// get teacher info
-	var teachers []models.Teacher
-	models.GetTeacherByDeaprtment(&teachers, 1)
+		// get teacher info
+		var teachers []models.Teacher
+		models.GetTeacherByDeaprtment(&teachers, 1)
 
-	// get student info
-	var students []models.Student
-	models.GetStudentByDepartment(&students, 1)
+		// get student info
+		var students []models.Student
+		models.GetStudentByDepartment(&students, 1)
 
-	var numberOfClass int64
-	models.DB.Model(&models.Class{}).Where("department_id = 1").Count(&numberOfClass)
+		var numberOfClass int64
+		models.DB.Model(&models.Class{}).Where(fmt.Sprintf("department_id = %d", department)).Count(&numberOfClass)
 
-	var attendanceInfos []attendanceInfo
-	var teachersName []string
-	var studentsName []string
+		var attendanceInfos []attendanceInfo
+		var teachersName []string
+		var studentsName []string
 
-	// matching class, teacher, student
-	for i := 0; i < int(numberOfClass); i++ {
-		for j := 0; j < len(teachers); j++ {
-			if teachers[j].ClassId == (i + 1) {
-				teachersName = append(teachersName, teachers[j].Name)
-				for k := 0; k < len(students); k++ {
-					if students[k].ClassID == (i + 1) {
-						studentsName = append(studentsName, students[k].Name)
-					}
+		// matching class, teacher, student
+		for classId := 1; classId <= int(numberOfClass); classId++ {
+			for j := 0; j < len(teachers); j++ {
+				if teachers[j].ClassID == classId {
+					teachersName = append(teachersName, teachers[j].Name)
 				}
 			}
+
+			for j := 0; j < len(students); j++ {
+				if students[j].ClassID == classId {
+					studentsName = append(studentsName, students[j].Name)
+				}
+			}
+
+			attendanceInfos = append(attendanceInfos, attendanceInfo{ClassID: classId, DepartmentID: 1, TeacherName: teachersName, StudentsName: studentsName})
+			teachersName = nil
+			studentsName = nil
+
 		}
-		attendanceInfos = append(attendanceInfos, attendanceInfo{classID: (i + 1), departmentID: 1, teacherName: teachersName, studentsName: studentsName})
-		teachersName = nil
-		studentsName = nil
+		c.JSON(200, attendanceInfos)
 	}
-
-	for _, v := range attendanceInfos {
-		fmt.Println(v)
-	}
-
-}
-
-func GetAttendanceInfoForDepartment2(c *gin.Context) {
-
-	c.Writer.Header().Add("Access-Control-Allow-Origin", "*")
-
-	fmt.Println("1234")
-	c.JSON(200, gin.H{
-		"count":        15,
-		"teacherName":  "선생님 예시",
-		"studentNames": "김지상",
-	})
-
+	return gin.HandlerFunc(fn)
 }

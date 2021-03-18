@@ -21,7 +21,7 @@ type Teacher struct {
 	ID           int
 	Name         string    `gorm:"not null;"`
 	DepartmentID int       `gorm:"not null;"`
-	ClassId      int       `gorm:"not null;"`
+	ClassID      int       `gorm:"not null;"`
 	CreatedAt    time.Time `gorm:"not null;"`
 
 	Class      Class      `gorm:"references:ID"`

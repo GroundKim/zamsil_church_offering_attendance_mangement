@@ -9,14 +9,13 @@ type OfferingDiary struct {
 	CreatedAt      time.Time `gorm:"not null;"`
 	CreatedBy      string
 
-	Student Student `gorm:"references:ID"`
+	Student      Student      `gorm:"references:ID"`
+	OfferingType OfferingType `gorm:"references:ID"`
 }
 
 type OfferingType struct {
 	ID           int
 	OfferingName string `gorm:"not null;"`
-
-	OfferingDiary OfferingDiary `gorm:"foreignKey:OfferingTypeID"`
 }
 
 func (OfferingDiary) TableName() string {
