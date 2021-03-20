@@ -8,10 +8,15 @@ import (
 )
 
 type attendanceInfo struct {
-	ClassID      int      `json:"classId"`
-	DepartmentID int      `json:"departmentId"`
-	TeacherName  []string `json:"teacherName"`
-	StudentsName []string `json:"studentName"`
+	ClassID           int                `json:"classId"`
+	DepartmentID      int                `json:"departmentId"`
+	TeachersName      []string           `json:"teacherName"`
+	StudentsIDandName []studentIDandName `json:"studentsIdandName"`
+}
+
+type studentIDandName struct {
+	StudentID   int    `json:"studentId"`
+	StudentName string `json:"studentName"`
 }
 
 // response with teacher, student , the number of classes
@@ -32,7 +37,7 @@ func GetAttendanceInfoByDepartment(department int) gin.HandlerFunc {
 
 		var attendanceInfos []attendanceInfo
 		var teachersName []string
-		var studentsName []string
+		var studentsIDandName []studentIDandName
 
 		// matching class, teacher, student
 		for classId := 1; classId <= int(numberOfClass); classId++ {
@@ -44,13 +49,13 @@ func GetAttendanceInfoByDepartment(department int) gin.HandlerFunc {
 
 			for j := 0; j < len(students); j++ {
 				if students[j].ClassID == classId {
-					studentsName = append(studentsName, students[j].Name)
+					studentsIDandName = append(studentsIDandName, studentIDandName{StudentID: students[j].ID, StudentName: students[j].Name})
 				}
 			}
 
-			attendanceInfos = append(attendanceInfos, attendanceInfo{ClassID: classId, DepartmentID: 1, TeacherName: teachersName, StudentsName: studentsName})
+			attendanceInfos = append(attendanceInfos, attendanceInfo{ClassID: classId, DepartmentID: 1, TeachersName: teachersName, StudentsIDandName: studentsIDandName})
 			teachersName = nil
-			studentsName = nil
+			studentsIDandName = nil
 
 		}
 		c.JSON(200, attendanceInfos)
