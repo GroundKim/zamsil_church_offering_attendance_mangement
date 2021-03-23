@@ -17,8 +17,6 @@ const router = new VueRouter({
         name: "offeringInput",
         component: OfferingInput
     }
-
-
     ]
 
     

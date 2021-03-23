@@ -10,15 +10,20 @@ import (
 // save attendance information into database
 func PostAttendanceInfo() gin.HandlerFunc {
 	fn := func(c *gin.Context) {
+		c.Writer.Header().Add("Access-Control-Allow-Origin", "*")
 
 		var attendanceDiarys []models.AttendanceDiary
 		if err := c.Bind(&attendanceDiarys); err != nil {
-			fmt.Println("Error in json bind")
+			fmt.Println("Error in json bind ", err)
 		}
 
 		for _, attendanceDiary := range attendanceDiarys {
 			attendanceDiary.SaveAttendanceDiary()
 		}
+
+		a := c.Request.Header
+		fmt.Println(a)
+
 	}
 	return gin.HandlerFunc(fn)
 }

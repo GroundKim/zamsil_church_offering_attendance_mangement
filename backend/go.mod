@@ -3,6 +3,7 @@ module zamsil_church_offering_attendance_mangement
 go 1.16
 
 require (
+	github.com/gin-contrib/cors v1.3.1 // indirect
 	github.com/gin-gonic/gin v1.6.3
 	github.com/spf13/viper v1.7.1
 	gorm.io/driver/mysql v1.0.5

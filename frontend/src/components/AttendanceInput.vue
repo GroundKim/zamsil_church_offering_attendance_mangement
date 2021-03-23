@@ -1,6 +1,42 @@
 <template>
   <v-container>
-    <form @submit.prevent="submit">
+    <form @submit.prevent="sendPost">
+      <v-text-field
+        v-model="createdBy"
+        label="Who are you ?"
+        required
+      ></v-text-field>
+
+      <v-menu
+        ref="menu"
+        v-model="menu"
+        :close-on-content-click="false"
+        :return-value.sync="date"
+        transition="scale-transition"
+        offset-y
+        min-width="auto"
+      >
+        <template v-slot:activator="{ on, attrs }">
+          <v-text-field
+            v-model="date"
+            label="날짜"
+            prepend-icon="mdi-calendar"
+            readonly
+            v-bind="attrs"
+            v-on="on"
+          ></v-text-field>
+        </template>
+        <v-date-picker v-model="date" no-title scrollable>
+          <v-spacer></v-spacer>
+          <v-btn text color="primary" @click="menu = false">
+            Cancel
+          </v-btn>
+          <v-btn text color="primary" @click="$refs.menu.save(date)">
+            OK
+          </v-btn>
+        </v-date-picker>
+      </v-menu>
+
       <v-row>
         <v-col
           v-for="data in attendanceData"
@@ -9,51 +45,86 @@
         >
           <v-card height="400">
             <h2 class="pa-5">Class {{ data.classId }}</h2>
-            <h3> {{ data.teacherName }} </h3>
-            
+            <h3>{{ data.teacherName }}</h3>
+
             <v-row>
-              <v-col v-for="student in data.studentsIdandName" v-bind:key="student.studentId" cols="4">
-                <v-checkbox v-model="checkedNames" :value=student.studentId :label="`${student.studentName}`"></v-checkbox>
+              <v-col
+                v-for="student in data.studentsIdandName"
+                v-bind:key="student.studentId"
+                cols="5"
+              >
+                <v-checkbox
+                  v-model="attendedStudents"
+                  :value="student.studentId"
+                  :label="`${student.studentName}`"
+                ></v-checkbox>
               </v-col>
             </v-row>
-            
-
-            
           </v-card>
         </v-col>
       </v-row>
       <v-container class="text-center ma-10">
         <v-btn type="submit" width="700">제출</v-btn>
       </v-container>
-      
     </form>
 
-    <span>{{checkedNames}}</span>
+    <span>{{ attendedStudents }}</span>
   </v-container>
 </template>
 
 <script>
 import axios from "axios";
+import moment from "moment";
 export default {
   data() {
     return {
-      checkedNames: [],
-      attendanceData: null
-    }
+      attendanceData: null,
+      attendedStudents: [],
+      createdBy: null,
+      menu: false,
+      date: moment().format(),
+
+    };
   },
   methods: {
-    submit() {
+    sendPost() {
+      let payload = [];
+      this.attendedStudents.forEach((element) => {
+        let data = {
+          studentId: element,
+          date: this.date,
+          createdBy: this.createdBy
+        };
+        payload.push(data);
+      });
+      const headers = {
+    'Content-Type': 'application/json',
+    }
+      
+      axios.post(
+        "http://localhost:8080/Youth/post/attendance/department", JSON.stringify(payload), {headers: headers}
+      )
+      .then(res => {
+        console.log(res.data)
+      })
 
-      axios.post("http://localhost:8080/Youth/post/attendance/department/1")
+      console.log(JSON.stringify(payload))
+
+
+    },
+
+    showSimpleDate() {
+      return this.date.substring(0, 10)    
     }
 
   },
-   created() {
-    axios.get("http://localhost:8080/Youth/resource/attendance/department/1")
-     .then(response => {
-       this.attendanceData = response.data
-     })
-    
-  }
-}
+
+  created() {
+    axios
+      .get("http://localhost:8080/Youth/resource/attendance/department/1")
+      .then((response) => {
+        this.attendanceData = response.data;
+      });
+  },
+};
 </script>
