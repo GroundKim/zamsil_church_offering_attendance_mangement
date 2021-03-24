@@ -6,12 +6,12 @@ import (
 )
 
 type Student struct {
-	ID           int
-	Name         string    `gorm:"not null;"`
-	Grade        int       `gorm:"not null;"`
-	DepartmentId int       `gorm:"not null;"`
-	ClassID      int       `gorm:"not null;"`
-	CreatedAt    time.Time `gorm:"not null;"`
+	ID           int       `json:"studentId"`
+	Name         string    `gorm:"not null;" json:"name"`
+	Year         int       `gorm:"not null;" json:"grade"`
+	DepartmentId int       `gorm:"not null;" json:"departmentId"`
+	ClassID      int       `gorm:"not null;" json:"classId"`
+	CreatedAt    time.Time `gorm:"not null;" json:"createdAt"`
 
 	Class      Class      `gorm:"references:ID"`
 	Department Department `gorm:"references:ID"`
@@ -26,6 +26,14 @@ type Teacher struct {
 
 	Class      Class      `gorm:"references:ID"`
 	Department Department `gorm:"references:ID"`
+}
+
+func GetAllStudent(students *[]Student) (err error) {
+	if err = DB.Find(students).Error; err != nil {
+		fmt.Println("Error in GetAllStudent")
+		return err
+	}
+	return nil
 }
 
 func GetAllTeacher(teachers *[]Teacher) (err error) {

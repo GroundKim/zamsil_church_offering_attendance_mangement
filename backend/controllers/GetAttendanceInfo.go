@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"fmt"
+	"strconv"
 	"zamsil_church_offering_attendance_mangement/models"
 
 	"github.com/gin-gonic/gin"
@@ -19,46 +20,56 @@ type studentIDandName struct {
 	StudentName string `json:"studentName"`
 }
 
-// response with teacher, student , the number of classes
-func GetAttendanceInfoByDepartment(department int) gin.HandlerFunc {
-	fn := func(c *gin.Context) {
-		c.Writer.Header().Add("Access-Control-Allow-Origin", "*")
-
-		// get teacher info
-		var teachers []models.Teacher
-		models.GetTeacherByDeaprtment(&teachers, 1)
-
-		// get student info
-		var students []models.Student
-		models.GetStudentByDepartment(&students, 1)
-
-		var numberOfClass int64
-		models.DB.Model(&models.Class{}).Where(fmt.Sprintf("department_id = %d", department)).Count(&numberOfClass)
-
-		var attendanceInfos []attendanceInfo
-		var teachersName []string
-		var studentsIDandName []studentIDandName
-
-		// matching class, teacher, student
-		for classId := 1; classId <= int(numberOfClass); classId++ {
-			for j := 0; j < len(teachers); j++ {
-				if teachers[j].ClassID == classId {
-					teachersName = append(teachersName, teachers[j].Name)
-				}
-			}
-
-			for j := 0; j < len(students); j++ {
-				if students[j].ClassID == classId {
-					studentsIDandName = append(studentsIDandName, studentIDandName{StudentID: students[j].ID, StudentName: students[j].Name})
-				}
-			}
-
-			attendanceInfos = append(attendanceInfos, attendanceInfo{ClassID: classId, DepartmentID: 1, TeachersName: teachersName, StudentsIDandName: studentsIDandName})
-			teachersName = nil
-			studentsIDandName = nil
-
-		}
-		c.JSON(200, attendanceInfos)
+func GetStudents(c *gin.Context) {
+	c.Writer.Header().Add("Access-Control-Allow-Origin", "*")
+	if len(c.Query("department_id")) != 0 {
+		getAttendanceInfoByDepartment(c)
+		return
 	}
-	return gin.HandlerFunc(fn)
+
+	var students []models.Student
+	models.GetAllStudent(&students)
+	c.JSON(200, students)
+}
+
+// response with teacher, student , the number of classes
+func getAttendanceInfoByDepartment(c *gin.Context) {
+	departmentID, _ := strconv.Atoi(c.Query("department_id"))
+
+	// get teacher info
+	var teachers []models.Teacher
+	models.GetTeacherByDeaprtment(&teachers, departmentID)
+
+	// get student info
+	var students []models.Student
+	models.GetStudentByDepartment(&students, departmentID)
+
+	var numberOfClass int64
+	models.DB.Model(&models.Class{}).Where(fmt.Sprintf("department_id = %d", departmentID)).Count(&numberOfClass)
+
+	var attendanceInfos []attendanceInfo
+	var teachersName []string
+	var studentsIDandName []studentIDandName
+
+	// matching class, teacher, student
+	for classId := 1; classId <= int(numberOfClass); classId++ {
+		for j := 0; j < len(teachers); j++ {
+			if teachers[j].ClassID == classId {
+				teachersName = append(teachersName, teachers[j].Name)
+			}
+		}
+
+		for j := 0; j < len(students); j++ {
+			if students[j].ClassID == classId {
+				studentsIDandName = append(studentsIDandName, studentIDandName{StudentID: students[j].ID, StudentName: students[j].Name})
+			}
+		}
+
+		attendanceInfos = append(attendanceInfos, attendanceInfo{ClassID: classId, DepartmentID: 1, TeachersName: teachersName, StudentsIDandName: studentsIDandName})
+		teachersName = nil
+		studentsIDandName = nil
+
+	}
+	c.JSON(200, attendanceInfos)
+
 }

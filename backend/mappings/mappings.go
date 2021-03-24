@@ -11,7 +11,7 @@ var Router *gin.Engine
 func CreateUrlMappings() {
 	Router = gin.Default()
 	Youth := Router.Group("Youth")
-	Youth.GET("/resource/attendance/department/1", controllers.GetAttendanceInfoByDepartment(1))
-	Youth.GET("/resource/attendance/department/2", controllers.GetAttendanceInfoByDepartment(2))
-	Youth.POST("/post/attendance/department", controllers.PostAttendanceInfo())
+
+	Youth.GET("/students", controllers.GetStudents)
+	Youth.POST("/attendances", controllers.PostAttendanceInfo)
 }

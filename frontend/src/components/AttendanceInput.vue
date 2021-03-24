@@ -1,11 +1,34 @@
 <template>
   <v-container>
     <form @submit.prevent="sendPost">
-      <v-text-field
-        v-model="createdBy"
-        label="Who are you ?"
-        required
-      ></v-text-field>
+      <v-row>
+        <v-col>
+          <v-text-field
+            v-model="createdBy"
+            label="Who are you ?"
+            width="20px"
+            required
+          ></v-text-field>
+        </v-col>
+
+        <v-col>
+          <v-card
+        flat
+      color="transparent"
+          >
+            <v-card-text>
+              <v-slider
+                v-model="department"
+                :tick-labels="departmentsLabel"
+                :max="1"
+                step="1"
+                ticks="always"
+                tick-size="4"
+              ></v-slider>
+            </v-card-text>
+      </v-card>
+        </v-col>
+      </v-row>
 
       <v-menu
         ref="menu"
@@ -69,6 +92,10 @@
     </form>
 
     <span>{{ attendedStudents }}</span>
+    <br>
+    <span>{{ department }}</span>
+    <br>
+    <span> {{ value }} </span>
   </v-container>
 </template>
 
@@ -81,9 +108,11 @@ export default {
       attendanceData: null,
       attendedStudents: [],
       createdBy: null,
+      department: null,
+      departmentsLabel: ['1부', '2부'],
       menu: false,
       date: moment().format(),
-
+      value: null,
     };
   },
   methods: {
@@ -98,33 +127,34 @@ export default {
         payload.push(data);
       });
       const headers = {
-    'Content-Type': 'application/json',
-    }
-      
-      axios.post(
-        "http://localhost:8080/Youth/post/attendance/department", JSON.stringify(payload), {headers: headers}
-      )
-      .then(res => {
-        console.log(res.data)
-      })
+      'Content-Type': 'application/json',
+      }
 
-      console.log(JSON.stringify(payload))
-
-
+      axios
+        .post(
+          "http://localhost:8080/Youth/attendances", JSON.stringify(payload), {headers: headers}
+        )
+        .then(res => {
+          console.log(res.data)
+        })
+        .catch(err => {
+          alert(err.message + ' 등록중 오류 발생 관리자에게 문의하십시오')
+        })
     },
-
-    showSimpleDate() {
-      return this.date.substring(0, 10)    
-    }
-
   },
 
-  created() {
+  watch: {
+  department : function () {
+    let getURL = `http://localhost:8080/Youth/students?department_id=${this.department + 1}`
     axios
-      .get("http://localhost:8080/Youth/resource/attendance/department/1")
+      .get(getURL)
       .then((response) => {
-        this.attendanceData = response.data;
-      });
+        this.attendanceData= response.data
+        })
+      .catch(err => {
+        alert(err.message + " 출석부를 불러오는 도중 오류가 발생했습니다 관리자에게 문의하십시오")
+      })
+    }
   },
 };
 </script>
