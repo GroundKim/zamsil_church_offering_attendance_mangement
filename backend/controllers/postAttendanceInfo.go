@@ -9,6 +9,7 @@ import (
 
 // save attendance information into database
 func PostAttendanceInfo(c *gin.Context) {
+
 	c.Writer.Header().Add("Access-Control-Allow-Origin", "*")
 
 	var attendanceDiarys []models.AttendanceDiary

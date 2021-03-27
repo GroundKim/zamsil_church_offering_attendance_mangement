@@ -6,7 +6,6 @@
           <v-text-field
             v-model="createdBy"
             label="Who are you ?"
-            width="20px"
             required
           ></v-text-field>
         </v-col>
@@ -145,7 +144,7 @@ export default {
 
   watch: {
   department : function () {
-    let getURL = `http://localhost:8080/Youth/students?department_id=${this.department + 1}`
+    let getURL = `http://localhost:8080/Youth/attendances?department_id=${this.department + 1}`
     axios
       .get(getURL)
       .then((response) => {

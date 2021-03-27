@@ -20,20 +20,10 @@ type studentIDandName struct {
 	StudentName string `json:"studentName"`
 }
 
-func GetStudents(c *gin.Context) {
-	c.Writer.Header().Add("Access-Control-Allow-Origin", "*")
-	if len(c.Query("department_id")) != 0 {
-		getAttendanceInfoByDepartment(c)
-		return
-	}
-
-	var students []models.Student
-	models.GetAllStudent(&students)
-	c.JSON(200, students)
-}
-
 // response with teacher, student , the number of classes
-func getAttendanceInfoByDepartment(c *gin.Context) {
+func GetAttendanceInfoByDepartment(c *gin.Context) {
+	c.Writer.Header().Add("Access-Control-Allow-Origin", "*")
+
 	departmentID, _ := strconv.Atoi(c.Query("department_id"))
 
 	// get teacher info
