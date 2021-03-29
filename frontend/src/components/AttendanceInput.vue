@@ -12,8 +12,8 @@
 
         <v-col>
           <v-card
-        flat
-      color="transparent"
+            flat
+            color="transparent"
           >
             <v-card-text>
               <v-slider
@@ -25,7 +25,7 @@
                 tick-size="4"
               ></v-slider>
             </v-card-text>
-      </v-card>
+          </v-card>
         </v-col>
       </v-row>
 

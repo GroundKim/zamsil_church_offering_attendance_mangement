@@ -16,10 +16,7 @@ const router = new VueRouter({
         path: "/offering/input",
         name: "offeringInput",
         component: OfferingInput
-    }
-    ]
-
-    
+    }]
 })
 
 export default router
