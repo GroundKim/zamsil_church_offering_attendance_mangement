@@ -2,7 +2,7 @@
     <v-container>
         <h1>헌금통계표</h1>
         <br>
-        <v-form>
+        <form @submit.prevent="sendPost">
             <v-row>
                 <v-col
                     cols="12"
@@ -56,7 +56,7 @@
                 <v-col
                     cols="4"
                 >
-                    <v-text-field label="작성자" :ruels="[rules.required]"></v-text-field>
+                    <v-text-field label="작성자" :ruels="[rules.required]" required></v-text-field>
                 </v-col>
 
                 <v-col
@@ -79,8 +79,10 @@
                     cols="5"
                 >
                     <v-text-field
+                        v-model="weekOffering"
                         label="주일헌금"
                         outlined
+                        required
                         :rules="[rules.offering, rules.required]"
                     >
                     </v-text-field>
@@ -111,10 +113,10 @@
             </v-icon>
         </v-btn>
 
-        <component v-for="item in offerings" :key="item" :is="item"></component>
+        <component v-for="item, i in offerings" :key="i" :is="item" :testProp="trigger"></component>
         <v-btn type="submit" width="700">제출</v-btn>
 
-        </v-form>
+        </form>
         <span>{{ department }}</span>
     </v-container>
 </template>
@@ -124,6 +126,7 @@ import SpecificOfferingInput from "./SpecificOfferingInput"
 
 import axios from "axios";
 export default {
+    name: 'OfferingInput',
     components: {
         SpecificOfferingInput,
     },
@@ -136,40 +139,60 @@ export default {
         department: null,
         studentData: [],
         departmentsLabel: ['1부', '2부'],
+        weekOffering: null,
         students: [],
         offerings: [],
+
+        trigger: 0,
+
         rules: {
-            reuqired: value => !!value || 'Required.',
+            required: value => !!value || 'Required.',
             offering: value => {
                 const pattern = /^[0-9]+$/
                 return pattern.test(value)
             }  
         }
     }),
+
+
     methods: {
+        sendPost() {
+            this.trigger++
+            var target = this.$store.getters.getOfferingPayload
+            alert(JSON.stringify(target))
+            console.log(JSON.stringify(target))
+        },
+
         addOffering() {
             this.offerings.push('SpecificOfferingInput')
         },
 
         deleteOffering() {
             this.offerings.pop()
-        }
-    },
-    watch: {
-        department : async function () {
+        },
+
+        getStudents: async function() {
             let getURL = `http://localhost:8080/Youth/students?department_id=${this.department + 1}`
             await axios
             .get(getURL)
-            .then((response) => {
-                this.studentData = response.data
+            .then((response) => {              
+                this.$store.commit('setStudents', response.data)
                 })
             .catch(err => {
                 alert(err.message + " 학생정보를 불러오는 도중 오류가 발생했습니다 관리자에게 문의하십시오")
-            })  
+            })
         }
+
     },
 
-    created() {
+    watch: {
+       department: function () {
+           this.getStudents()
+       }
+    },
+
+    async created() {
+        await this.getStudents()
         this.offerings.push('SpecificOfferingInput')
     },
   }
