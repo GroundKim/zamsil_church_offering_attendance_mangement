@@ -7,7 +7,9 @@
                 v-model="offeringTypeValue"
                 label="offering type"
                 :items="offeringType"
+                item-text="offeringName"
                 required
+                return-object
             ></v-autocomplete>
         </v-col>
 
@@ -41,7 +43,7 @@
 export default {
     name: 'SpecificOfferingInput',
     data: () => ({
-        offeringType: ['tith', 'thanks', 'seasonal', 'etc'], //... backend 서버에서 get offering type
+        offeringType: [], //... backend 서버에서 get offering type
         offeringTypeValue: null,
         offerorValue: null,
         offeringAmountValue: null,
@@ -68,11 +70,10 @@ export default {
 
         makePayload() {
             let offeringPayload = {
-                offeringType: this.offeringTypeValue,
-                offeror: this.offerorValue,
-                offeringAmount: this.offeringAmountValue
+                offeringTypeId: this.offeringTypeValue['offeringTypeId'],
+                studentId: this.offerorValue['studentId'],
+                offeringAmount: this.offeringAmountValue,
             }
-
             this.$store.commit('pushOffering', offeringPayload)
         }
 
@@ -92,6 +93,7 @@ export default {
 
     created() {
         this.students = this.$store.getters.getStudents
+        this.offeringType = this.$store.getters.getOfferingType
     },
 }
 </script>

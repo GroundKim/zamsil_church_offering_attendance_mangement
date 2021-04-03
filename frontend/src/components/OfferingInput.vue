@@ -124,7 +124,8 @@
 <script>
 import SpecificOfferingInput from "./SpecificOfferingInput"
 
-import axios from "axios";
+import axios from 'axios'
+import moment from 'moment'
 export default {
     name: 'OfferingInput',
     components: {
@@ -132,7 +133,7 @@ export default {
     },
 
     data: () => ({
-        date: new Date().toISOString().substr(0, 10),
+        date: moment().format(),
         menu: false,
         modal: false,
         menu2: false,
@@ -156,11 +157,27 @@ export default {
 
 
     methods: {
-        sendPost() {
+        async sendPost() {
             this.trigger++
-            var target = this.$store.getters.getOfferingPayload
+            var target = await this.$store.getters.getOfferingPayload
             alert(JSON.stringify(target))
             console.log(JSON.stringify(target))
+
+            const headers = {
+                'Content-Type': 'application/json',
+            }
+
+            axios
+                .post(
+                "http://localhost:8080/Youth/offering", JSON.stringify(target), {headers: headers}
+                )
+                .then(res => {
+                    console.log(res.data)
+                    alert("등록 완료!")
+                })
+                .catch(err => {
+                    alert(err.message + ' 등록중 오류 발생 관리자에게 문의하십시오')
+                })
         },
 
         addOffering() {
@@ -171,7 +188,7 @@ export default {
             this.offerings.pop()
         },
 
-        getStudents: async function() {
+        setStudents: async function() {
             let getURL = `http://localhost:8080/Youth/students?department_id=${this.department + 1}`
             await axios
             .get(getURL)
@@ -181,18 +198,31 @@ export default {
             .catch(err => {
                 alert(err.message + " 학생정보를 불러오는 도중 오류가 발생했습니다 관리자에게 문의하십시오")
             })
+        },
+
+        setOfferingType: async function() {
+            let getURL = "http://localhost:8080/Youth/offering/type"
+            await axios
+                .get(getURL)
+                .then((response) => {
+                    this.$store.commit('setOfferingType', response.data)
+                })
+                .catch(err => {
+                    alert(err.message + " offeriny type을 불러오는 도중 오류가 발생했습니다. 관리자에게 문의하십시오")
+                })
         }
 
     },
 
     watch: {
        department: function () {
-           this.getStudents()
+           this.setStudents()
        }
     },
 
     async created() {
-        await this.getStudents()
+        await this.setStudents()
+        await this.setOfferingType()
         this.offerings.push('SpecificOfferingInput')
     },
   }

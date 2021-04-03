@@ -14,7 +14,7 @@ func PostAttendanceInfo(c *gin.Context) {
 
 	var attendanceDiarys []models.AttendanceDiary
 	if err := c.Bind(&attendanceDiarys); err != nil {
-		fmt.Println("Error in json bind ", err)
+		fmt.Println("Error in json bind: post attendance diary ", err)
 	}
 
 	for _, attendanceDiary := range attendanceDiarys {

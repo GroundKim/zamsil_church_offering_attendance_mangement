@@ -16,4 +16,7 @@ func CreateUrlMappings() {
 	Youth.POST("/attendances", controllers.PostAttendanceInfo)
 
 	Youth.GET("/students", controllers.GetStudents)
+
+	Youth.GET("/offering/type", controllers.GetOfferingType)
+	Youth.POST("/offering", controllers.PostOffering)
 }

@@ -1,5 +1,6 @@
 const state = {
     students: null,
+    offeringType: [],
     payloadStudents: [],
     payloadOfferings: [],
     sendPost: false,
@@ -10,6 +11,10 @@ const mutations = {
     setStudents(state, newStudents) {
         state.students = newStudents
     },
+
+    setOfferingType(state, newOfferingType) {
+        state.offeringType = newOfferingType
+    },
     
     pushStudent(state, student) {
         state.payloadStudents.push(student)
@@ -18,10 +23,6 @@ const mutations = {
     pushOffering(state, newOffering) {
         state.payloadOfferings.push(newOffering)
     },
-
-    changeSendPost(state, bool) {
-        state.sendPost = bool
-    }
 }
 
 const actions = {
@@ -35,7 +36,12 @@ const getters = {
 
     getOfferingPayload(state) {
         return state.payloadOfferings
+    },
+
+    getOfferingType(state) {
+        return state.offeringType
     }
+
 }
 
 export default {

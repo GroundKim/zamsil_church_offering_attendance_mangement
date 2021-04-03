@@ -135,6 +135,7 @@ export default {
         )
         .then(res => {
           console.log(res.data)
+          alert("등록 완료!")
         })
         .catch(err => {
           alert(err.message + ' 등록중 오류 발생 관리자에게 문의하십시오')
