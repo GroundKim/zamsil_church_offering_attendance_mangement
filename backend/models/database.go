@@ -32,7 +32,8 @@ func InitDb(conf *config.Config) {
 // Migrate models using GORM
 func Migrate(db *gorm.DB) {
 	db.AutoMigrate(
-		OfferingDiary{},
+		WeekOfferingDiary{},
+		SpecificOfferingDiary{},
 		OfferingType{},
 		Student{},
 		Teacher{},

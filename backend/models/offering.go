@@ -5,10 +5,20 @@ import (
 	"time"
 )
 
-type OfferingDiary struct {
+type WeekOfferingDiary struct {
+	ID        int
+	Cost      int       `gorm:"not null" json:"weekOfferingCost"`
+	OfferedAt time.Time `gorm:"not null" json:"offeredAt"`
+	CreatedBy string    `gorm:"not null" json:"createdBy"`
+	CreatedAt time.Time `gorm:"not null" json:"createdAt"`
+}
+
+type SpecificOfferingDiary struct {
 	ID             int
 	StudentID      int       `gorm:"not null;" json:"studentId"`
 	OfferingTypeID int       `gorm:"not null;" json:"offeringTypeId"`
+	Cost           int       `gorm:"not null;" json:"specificOfferingCost"`
+	OfferedAt      time.Time `gorm:"not null" json:"offeredAt"`
 	CreatedAt      time.Time `gorm:"not null;" json:"createdAt"`
 	CreatedBy      string    `gorm:"not null;" json:"createdBy"`
 
@@ -21,10 +31,18 @@ type OfferingType struct {
 	OfferingName string `gorm:"not null;" json:"offeringName"`
 }
 
-func (offeringDiary *OfferingDiary) SaveOfferingDiary() (err error) {
+func (WeekOfferingDiary *WeekOfferingDiary) SaveWeekOfferingDiary() (err error) {
+	if err = DB.Create(&WeekOfferingDiary).Error; err != nil {
+		fmt.Println("Error in create week offering Diary")
+		return err
+	}
+	return nil
+}
 
-	if err = DB.Create(&offeringDiary).Error; err != nil {
-		fmt.Println("Error in create Offering Diary")
+func (specificOfferingDiary *SpecificOfferingDiary) SaveSpecificOfferingDiary() (err error) {
+
+	if err = DB.Create(&specificOfferingDiary).Error; err != nil {
+		fmt.Println("Error in create specific Offering Diary")
 		return err
 	}
 	return nil
@@ -38,8 +56,12 @@ func GetOfferingType(OfferingTypes *[]OfferingType) (err error) {
 	return nil
 }
 
-func (OfferingDiary) TableName() string {
-	return "offering_diary"
+func (WeekOfferingDiary) TableName() string {
+	return "week_offering_diary"
+}
+
+func (SpecificOfferingDiary) TableName() string {
+	return "specific_offering_diary"
 }
 
 func (OfferingType) TableName() string {

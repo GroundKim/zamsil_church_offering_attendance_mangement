@@ -56,7 +56,12 @@
                 <v-col
                     cols="4"
                 >
-                    <v-text-field label="작성자" :ruels="[rules.required]" required></v-text-field>
+                    <v-text-field
+                        v-model="createdBy"
+                        label="작성자"
+                        :ruels="[rules.required]" 
+                        required
+                        ></v-text-field>
                 </v-col>
 
                 <v-col
@@ -79,7 +84,7 @@
                     cols="5"
                 >
                     <v-text-field
-                        v-model="weekOffering"
+                        v-model="weekOfferingCost"
                         label="주일헌금"
                         outlined
                         required
@@ -113,7 +118,7 @@
             </v-icon>
         </v-btn>
 
-        <component v-for="item, i in offerings" :key="i" :is="item" :testProp="trigger"></component>
+        <component v-for="item, i in offerings" :key="i" :is="item" :offerPostTrigger="specificOfferingTrigger"></component>
         <v-btn type="submit" width="700">제출</v-btn>
 
         </form>
@@ -140,11 +145,11 @@ export default {
         department: null,
         studentData: [],
         departmentsLabel: ['1부', '2부'],
-        weekOffering: null,
+        weekOfferingCost: null,
+        createdBy: null,
         students: [],
         offerings: [],
-
-        trigger: 0,
+        specificOfferingTrigger: 0,
 
         rules: {
             required: value => !!value || 'Required.',
@@ -158,22 +163,43 @@ export default {
 
     methods: {
         async sendPost() {
-            this.trigger++
-            var target = await this.$store.getters.getOfferingPayload
-            alert(JSON.stringify(target))
-            console.log(JSON.stringify(target))
+            this.specificOfferingTrigger++
+            let specificOfferingPayload = await this.$store.getters.getOfferingPayload
 
+            let weekOfferingPayload = {
+                'weekOfferingCost': parseInt(this.weekOfferingCost),
+                'offeredAt': this.date,
+                'createdBy': this.createdBy,
+                'createdAt': moment().format()
+            }
+
+            console.log(JSON.stringify(specificOfferingPayload))
+            console.log(JSON.stringify(weekOfferingPayload))
             const headers = {
                 'Content-Type': 'application/json',
             }
 
             axios
                 .post(
-                "http://localhost:8080/Youth/offering", JSON.stringify(target), {headers: headers}
+                    "http://localhost:8080/Youth/offering?offering_type=specific", JSON.stringify(specificOfferingPayload), {headers: headers}
                 )
                 .then(res => {
                     console.log(res.data)
                     alert("등록 완료!")
+                    this.$store.commit('deleteSpecificOffering')
+                })
+                .catch(err => {
+                    alert(err.message + ' 등록중 오류 발생 관리자에게 문의하십시오')
+                })
+            
+            axios
+                .post(
+                    "http://localhost:8080/Youth/offering?offering_type=week", JSON.stringify(weekOfferingPayload), {headers: headers}
+                )
+                .then(res => {
+                    console.log(res.data)
+                    alert("등록 완료!")
+                    
                 })
                 .catch(err => {
                     alert(err.message + ' 등록중 오류 발생 관리자에게 문의하십시오')
@@ -210,13 +236,29 @@ export default {
                 .catch(err => {
                     alert(err.message + " offeriny type을 불러오는 도중 오류가 발생했습니다. 관리자에게 문의하십시오")
                 })
-        }
+        },
+
+        setCreatedBy() {
+            this.$store.commit('setCreatedBy', this.createdBy)
+        },
+
+        setOfferedAt() {
+            this.$store.commit('setOfferedAt', this.date)
+        },
 
     },
 
     watch: {
-       department: function () {
-           this.setStudents()
+       department: async function () {
+           await this.setStudents()
+       },
+
+       createdBy: function () {
+           this.setCreatedBy()
+       },
+
+       date: function() {
+           this.setOfferedAt()
        }
     },
 

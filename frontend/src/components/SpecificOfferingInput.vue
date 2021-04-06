@@ -30,7 +30,7 @@
             cols="4"
         >
             <v-text-field
-                v-model="offeringAmountValue"
+                v-model="offeringCost"
                 label ="what cost" 
                 required
                 :rules="[rules.offering]"
@@ -39,6 +39,7 @@
     </v-row>
 </template>
 <script>
+import moment from 'moment'
 
 export default {
     name: 'SpecificOfferingInput',
@@ -46,7 +47,7 @@ export default {
         offeringType: [], //... backend 서버에서 get offering type
         offeringTypeValue: null,
         offerorValue: null,
-        offeringAmountValue: null,
+        offeringCost: null,
         students: null,
 
         rules: {
@@ -57,12 +58,8 @@ export default {
         }
     }),
     
-    props:['testProp'],
+    props:['offerPostTrigger'],
     methods: {
-        getStudents() {
-            return this.$store.getters.getStudents
-        },
-
         watchSendPost() {
             const {sendPost} = this
             return sendPost
@@ -72,12 +69,20 @@ export default {
             let offeringPayload = {
                 offeringTypeId: this.offeringTypeValue['offeringTypeId'],
                 studentId: this.offerorValue['studentId'],
-                offeringAmount: this.offeringAmountValue,
+                specificOfferingCost: parseInt(this.offeringCost),
+                createdBy: this.$store.getters.getCreatedBy,
+                createdAt: moment().format(),
+                offeredAt: this.$store.state.offeredAt
             }
             this.$store.commit('pushOffering', offeringPayload)
         }
+    },
 
-        
+    computed: {
+        // cannot use with method, not a computed because update cycle is not proccessed in methods
+        getStudents() {
+            return this.$store.getters.getStudents
+        },
     },
 
     watch: {
@@ -85,10 +90,9 @@ export default {
             this.students = this.$store.getters.getStudents
         },
 
-        testProp: function() {
+        offerPostTrigger: function() {
             this.makePayload()
-        }
-
+        },
     },
 
     created() {

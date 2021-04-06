@@ -4,7 +4,8 @@ const state = {
     payloadStudents: [],
     payloadOfferings: [],
     sendPost: false,
-    
+    offeredAt: null,
+    createdBy: null,
 }
 
 const mutations = {
@@ -15,6 +16,14 @@ const mutations = {
     setOfferingType(state, newOfferingType) {
         state.offeringType = newOfferingType
     },
+
+    setCreatedBy(state, createdBy) {
+      state.createdBy = createdBy
+    },
+
+    setOfferedAt(state, offeredAt) {
+        state.offeredAt = offeredAt
+    },
     
     pushStudent(state, student) {
         state.payloadStudents.push(student)
@@ -23,6 +32,10 @@ const mutations = {
     pushOffering(state, newOffering) {
         state.payloadOfferings.push(newOffering)
     },
+
+    deleteSpecificOffering(state) {
+        state.payloadOfferings = []
+    }
 }
 
 const actions = {
@@ -34,13 +47,18 @@ const getters = {
         return state.students
     },
 
+    getCreatedBy (state) {
+        return state.createdBy
+    },
+
     getOfferingPayload(state) {
         return state.payloadOfferings
     },
 
     getOfferingType(state) {
         return state.offeringType
-    }
+    },
+
 
 }
 
