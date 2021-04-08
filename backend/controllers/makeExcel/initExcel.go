@@ -3,6 +3,7 @@ package makeExcel
 import (
 	"fmt"
 	"time"
+	"zamsil_church_offering_attendance_mangement/models"
 
 	"github.com/360EntSecGroup-Skylar/excelize/v2"
 )
@@ -29,7 +30,12 @@ func SaveExcel(date time.Time, createdBy string) {
 	f.SetCellValue(offeringDiaryName, "A7", "감사헌금")
 	f.SetCellValue(offeringDiaryName, "A8", "절기헌금")
 
-	// var OfferingDiarys []models.SpecificOfferingDiary
+	// 원하는 날짜
+	now := time.Now()
+
+	var offeringDiarys []models.OfferingDiary
+
+	models.GetSpecificOfferingDiaryByDate(&offeringDiarys, now)
 
 	// 주일헌금 + 십일조 + 감사헌금 + 절기헌금 + 기타헌금 / 합계
 

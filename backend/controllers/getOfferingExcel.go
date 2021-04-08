@@ -21,5 +21,5 @@ func GetOfferingExcel(c *gin.Context) {
 		return
 	}
 
-	c.AbortWithStatusJSON(500, gin.H{"message": "No offering excel file in server"})
+	c.AbortWithStatus(500)
 }

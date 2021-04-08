@@ -6,6 +6,7 @@ const state = {
     sendPost: false,
     offeredAt: null,
     createdBy: null,
+    departmentId: null,
 }
 
 const mutations = {
@@ -18,11 +19,15 @@ const mutations = {
     },
 
     setCreatedBy(state, createdBy) {
-      state.createdBy = createdBy
+        state.createdBy = createdBy
     },
 
     setOfferedAt(state, offeredAt) {
         state.offeredAt = offeredAt
+    },
+
+    setDepartmentId(state, departmentId) {
+        state.departmentId = departmentId
     },
     
     pushStudent(state, student) {
@@ -58,6 +63,14 @@ const getters = {
     getOfferingType(state) {
         return state.offeringType
     },
+    
+    getDepartmentId(state) {
+        return state.departmentId
+    },
+
+    getOfferedAt(state) {
+        return state.offeredAt
+    }
 
 
 }

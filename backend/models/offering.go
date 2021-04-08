@@ -5,44 +5,38 @@ import (
 	"time"
 )
 
-type WeekOfferingDiary struct {
-	ID        int
-	Cost      int       `gorm:"not null" json:"weekOfferingCost"`
-	OfferedAt time.Time `gorm:"not null" json:"offeredAt"`
-	CreatedBy string    `gorm:"not null" json:"createdBy"`
-	CreatedAt time.Time `gorm:"not null" json:"createdAt"`
-}
-
-type SpecificOfferingDiary struct {
+type OfferingDiary struct {
 	ID             int
-	StudentID      int       `gorm:"not null;" json:"studentId"`
-	OfferingTypeID int       `gorm:"not null;" json:"offeringTypeId"`
-	Cost           int       `gorm:"not null;" json:"specificOfferingCost"`
-	OfferedAt      time.Time `gorm:"not null" json:"offeredAt"`
-	CreatedAt      time.Time `gorm:"not null;" json:"createdAt"`
-	CreatedBy      string    `gorm:"not null;" json:"createdBy"`
-
-	Student      Student      `gorm:"references:ID"`
-	OfferingType OfferingType `gorm:"references:ID"`
+	StudentID      *int         `json:"studentId"`
+	OfferingTypeID int          `gorm:"not null;" json:"offeringTypeId"`
+	DepartmentID   int          `gorm:"not null;" json:"departmentId"`
+	Cost           int          `gorm:"not null;" json:"offeringCost"`
+	OfferedAt      time.Time    `gorm:"not null" json:"offeredAt"`
+	CreatedAt      time.Time    `gorm:"not null;" json:"createdAt"`
+	CreatedBy      string       `gorm:"not null;" json:"createdBy"`
+	Student        Student      `gorm:"references:ID"`
+	OfferingType   OfferingType `gorm:"references:ID"`
+	Department     Department   `gorm:"references:ID"`
 }
 
 type OfferingType struct {
-	ID           int    `json:"offeringTypeId"`
-	OfferingName string `gorm:"not null;" json:"offeringName"`
+	ID               int    `json:"offeringTypeId"`
+	OfferingTypeName string `gorm:"not null;" json:"offeringName"`
 }
 
-func (WeekOfferingDiary *WeekOfferingDiary) SaveWeekOfferingDiary() (err error) {
-	if err = DB.Create(&WeekOfferingDiary).Error; err != nil {
-		fmt.Println("Error in create week offering Diary")
+func GetSpecificOfferingDiaryByDate(offeringDiarys *[]OfferingDiary, date time.Time) (err error) {
+	theDay := date.Format("2006-01-02 ") + "00:00:00"
+	theDayRange := theDay[0:11] + "23:59:59"
+	if err = DB.Where("offered_at BETWEEN ? AND ?", theDay, theDayRange).Find(&offeringDiarys).Error; err != nil {
+		fmt.Println("Error in get Offering Diary by date")
 		return err
 	}
 	return nil
 }
 
-func (specificOfferingDiary *SpecificOfferingDiary) SaveSpecificOfferingDiary() (err error) {
-
-	if err = DB.Create(&specificOfferingDiary).Error; err != nil {
-		fmt.Println("Error in create specific Offering Diary")
+func (OfferingDiary *OfferingDiary) SaveOfferingDiary() (err error) {
+	if err = DB.Create(&OfferingDiary).Error; err != nil {
+		fmt.Println("Error in create Offering Diary")
 		return err
 	}
 	return nil
@@ -56,12 +50,8 @@ func GetOfferingType(OfferingTypes *[]OfferingType) (err error) {
 	return nil
 }
 
-func (WeekOfferingDiary) TableName() string {
-	return "week_offering_diary"
-}
-
-func (SpecificOfferingDiary) TableName() string {
-	return "specific_offering_diary"
+func (OfferingDiary) TableName() string {
+	return "offering_diary"
 }
 
 func (OfferingType) TableName() string {

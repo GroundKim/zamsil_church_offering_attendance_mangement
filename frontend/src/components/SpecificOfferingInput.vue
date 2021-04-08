@@ -69,10 +69,11 @@ export default {
             let offeringPayload = {
                 offeringTypeId: this.offeringTypeValue['offeringTypeId'],
                 studentId: this.offerorValue['studentId'],
-                specificOfferingCost: parseInt(this.offeringCost),
-                createdBy: this.$store.getters.getCreatedBy,
+                offeringCost: parseInt(this.offeringCost),
                 createdAt: moment().format(),
-                offeredAt: this.$store.state.offeredAt
+                createdBy: this.$store.getters.getCreatedBy,
+                offeredAt: this.$store.getters.getOfferedAt,
+                departmentId: this.$store.getters.getDepartmentId,
             }
             this.$store.commit('pushOffering', offeringPayload)
         }

@@ -69,7 +69,7 @@
                     class="mx-10"
                 >
                     <v-slider
-                        v-model="department"
+                        v-model="departmentId"
                         :tick-labels="departmentsLabel"
                         :max="1"
                         step="1"
@@ -122,7 +122,7 @@
         <v-btn type="submit" width="700">제출</v-btn>
 
         </form>
-        <span>{{ department }}</span>
+        <span>{{ departmentId }}</span>
     </v-container>
 </template>
 
@@ -142,7 +142,7 @@ export default {
         menu: false,
         modal: false,
         menu2: false,
-        department: null,
+        departmentId: null,
         studentData: [],
         departmentsLabel: ['1부', '2부'],
         weekOfferingCost: null,
@@ -163,25 +163,30 @@ export default {
 
     methods: {
         async sendPost() {
+            let hasPostError = false
             this.specificOfferingTrigger++
             let specificOfferingPayload = await this.$store.getters.getOfferingPayload
 
             let weekOfferingPayload = {
-                'weekOfferingCost': parseInt(this.weekOfferingCost),
-                'offeredAt': this.date,
-                'createdBy': this.createdBy,
-                'createdAt': moment().format()
+                studentId: null,
+                offeringTypeId: 1,
+                offeringCost: parseInt(this.weekOfferingCost),
+                departmentId: parseInt(this.departmentId + 1),
+                offeredAt: this.date,
+                createdAt: moment().format(),
+                createdBy: this.createdBy,
             }
-
+            console.log(specificOfferingPayload)
+            specificOfferingPayload.push(weekOfferingPayload)
             console.log(JSON.stringify(specificOfferingPayload))
-            console.log(JSON.stringify(weekOfferingPayload))
+            
             const headers = {
                 'Content-Type': 'application/json',
             }
 
-            axios
+            await axios
                 .post(
-                    "http://localhost:8080/Youth/offering?offering_type=specific", JSON.stringify(specificOfferingPayload), {headers: headers}
+                    "http://localhost:8080/Youth/offering", JSON.stringify(specificOfferingPayload), {headers: headers}
                 )
                 .then(res => {
                     console.log(res.data)
@@ -189,21 +194,15 @@ export default {
                     this.$store.commit('deleteSpecificOffering')
                 })
                 .catch(err => {
+                    hasPostError = true
                     alert(err.message + ' 등록중 오류 발생 관리자에게 문의하십시오')
+                    this.$store.commit('deleteSpecificOffering')
+
                 })
             
-            axios
-                .post(
-                    "http://localhost:8080/Youth/offering?offering_type=week", JSON.stringify(weekOfferingPayload), {headers: headers}
-                )
-                .then(res => {
-                    console.log(res.data)
-                    alert("등록 완료!")
-                    
-                })
-                .catch(err => {
-                    alert(err.message + ' 등록중 오류 발생 관리자에게 문의하십시오')
-                })
+            if (!hasPostError) {
+                window.location.reload()
+            }
         },
 
         addOffering() {
@@ -215,7 +214,7 @@ export default {
         },
 
         setStudents: async function() {
-            let getURL = `http://localhost:8080/Youth/students?department_id=${this.department + 1}`
+            let getURL = `http://localhost:8080/Youth/students?department_id=${this.departmentId + 1}`
             await axios
             .get(getURL)
             .then((response) => {              
@@ -246,11 +245,16 @@ export default {
             this.$store.commit('setOfferedAt', this.date)
         },
 
+        setDepartmentId() {
+            this.$store.commit('setDepartmentId', this.departmentId + 1)
+        }
+
     },
 
     watch: {
-       department: async function () {
+       departmentId: async function () {
            await this.setStudents()
+           this.setDepartmentId()
        },
 
        createdBy: function () {
@@ -265,6 +269,7 @@ export default {
     async created() {
         await this.setStudents()
         await this.setOfferingType()
+        this.setOfferedAt()
         this.offerings.push('SpecificOfferingInput')
     },
   }
