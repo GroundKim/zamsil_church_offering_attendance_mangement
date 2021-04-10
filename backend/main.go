@@ -15,4 +15,5 @@ func main() {
 	mappings.CreateUrlMappings()
 	mappings.Router.Use(cors.Default())
 	mappings.Router.Run()
+
 }

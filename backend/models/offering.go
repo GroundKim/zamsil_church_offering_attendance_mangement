@@ -7,16 +7,17 @@ import (
 
 type OfferingDiary struct {
 	ID             int
-	StudentID      *int         `json:"studentId"`
-	OfferingTypeID int          `gorm:"not null;" json:"offeringTypeId"`
-	DepartmentID   int          `gorm:"not null;" json:"departmentId"`
-	Cost           int          `gorm:"not null;" json:"offeringCost"`
-	OfferedAt      time.Time    `gorm:"not null" json:"offeredAt"`
-	CreatedAt      time.Time    `gorm:"not null;" json:"createdAt"`
-	CreatedBy      string       `gorm:"not null;" json:"createdBy"`
-	Student        Student      `gorm:"references:ID"`
-	OfferingType   OfferingType `gorm:"references:ID"`
-	Department     Department   `gorm:"references:ID"`
+	StudentID      *int      `json:"studentId"`
+	OfferingTypeID int       `gorm:"not null;" json:"offeringTypeId"`
+	DepartmentID   int       `gorm:"not null;" json:"departmentId"`
+	Cost           int       `gorm:"not null;" json:"offeringCost"`
+	OfferedAt      time.Time `gorm:"not null" json:"offeredAt"`
+	CreatedAt      time.Time `gorm:"not null;" json:"createdAt"`
+	CreatedBy      string    `gorm:"not null;" json:"createdBy"`
+
+	Student      Student      `gorm:"references:ID"`
+	OfferingType OfferingType `gorm:"references:ID"`
+	Department   Department   `gorm:"references:ID"`
 }
 
 type OfferingType struct {
@@ -24,10 +25,10 @@ type OfferingType struct {
 	OfferingTypeName string `gorm:"not null;" json:"offeringName"`
 }
 
-func GetSpecificOfferingDiaryByDate(offeringDiarys *[]OfferingDiary, date time.Time) (err error) {
+func GetOfferingDiaryByDate(offeringDiarys *[]OfferingDiary, date time.Time) (err error) {
 	theDay := date.Format("2006-01-02 ") + "00:00:00"
 	theDayRange := theDay[0:11] + "23:59:59"
-	if err = DB.Where("offered_at BETWEEN ? AND ?", theDay, theDayRange).Find(&offeringDiarys).Error; err != nil {
+	if err = DB.Preload("OfferingType").Preload("Student").Where("offered_at BETWEEN ? AND ?", theDay, theDayRange).Find(&offeringDiarys).Error; err != nil {
 		fmt.Println("Error in get Offering Diary by date")
 		return err
 	}
