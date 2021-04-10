@@ -2,6 +2,7 @@ package makeExcel
 
 import (
 	"fmt"
+	"strings"
 	"time"
 	"zamsil_church_offering_attendance_mangement/models"
 
@@ -11,13 +12,27 @@ import (
 func SaveExcel(date time.Time, createdBy string) {
 	f := excelize.NewFile()
 	var offeringDiarys []models.OfferingDiary
+	var createdBys []string
 	models.GetOfferingDiaryByDate(&offeringDiarys, time.Now())
+
+	for i := 0; i < len(offeringDiarys); i++ {
+		hasSameName := false
+		for j := 1; j < len(offeringDiarys)-j; j++ {
+			if offeringDiarys[i].CreatedBy == offeringDiarys[j].CreatedBy {
+				hasSameName = true
+			}
+		}
+
+		if !hasSameName {
+			createdBys = append(createdBys, offeringDiarys[i].CreatedBy)
+		}
+	}
 
 	offeringDiarySheetName := "헌금통계표"
 	index := f.NewSheet(offeringDiarySheetName)
 
 	f.SetCellValue(offeringDiarySheetName, "A1", offeringDiarySheetName)
-	f.SetCellValue(offeringDiarySheetName, "A2", "작성자: ")
+	f.SetCellValue(offeringDiarySheetName, "A2", fmt.Sprintf("작성자입니다: %s", strings.Join(createdBys, ",")))
 	f.SetCellValue(offeringDiarySheetName, "A3", ("열람 날짜 " + time.Now().Format("2006-01-02")))
 	f.MergeCell(offeringDiarySheetName, "A1", "D1")
 	f.MergeCell(offeringDiarySheetName, "A2", "D2")
