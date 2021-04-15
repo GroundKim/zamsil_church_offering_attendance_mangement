@@ -10,7 +10,7 @@ import (
 
 func GetOfferingExcel(c *gin.Context) {
 
-	makeExcel.SaveExcel(time.Now(), "작성자입니다") //...  get createdBy from gorm(mysql)
+	makeExcel.SaveOfferingViewExcel(time.Now(), "작성자입니다") //...  get createdBy from gorm(mysql)
 
 	if len(c.Query("date")) != 0 {
 

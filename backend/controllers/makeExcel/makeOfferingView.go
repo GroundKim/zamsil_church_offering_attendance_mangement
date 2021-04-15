@@ -9,7 +9,7 @@ import (
 	"github.com/360EntSecGroup-Skylar/excelize/v2"
 )
 
-func SaveExcel(date time.Time, createdBy string) {
+func SaveOfferingViewExcel(date time.Time, createdBy string) {
 	f := excelize.NewFile()
 	var offeringDiarys []models.OfferingDiary
 	var createdBys []string
@@ -27,7 +27,6 @@ func SaveExcel(date time.Time, createdBy string) {
 			createdBys = append(createdBys, offeringDiarys[i].CreatedBy)
 		}
 	}
-
 	offeringDiarySheetName := "헌금통계표"
 	index := f.NewSheet(offeringDiarySheetName)
 
@@ -103,7 +102,6 @@ func SaveExcel(date time.Time, createdBy string) {
 			if offeringDiary.DepartmentID == 2 {
 				totalSeasonalOfferingCost[1] += offeringDiary.Cost
 				seasonalOfferingName[1] += offeringDiary.Student.Name + " "
-
 			}
 
 		case "기타헌금":
