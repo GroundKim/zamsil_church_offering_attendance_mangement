@@ -2,7 +2,9 @@ import Vue from "vue"
 import VueRouter from "vue-router"
 import AttendanceInput from "./components/AttendanceInput"
 import OfferingInput from "./components/OfferingInput"
-import AttendanceAndOfferingView from "./components/AttendanceAndOfferingView"
+import OfferingView from "./components/OfferingView"
+import AttendanceView from "./components/AttendanceView"
+
 Vue.use(VueRouter)
 
 const router = new VueRouter({
@@ -20,9 +22,15 @@ const router = new VueRouter({
     },
 
     {
-        path: "/attendance-offering/view",
-        name: "attendanceAndOfferingView",
-        component: AttendanceAndOfferingView
+        path: "/offering/view",
+        name: "offeringView",
+        component: OfferingView
+    },
+
+    {
+        path:"/attendance/view",
+        name: "attendanceView",
+        component: AttendanceView
     }
 ]
 })

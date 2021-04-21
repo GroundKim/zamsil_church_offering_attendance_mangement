@@ -71,8 +71,6 @@ const getters = {
     getOfferedAt(state) {
         return state.offeredAt
     }
-
-
 }
 
 export default {

@@ -13,7 +13,7 @@ func SaveOfferingViewExcel(date time.Time, createdBy string) {
 	f := excelize.NewFile()
 	var offeringDiarys []models.OfferingDiary
 	var createdBys []string
-	models.GetOfferingDiaryByDate(&offeringDiarys, time.Now())
+	models.GetOfferingDiaryByDate(&offeringDiarys, date)
 
 	for i := 0; i < len(offeringDiarys); i++ {
 		hasSameName := false
@@ -31,8 +31,8 @@ func SaveOfferingViewExcel(date time.Time, createdBy string) {
 	index := f.NewSheet(offeringDiarySheetName)
 
 	f.SetCellValue(offeringDiarySheetName, "A1", offeringDiarySheetName)
-	f.SetCellValue(offeringDiarySheetName, "A2", fmt.Sprintf("작성자입니다: %s", strings.Join(createdBys, ",")))
-	f.SetCellValue(offeringDiarySheetName, "A3", ("열람 날짜 " + time.Now().Format("2006-01-02")))
+	f.SetCellValue(offeringDiarySheetName, "A2", fmt.Sprintf("작성자: %s", strings.Join(createdBys, ",")))
+	f.SetCellValue(offeringDiarySheetName, "A3", ("열람 날짜 " + date.Format("2006-01-02")))
 	f.MergeCell(offeringDiarySheetName, "A1", "D1")
 	f.MergeCell(offeringDiarySheetName, "A2", "D2")
 	f.MergeCell(offeringDiarySheetName, "A3", "D3")

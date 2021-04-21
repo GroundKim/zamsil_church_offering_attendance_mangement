@@ -11,7 +11,7 @@ func GetOfferingView(c *gin.Context) {
 
 	if len(c.Query("year")) != 0 {
 
-		c.Writer.Header().Add("Content-type", "application/octet-stream")
+		c.Writer.Header().Add("Access-Control-Allow-Origin", "*")
 
 		year := c.Query("year")
 		parsedYear, _ := time.Parse("2006", year)
@@ -33,7 +33,7 @@ func GetOfferingView(c *gin.Context) {
 			}
 
 		}
-		payload := map[string][]time.Time{"cratedAts": offeringAts}
+		payload := map[string][]time.Time{"offeredAts": offeringAts}
 		c.JSON(200, payload)
 	}
 

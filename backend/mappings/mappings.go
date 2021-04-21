@@ -20,6 +20,9 @@ func CreateUrlMappings() {
 	Youth.GET("/offering/type", controllers.GetOfferingType)
 	Youth.POST("/offering", controllers.PostOffering)
 
-	Youth.GET("/offering/view/excel", controllers.GetOfferingExcel)
+	Youth.GET("/attendance/view", controllers.GetAttendanceView)
+	Youth.GET("/attendance/view/excel")
 	Youth.GET("/offering/view", controllers.GetOfferingView)
+	Youth.GET("/offering/view/excel", controllers.GetOfferingExcel)
+
 }

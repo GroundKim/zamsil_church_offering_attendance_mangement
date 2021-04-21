@@ -10,6 +10,7 @@
   "dependencies": {
     "axios": "^0.21.1",
     "core-js": "^3.10.0",
+    "js-file-download": "^0.4.12",
     "moment": "^2.29.1",
     "sass-loader": "^10.1.1",
     "vue": "^2.6.12",

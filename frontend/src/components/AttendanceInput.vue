@@ -120,7 +120,7 @@ export default {
       this.attendedStudents.forEach((element) => {
         let data = {
           studentId: element,
-          date: this.date,
+          attendedAt: this.date,
           createdBy: this.createdBy
         };
         payload.push(data);
