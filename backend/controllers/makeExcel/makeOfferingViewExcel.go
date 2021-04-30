@@ -9,7 +9,7 @@ import (
 	"github.com/360EntSecGroup-Skylar/excelize/v2"
 )
 
-func SaveOfferingViewExcel(date time.Time, createdBy string) {
+func SaveOfferingViewExcel(date time.Time) {
 	f := excelize.NewFile()
 	var offeringDiarys []models.OfferingDiary
 	var createdBys []string

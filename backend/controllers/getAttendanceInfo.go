@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"fmt"
 	"strconv"
 	"zamsil_church_offering_attendance_mangement/models"
 
@@ -9,7 +8,7 @@ import (
 )
 
 type attendanceInfo struct {
-	ClassID           int                `json:"classId"`
+	ClassName         int                `json:"classId"`
 	DepartmentID      int                `json:"departmentId"`
 	TeachersName      []string           `json:"teacherName"`
 	StudentsIDandName []studentIDandName `json:"studentsIdandName"`
@@ -34,8 +33,11 @@ func GetAttendanceInfoByDepartment(c *gin.Context) {
 	var students []models.Student
 	models.GetStudentByDepartment(&students, departmentID)
 
-	var numberOfClass int64
-	models.DB.Model(&models.Class{}).Where(fmt.Sprintf("department_id = %d", departmentID)).Count(&numberOfClass)
+	// var numberOfClass int64
+	// models.DB.Model(&models.Class{}).Where(fmt.Sprintf("department_id = %d", departmentID)).Count(&numberOfClass)
+
+	var classes []models.Class
+	models.GetClasses(&classes)
 
 	var attendanceInfos []attendanceInfo
 	var teachersName []string

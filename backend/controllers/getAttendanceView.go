@@ -18,7 +18,7 @@ func GetAttendanceView(c *gin.Context) {
 		var attendedAts []time.Time
 		models.GetAttendanceViewByYear(&attendanceDiarys, parsedYear)
 
-		for i := 0; i < len(attendedAts); i++ {
+		for i := 0; i < len(attendanceDiarys); i++ {
 			isFound := false
 			for j := i; j < len(attendedAts)-i; j++ {
 
@@ -32,6 +32,7 @@ func GetAttendanceView(c *gin.Context) {
 			}
 
 		}
+
 		payload := map[string][]time.Time{"attendedAts": attendedAts}
 		c.JSON(200, payload)
 	}

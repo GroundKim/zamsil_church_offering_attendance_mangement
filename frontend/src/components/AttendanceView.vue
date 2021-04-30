@@ -59,7 +59,6 @@ export default {
             .get(`${this.$serverAddress}/Youth/attendance/view?year=${year}`)
             .then(res => {
                 this.attendedAts = res.data.attendedAts
-                alert(this.attendedAts)
             })
             .catch(err => {
                 alert(err.message + "에러 발생")
