@@ -32,13 +32,13 @@ func InitDb(conf *config.Config) {
 // Migrate models using GORM
 func Migrate(db *gorm.DB) {
 	db.AutoMigrate(
-		OfferingDiary{},
-		OfferingType{},
+		Department{},
+		Class{},
 		Student{},
 		Teacher{},
+		OfferingType{},
+		OfferingDiary{},
 		AttendanceDiary{},
-		Class{},
-		Department{},
 	)
 	db.Commit()
 	fmt.Println("Auto Migration has been excuted")

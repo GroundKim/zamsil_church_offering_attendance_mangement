@@ -186,7 +186,7 @@ export default {
 
             await axios
                 .post(
-                    "http://localhost:8080/Youth/offering", JSON.stringify(specificOfferingPayload), {headers: headers}
+                    `${this.$serverAddress}/Youth/offering`, JSON.stringify(specificOfferingPayload), {headers: headers}
                 )
                 .then(res => {
                     console.log(res.data)
@@ -214,7 +214,7 @@ export default {
         },
 
         setStudents: async function() {
-            let getURL = `http://localhost:8080/Youth/students?department_id=${this.departmentId + 1}`
+            let getURL = `${this.$serverAddress}/Youth/students?department_id=${this.departmentId + 1}`
             await axios
             .get(getURL)
             .then((response) => {              
@@ -226,7 +226,7 @@ export default {
         },
 
         setOfferingType: async function() {
-            let getURL = "http://localhost:8080/Youth/offering/type"
+            let getURL = `${this.$serverAddress}/Youth/offering/type`
             await axios
                 .get(getURL)
                 .then((response) => {

@@ -14,6 +14,6 @@ func main() {
 	models.InitDb(conf)
 	mappings.CreateUrlMappings()
 	mappings.Router.Use(cors.Default())
-	mappings.Router.Run()
+	mappings.Router.Run("8888")
 
 }

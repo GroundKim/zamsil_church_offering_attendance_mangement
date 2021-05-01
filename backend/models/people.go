@@ -6,37 +6,33 @@ import (
 )
 
 type Student struct {
-	ID           int       `json:"studentId"`
-	Name         string    `gorm:"not null;" json:"name"`
-	DepartmentId int       `gorm:"not null;" json:"departmentId"`
-	ClassName    string    `gorm:"not null;" json:"classId"`
-	CreatedAt    time.Time `gorm:"not null;" json:"createdAt" `
+	ID        int       `json:"studentId"`
+	Name      string    `gorm:"not null;" json:"name"`
+	ClassID   int       `gorm:"not null;" json:"className"`
+	CreatedAt time.Time `gorm:"not null;" json:"createdAt" `
 
-	Class      Class      `gorm:"references:ID" json:"-"`
-	Department Department `gorm:"references:ID" json:"-"`
+	Class Class `gorm:"references:ID" json:"-"`
 }
 
 type Teacher struct {
-	ID           int
-	Name         string    `gorm:"not null;"`
-	DepartmentID int       `gorm:"not null;"`
-	ClassName    string    `gorm:"not null;"`
-	CreatedAt    time.Time `gorm:"not null;"`
+	ID        int
+	Name      string    `gorm:"not null;"`
+	ClassID   int       `gorm:"not null;"`
+	CreatedAt time.Time `gorm:"not null;"`
 
-	Class      Class      `gorm:"references:ID"`
-	Department Department `gorm:"references:ID"`
+	Class Class `gorm:"references:ID"`
 }
 
-func GetAllStudent(students *[]Student) (err error) {
-	if err = DB.Find(students).Error; err != nil {
+func GetStudents(students *[]Student) (err error) {
+	if err = DB.Find(&students).Error; err != nil {
 		fmt.Println("Error in GetAllStudent")
 		return err
 	}
 	return nil
 }
 
-func GetAllTeacher(teachers *[]Teacher) (err error) {
-	if err = DB.Find(teachers).Error; err != nil {
+func GetTeachers(teachers *[]Teacher) (err error) {
+	if err = DB.Find(&teachers).Error; err != nil {
 		fmt.Println("Error in getAllTeacher")
 		return err
 	}
@@ -44,16 +40,16 @@ func GetAllTeacher(teachers *[]Teacher) (err error) {
 }
 
 func GetTeacherByDeaprtment(teachers *[]Teacher, departmentID int) (err error) {
-	if err = DB.Where("department_id = ?", departmentID).Find(teachers).Error; err != nil {
-		fmt.Println("Error in getAllTeacher")
+	if err = DB.Joins("Class").Find(&teachers, fmt.Sprintf("class.department_id=%d", departmentID)).Error; err != nil {
+		fmt.Println("Error in GetTeacherByDeaprtment")
 		return err
 	}
 	return nil
 }
 
 func GetStudentByDepartment(students *[]Student, departmentID int) (err error) {
-	if err = DB.Where("department_id = ?", departmentID).Find(students).Error; err != nil {
-		fmt.Println("Error in GetStudentByDepartment")
+	if err = DB.Joins("Class").Find(&students, fmt.Sprintf("class.department_id=%d", departmentID)).Error; err != nil {
+		fmt.Println("Error in GetTeacherByDeaprtment")
 		return err
 	}
 	return nil

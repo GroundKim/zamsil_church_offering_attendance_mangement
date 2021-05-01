@@ -15,7 +15,7 @@ type Department struct {
 
 type Class struct {
 	ID           int
-	ClassName      string    `gorm:"not null;"`
+	Name         string    `gorm:"not null;"`
 	DepartmentID int       `gorm:"not null;"`
 	CreatedAt    time.Time `gorm:"not null;"`
 }
@@ -23,6 +23,14 @@ type Class struct {
 func GetClasses(classes *[]Class) (err error) {
 	if err = DB.Find(classes).Error; err != nil {
 		fmt.Println("Error in GetClasses")
+		return err
+	}
+	return nil
+}
+
+func GetClassesByDepartment(classes *[]Class, departmentID int) (err error) {
+	if err = DB.Where("department_id = ?", departmentID).Find(classes).Error; err != nil {
+		fmt.Println("Error in GetClassesByDepartment")
 		return err
 	}
 	return nil

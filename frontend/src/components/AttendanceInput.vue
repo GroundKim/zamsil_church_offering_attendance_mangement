@@ -66,7 +66,7 @@
           cols="4"
         >
           <v-card height="400">
-            <h2 class="pa-5">Class {{ data.classId }}</h2>
+            <h2 class="pa-5">Class {{ data.className }}</h2>
             <h3>{{ data.teacherName }}</h3>
 
             <v-row>
@@ -131,7 +131,7 @@ export default {
 
       axios
         .post(
-          "http://localhost:8080/Youth/attendances", JSON.stringify(payload), {headers: headers}
+          `${this.$serverAddress}/Youth/attendances", JSON.stringify(payload), {headers: headers}`
         )
         .then(res => {
           console.log(res.data)
@@ -145,7 +145,7 @@ export default {
 
   watch: {
   department : function () {
-    let getURL = `http://localhost:8080/Youth/attendances?department_id=${this.department + 1}`
+    let getURL = `${this.$serverAddress}/Youth/attendances?department_id=${this.department + 1}`
     axios
       .get(getURL)
       .then((response) => {

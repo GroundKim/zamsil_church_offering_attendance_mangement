@@ -8,8 +8,8 @@ import (
 )
 
 type attendanceInfo struct {
-	ClassName         int                `json:"classId"`
 	DepartmentID      int                `json:"departmentId"`
+	ClassName         string             `json:"className"`
 	TeachersName      []string           `json:"teacherName"`
 	StudentsIDandName []studentIDandName `json:"studentsIdandName"`
 }
@@ -25,43 +25,34 @@ func GetAttendanceInfoByDepartment(c *gin.Context) {
 
 	departmentID, _ := strconv.Atoi(c.Query("department_id"))
 
-	// get teacher info
-	var teachers []models.Teacher
-	models.GetTeacherByDeaprtment(&teachers, departmentID)
-
-	// get student info
-	var students []models.Student
-	models.GetStudentByDepartment(&students, departmentID)
-
-	// var numberOfClass int64
-	// models.DB.Model(&models.Class{}).Where(fmt.Sprintf("department_id = %d", departmentID)).Count(&numberOfClass)
-
 	var classes []models.Class
-	models.GetClasses(&classes)
+	var teachers []models.Teacher
+	var students []models.Student
 
 	var attendanceInfos []attendanceInfo
-	var teachersName []string
-	var studentsIDandName []studentIDandName
 
-	// matching class, teacher, student
-	for classId := 1; classId <= int(numberOfClass); classId++ {
-		for j := 0; j < len(teachers); j++ {
-			if teachers[j].ClassID == classId {
-				teachersName = append(teachersName, teachers[j].Name)
+	models.GetClassesByDepartment(&classes, departmentID)
+	models.GetTeacherByDeaprtment(&teachers, departmentID)
+	models.GetStudentByDepartment(&students, departmentID)
+
+	for _, class := range classes {
+		attendance := &attendanceInfo{DepartmentID: departmentID, ClassName: class.Name}
+		for _, teacher := range teachers {
+			if class.ID == teacher.ClassID {
+				attendance.TeachersName = append(attendance.TeachersName, teacher.Name)
 			}
 		}
 
-		for j := 0; j < len(students); j++ {
-			if students[j].ClassID == classId {
-				studentsIDandName = append(studentsIDandName, studentIDandName{StudentID: students[j].ID, StudentName: students[j].Name})
+		for _, student := range students {
+			if class.ID == student.ClassID {
+				idAndName := &studentIDandName{student.ID, student.Name}
+				attendance.StudentsIDandName = append(attendance.StudentsIDandName, *idAndName)
 			}
 		}
 
-		attendanceInfos = append(attendanceInfos, attendanceInfo{ClassID: classId, DepartmentID: 1, TeachersName: teachersName, StudentsIDandName: studentsIDandName})
-		teachersName = nil
-		studentsIDandName = nil
-
+		attendanceInfos = append(attendanceInfos, *attendance)
 	}
+
 	c.JSON(200, attendanceInfos)
 
 }

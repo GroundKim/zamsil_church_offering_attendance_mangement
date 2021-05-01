@@ -20,6 +20,6 @@ func GetStudents(c *gin.Context) {
 		return
 	}
 
-	models.GetAllStudent(&students)
+	models.GetStudents(&students)
 	c.JSON(200, students)
 }
