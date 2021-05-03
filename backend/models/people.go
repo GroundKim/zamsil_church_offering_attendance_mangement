@@ -24,15 +24,15 @@ type Teacher struct {
 }
 
 func GetStudents(students *[]Student) (err error) {
-	if err = DB.Find(&students).Error; err != nil {
-		fmt.Println("Error in GetAllStudent")
+	if err = DB.Find(students).Error; err != nil {
+		fmt.Println("Error in GetStudent")
 		return err
 	}
 	return nil
 }
 
 func GetTeachers(teachers *[]Teacher) (err error) {
-	if err = DB.Find(&teachers).Error; err != nil {
+	if err = DB.Find(teachers).Error; err != nil {
 		fmt.Println("Error in getAllTeacher")
 		return err
 	}
@@ -40,7 +40,7 @@ func GetTeachers(teachers *[]Teacher) (err error) {
 }
 
 func GetTeacherByDeaprtment(teachers *[]Teacher, departmentID int) (err error) {
-	if err = DB.Joins("Class").Find(&teachers, fmt.Sprintf("class.department_id=%d", departmentID)).Error; err != nil {
+	if err = DB.Joins("Class").Find(teachers, fmt.Sprintf("class.department_id=%d", departmentID)).Error; err != nil {
 		fmt.Println("Error in GetTeacherByDeaprtment")
 		return err
 	}
@@ -48,7 +48,7 @@ func GetTeacherByDeaprtment(teachers *[]Teacher, departmentID int) (err error) {
 }
 
 func GetStudentByDepartment(students *[]Student, departmentID int) (err error) {
-	if err = DB.Joins("Class").Find(&students, fmt.Sprintf("class.department_id=%d", departmentID)).Error; err != nil {
+	if err = DB.Joins("Class").Find(students, fmt.Sprintf("class.department_id=%d", departmentID)).Error; err != nil {
 		fmt.Println("Error in GetTeacherByDeaprtment")
 		return err
 	}

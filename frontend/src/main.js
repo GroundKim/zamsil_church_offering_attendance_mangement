@@ -8,12 +8,10 @@ import store from './store'
 
 Vue.config.productionTip = false
 Vue.prototype.$http = axios
-
 const protocol = 'http'
-const host = 'localhost'
-const port = '8080'
+const address = process.env.VUE_APP_SERVERADDRESS
 
-Vue.prototype.$serverAddress = `${protocol}://${host}:${port}`
+Vue.prototype.$serverAddress = `${protocol}://${address}`
 
 new Vue({
   store,

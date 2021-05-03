@@ -40,7 +40,6 @@ func Migrate(db *gorm.DB) {
 		OfferingDiary{},
 		AttendanceDiary{},
 	)
-	db.Commit()
 	fmt.Println("Auto Migration has been excuted")
 }
 

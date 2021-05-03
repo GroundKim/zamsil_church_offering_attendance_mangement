@@ -95,6 +95,8 @@
     <span>{{ department }}</span>
     <br>
     <span> {{ value }} </span>
+    <br>
+    <span> {{ test }} </span>
   </v-container>
 </template>
 
@@ -112,6 +114,8 @@ export default {
       menu: false,
       date: moment().format(),
       value: null,
+      
+      test: process.env.VUE_APP_SERVERADDRESS
     };
   },
   methods: {
@@ -131,7 +135,7 @@ export default {
 
       axios
         .post(
-          `${this.$serverAddress}/Youth/attendances", JSON.stringify(payload), {headers: headers}`
+          `${this.$serverAddress}/Youth/attendances`, JSON.stringify(payload), {headers: headers}
         )
         .then(res => {
           console.log(res.data)
