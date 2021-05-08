@@ -1,6 +1,5 @@
 <template>
     <v-container>
-        <h1>헌금통계표</h1>
         <br>
         <form @submit.prevent="sendPost">
             <v-row>
@@ -267,6 +266,7 @@ export default {
     },
 
     async created() {
+        await this.$store.commit('changeHeaderName', '헌금 기입')
         await this.setStudents()
         await this.setOfferingType()
         this.setOfferedAt()

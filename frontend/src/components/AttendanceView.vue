@@ -33,7 +33,7 @@
 
         <v-sheet v-for="(attendedAt, i) in attendedAts" :key="i">
             {{ attendedAt }}
-            <v-btn @click="downloadExcelByDate(attendedAt)">
+            <v-btn @click="downloadAttendanceExcelByDate(attendedAt)">
                 excel download
             </v-btn>
         </v-sheet>
@@ -83,7 +83,7 @@ export default {
                 const url = window.URL.createObjectURL(new Blob([response.data]))
                 const link = document.createElement('a')
                 link.href = url
-                link.setAttribute('download', `헌금통게표_${yearMonthDate}.xlsx`)
+                link.setAttribute('download', `출석부_${yearMonthDate}.xlsx`)
                 document.body.appendChild(link)
                 link.click()
             })
@@ -99,6 +99,7 @@ export default {
 
     created () {
         this.year = moment().year()
+        this.$store.commit('changeHeaderName', '출석부 보기')
     },
 }
 </script>

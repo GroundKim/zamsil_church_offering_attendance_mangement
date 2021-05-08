@@ -98,6 +98,7 @@ export default {
     },
 
     created () {
+        this.$store.commit('changeHeaderName', '헌금 보기')
         this.year = moment().year()
     },
 }

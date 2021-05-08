@@ -39,9 +39,25 @@ func GetTeachers(teachers *[]Teacher) (err error) {
 	return nil
 }
 
-func GetTeacherByDeaprtment(teachers *[]Teacher, departmentID int) (err error) {
+func GetTeacherByClassNameAndDepartment(teachers *[]Teacher, departmentID int, className string) (err error) {
+	if err = DB.Joins("Class").Where("class.department_id = ?", departmentID).Find(teachers, "class.name="+"'"+className+"'").Error; err != nil {
+		fmt.Println("Error in GetTeacherByClassName")
+		return err
+	}
+	return nil
+}
+
+func GetStudentByClassNameAndDepartment(students *[]Student, departmentID int, className string) (err error) {
+	if err = DB.Joins("Class").Where("class.department_id = ?", departmentID).Find(students, "class.name="+"'"+className+"'").Error; err != nil {
+		fmt.Println("Error in GetStudentByClassName")
+		return err
+	}
+	return nil
+}
+
+func GetTeacherByDepartment(teachers *[]Teacher, departmentID int) (err error) {
 	if err = DB.Joins("Class").Find(teachers, fmt.Sprintf("class.department_id=%d", departmentID)).Error; err != nil {
-		fmt.Println("Error in GetTeacherByDeaprtment")
+		fmt.Println("Error in GetTeacherByDepartment")
 		return err
 	}
 	return nil
@@ -49,7 +65,7 @@ func GetTeacherByDeaprtment(teachers *[]Teacher, departmentID int) (err error) {
 
 func GetStudentByDepartment(students *[]Student, departmentID int) (err error) {
 	if err = DB.Joins("Class").Find(students, fmt.Sprintf("class.department_id=%d", departmentID)).Error; err != nil {
-		fmt.Println("Error in GetTeacherByDeaprtment")
+		fmt.Println("Error in GetTeacherByDepartment")
 		return err
 	}
 	return nil

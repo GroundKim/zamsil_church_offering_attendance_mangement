@@ -30,11 +30,9 @@
       </v-list>
     </v-menu>
 
-      <v-toolbar-title>잠실교회 소년부 출석부 기입</v-toolbar-title>
+      <v-toolbar-title><h4>{{ headerName }}</h4></v-toolbar-title>
 
       <v-spacer></v-spacer>
-
-      
     </v-app-bar>
   </div>
 </template>
@@ -42,17 +40,22 @@
 <script>
   export default {
     data: () => ({
+      headerName: "",
       links: [
-        { title: '출석부 기입',
+        { 
+          title: '출석부 기입',
           target: 'attendanceInput'
         },
-        { title: '출석부 보기',
+        { 
+          title: '출석부 보기',
           target: 'attendanceView'
         },
-        { title: '헌금 기입',
+        { 
+          title: '헌금 기입',
           target: 'offeringInput'
         },
-        { title: '헌금 보기',
+        { 
+          title: '헌금 보기',
           target: 'offeringView'
         },
       ]
@@ -61,8 +64,18 @@
     methods: {
       movePage(link) {
         // avoid catch error for same url, but it is not good way
+        this.headerName = link.title
         this.$router.push({name: link.target}).catch(() => {})
-      }
-    }
+      },
+    },
+
+    mounted () {
+      this.headerName = this.$store.state.headerName
+    },
+
+
+    
+
+
   }
 </script>

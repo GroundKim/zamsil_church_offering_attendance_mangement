@@ -17,7 +17,7 @@ func SaveOfferingViewExcel(date time.Time) {
 
 	for i := 0; i < len(offeringDiarys); i++ {
 		hasSameName := false
-		for j := 1; j < len(offeringDiarys)-j; j++ {
+		for j := i + 1; j < len(offeringDiarys); j++ {
 			if offeringDiarys[i].CreatedBy == offeringDiarys[j].CreatedBy {
 				hasSameName = true
 			}
@@ -27,7 +27,7 @@ func SaveOfferingViewExcel(date time.Time) {
 			createdBys = append(createdBys, offeringDiarys[i].CreatedBy)
 		}
 	}
-	offeringDiarySheetName := "헌금통계표"
+	offeringDiarySheetName := date.Format("2006-01-12") + "_헌금통계표"
 	index := f.NewSheet(offeringDiarySheetName)
 
 	f.SetCellValue(offeringDiarySheetName, "A1", offeringDiarySheetName)

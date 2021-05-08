@@ -32,7 +32,7 @@ func GetAttendanceInfoByDepartment(c *gin.Context) {
 	var attendanceInfos []attendanceInfo
 
 	models.GetClassesByDepartment(&classes, departmentID)
-	models.GetTeacherByDeaprtment(&teachers, departmentID)
+	models.GetTeacherByDepartment(&teachers, departmentID)
 	models.GetStudentByDepartment(&students, departmentID)
 
 	for _, class := range classes {

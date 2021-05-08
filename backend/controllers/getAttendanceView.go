@@ -14,21 +14,20 @@ func GetAttendanceView(c *gin.Context) {
 
 		year := c.Query("year")
 		parsedYear, _ := time.Parse("2006", year)
-		var attendanceDiarys []models.AttendanceDiary
+		var attendanceDiaries []models.AttendanceDiary
+		models.GetAttendanceViewByYear(&attendanceDiaries, parsedYear)
+
 		var attendedAts []time.Time
-		models.GetAttendanceViewByYear(&attendanceDiarys, parsedYear)
-
-		for i := 0; i < len(attendanceDiarys); i++ {
+		for i := 0; i < len(attendanceDiaries); i++ {
 			isFound := false
-			for j := i; j < len(attendedAts)-i; j++ {
-
-				if attendanceDiarys[i].AttendedAt.Format("2006-01-02") == attendanceDiarys[j].AttendedAt.Format("2006-01-02") {
+			for j := 0; j < len(attendedAts); j++ {
+				if attendanceDiaries[i].AttendedAt.Format("2006-01-02") == attendedAts[j].Format("2006-01-02") {
 					isFound = true
 				}
 			}
 
 			if !isFound {
-				attendedAts = append(attendedAts, attendanceDiarys[i].AttendedAt)
+				attendedAts = append(attendedAts, attendanceDiaries[i].AttendedAt)
 			}
 
 		}
