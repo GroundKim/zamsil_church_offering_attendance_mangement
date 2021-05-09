@@ -15,21 +15,21 @@ func GetOfferingView(c *gin.Context) {
 
 		year := c.Query("year")
 		parsedYear, _ := time.Parse("2006", year)
-		var offeringDiarys []models.OfferingDiary
+		var offeringDiaries []models.OfferingDiary
 		var offeringAts []time.Time
-		models.GetOfferingDiaryByYear(&offeringDiarys, parsedYear)
+		models.GetOfferingDiaryByYear(&offeringDiaries, parsedYear)
 
-		for i := 0; i < len(offeringDiarys); i++ {
+		for i := 0; i < len(offeringDiaries); i++ {
 			isFound := false
-			for j := i; j < len(offeringDiarys)-i; j++ {
+			for j := 0; j < len(offeringDiaries); j++ {
 
-				if offeringDiarys[i].CreatedAt.Format("2006-01-02") == offeringDiarys[j].CreatedAt.Format("2006-01-02") {
+				if offeringDiaries[i].CreatedAt.Format("2006-01-02") == offeringAts[j].Format("2006-01-02") {
 					isFound = true
 				}
 			}
 
 			if !isFound {
-				offeringAts = append(offeringAts, offeringDiarys[i].CreatedAt)
+				offeringAts = append(offeringAts, offeringDiaries[i].CreatedAt)
 			}
 
 		}
