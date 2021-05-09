@@ -40,7 +40,7 @@ func GetTeachers(teachers *[]Teacher) (err error) {
 }
 
 func GetTeacherByClassNameAndDepartment(teachers *[]Teacher, departmentID int, className string) (err error) {
-	if err = DB.Joins("Class").Where("class.department_id = ?", departmentID).Find(teachers, "class.name="+"'"+className+"'").Error; err != nil {
+	if err = DB.Joins("Class").Where("department_id = ?", departmentID).Find(teachers, "class.name="+"'"+className+"'").Error; err != nil {
 		fmt.Println("Error in GetTeacherByClassName")
 		return err
 	}
@@ -48,7 +48,7 @@ func GetTeacherByClassNameAndDepartment(teachers *[]Teacher, departmentID int, c
 }
 
 func GetStudentByClassNameAndDepartment(students *[]Student, departmentID int, className string) (err error) {
-	if err = DB.Joins("Class").Where("class.department_id = ?", departmentID).Find(students, "class.name="+"'"+className+"'").Error; err != nil {
+	if err = DB.Joins("Class").Where("department_id = ?", departmentID).Find(students, "class.name="+"'"+className+"'").Error; err != nil {
 		fmt.Println("Error in GetStudentByClassName")
 		return err
 	}
@@ -56,7 +56,7 @@ func GetStudentByClassNameAndDepartment(students *[]Student, departmentID int, c
 }
 
 func GetTeacherByDepartment(teachers *[]Teacher, departmentID int) (err error) {
-	if err = DB.Joins("Class").Find(teachers, fmt.Sprintf("class.department_id=%d", departmentID)).Error; err != nil {
+	if err = DB.Joins("Class").Find(teachers, fmt.Sprintf("department_id=%d", departmentID)).Error; err != nil {
 		fmt.Println("Error in GetTeacherByDepartment")
 		return err
 	}
@@ -64,7 +64,7 @@ func GetTeacherByDepartment(teachers *[]Teacher, departmentID int) (err error) {
 }
 
 func GetStudentByDepartment(students *[]Student, departmentID int) (err error) {
-	if err = DB.Joins("Class").Find(students, fmt.Sprintf("class.department_id=%d", departmentID)).Error; err != nil {
+	if err = DB.Joins("Class").Find(students, fmt.Sprintf("department_id=%d", departmentID)).Error; err != nil {
 		fmt.Println("Error in GetTeacherByDepartment")
 		return err
 	}
