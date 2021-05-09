@@ -6,7 +6,7 @@ ENV GIN_MODE=release \
     GO111MODULE=on \
     PORT=8888
 
-COPY src /app
+COPY . /app
 WORKDIR /app
 
 RUN apk update
