@@ -21,9 +21,9 @@ func GetOfferingView(c *gin.Context) {
 
 		for i := 0; i < len(offeringDiaries); i++ {
 			isFound := false
-			for j := 0; j < len(offeringDiaries); j++ {
+			for j := 0; j < len(offeringAts); j++ {
 
-				if offeringDiaries[i].CreatedAt.Format("2006-01-02") == offeringAts[j].Format("2006-01-02") {
+				if offeringDiaries[i].OfferedAt.Format("2006-01-02") == offeringAts[j].Format("2006-01-02") {
 					isFound = true
 				}
 			}

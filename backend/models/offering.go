@@ -11,7 +11,7 @@ type OfferingDiary struct {
 	OfferingTypeID int       `gorm:"not null;" json:"offeringTypeId"`
 	DepartmentID   int       `gorm:"not null;" json:"departmentId"`
 	Cost           int       `gorm:"not null;" json:"offeringCost"`
-	OfferedAt      time.Time `gorm:"not null" json:"offeredAt"`
+	OfferedAt      time.Time `gorm:"not null; type:date" json:"offeredAt"`
 	CreatedAt      time.Time `gorm:"not null;" json:"createdAt"`
 	CreatedBy      string    `gorm:"not null;" json:"createdBy"`
 
