@@ -118,7 +118,17 @@
         </v-btn>
 
         <component v-for="item, i in offerings" :key="i" :is="item" :offerPostTrigger="specificOfferingTrigger"></component>
-        <v-btn type="submit" width="700">제출</v-btn>
+
+        <div class="text-center ma-15">
+            <v-btn
+            type="submit"
+            style="width: 50%"
+            class="white--text"
+            color="indigo"
+            elevation="4"
+            x-large
+            ><h3>제출</h3></v-btn>
+        </div>
 
         </form>
         <span>{{ departmentId }}</span>
@@ -137,7 +147,7 @@ export default {
     },
 
     data: () => ({
-        date: moment().format(),
+        date: moment().format('yyy-MM-DD'),
         menu: false,
         modal: false,
         menu2: false,
@@ -165,7 +175,7 @@ export default {
             let hasPostError = false
             this.specificOfferingTrigger++
             let specificOfferingPayload = await this.$store.getters.getOfferingPayload
-
+            this.date += moment().format().substr(10, )
             let weekOfferingPayload = {
                 studentId: null,
                 offeringTypeId: 1,

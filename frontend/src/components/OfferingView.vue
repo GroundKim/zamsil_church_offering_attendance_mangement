@@ -31,9 +31,15 @@
             </v-btn>
         </v-container>
 
-        <v-sheet v-for="(offeredAt, i) in offeredAts" :key="i">
-            {{ offeredAt }}
-            <v-btn @click="downloadExcelByDate(offeredAt)">
+        <v-sheet 
+            v-for="(offeredAt, i) in offeredAts" :key="i"
+            class="ma-5"
+        >
+            {{ offeredAt.substr(0, 10) }}
+            <v-btn 
+                @click="downloadExcelByDate(offeredAt)"
+                class="ma-10"
+            >
                 excel download
             </v-btn>
         </v-sheet>

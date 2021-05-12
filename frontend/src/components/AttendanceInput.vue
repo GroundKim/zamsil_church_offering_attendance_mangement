@@ -87,7 +87,6 @@
             </v-row>
             <v-spacer></v-spacer>
             
-            <v-select></v-select>
           </v-card>
         </v-col>
         
@@ -95,11 +94,11 @@
       
       <div class="text-center ma-15">
         <v-btn
+          type="submit"
           style="width: 50%"
           class="white--text"
           color="indigo"
           elevation="4"
-          rounded
           x-large
         ><h3>제출</h3></v-btn>
       </div>
@@ -128,7 +127,7 @@ export default {
       department: null,
       departmentsLabel: ['1부', '2부'],
       menu: false,
-      date: moment().format(),
+      date: moment().format('yyyy-MM-DD'),
       value: null,
       selectAbsentReason: "일반결석",
       absentReason: ["일반결석", "특별결석"],
@@ -140,6 +139,7 @@ export default {
   methods: {
     sendPost() {
       let payload = [];
+      this.date += moment().format().substr(10, )
       this.attendedStudents.forEach((element) => {
         let data = {
           studentId: element,
@@ -159,6 +159,7 @@ export default {
         .then(res => {
           console.log(res.data)
           alert("등록 완료!")
+          location.reload()
         })
         .catch(err => {
           alert(err.message + ' 등록중 오류 발생 관리자에게 문의하십시오')
