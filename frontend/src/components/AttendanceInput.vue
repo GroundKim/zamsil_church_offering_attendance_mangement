@@ -40,6 +40,7 @@
       >
         <template v-slot:activator="{ on, attrs }">
           <v-text-field
+            class="mb-15"
             v-model="date"
             label="날짜"
             prepend-icon="mdi-calendar"
@@ -59,35 +60,49 @@
         </v-date-picker>
       </v-menu>
 
+
       <v-row>
         <v-col
           v-for="data in attendanceData"
           v-bind:key="data.classId"
           cols="4"
         >
-          <v-card height="400">
-            <h2 class="pa-5">Class {{ data.className }}</h2>
-            <h3>{{ data.teacherName }}</h3>
 
-            <v-row>
+          <v-card height="100%" class="d-flex flex-column">
+            <h2 class="pa-3">Class {{ data.className }}</h2>
+            <h3 class="pa-3">{{ data.teacherName.join(', ') }}</h3>
+
+            <v-row class="pa-2">
               <v-col
                 v-for="student in data.studentsIdandName"
                 v-bind:key="student.studentId"
                 cols="5"
               >
-                <v-checkbox
-                  v-model="attendedStudents"
-                  :value="student.studentId"
-                  :label="`${student.studentName}`"
-                ></v-checkbox>
+              <v-checkbox
+                v-model="attendedStudents"
+                :value="student.studentId"
+                :label="`${student.studentName}`"
+              ></v-checkbox>
               </v-col>
             </v-row>
+            <v-spacer></v-spacer>
+            
+            <v-select></v-select>
           </v-card>
         </v-col>
+        
       </v-row>
-      <v-container class="text-center ma-10">
-        <v-btn type="submit" width="700">제출</v-btn>
-      </v-container>
+      
+      <div class="text-center ma-15">
+        <v-btn
+          style="width: 50%"
+          class="white--text"
+          color="indigo"
+          elevation="4"
+          rounded
+          x-large
+        ><h3>제출</h3></v-btn>
+      </div>
     </form>
 
     <span>{{ attendedStudents }}</span>
@@ -97,6 +112,7 @@
     <span> {{ value }} </span>
     <br>
     <span> {{ test }} </span>
+    
   </v-container>
 </template>
 
@@ -114,6 +130,9 @@ export default {
       menu: false,
       date: moment().format(),
       value: null,
+      selectAbsentReason: "일반결석",
+      absentReason: ["일반결석", "특별결석"],
+      absentStudents: [],
       
       test: process.env.VUE_APP_SERVERADDRESS
     };
@@ -148,21 +167,29 @@ export default {
   },
 
   watch: {
-  department : function () {
-    let getURL = `${this.$serverAddress}/Youth/attendances?department_id=${this.department + 1}`
-    axios
-      .get(getURL)
-      .then((response) => {
-        this.attendanceData= response.data
+    department: function () {
+      let getURL = `${this.$serverAddress}/Youth/attendances?department_id=${this.department + 1}`
+      axios
+        .get(getURL)
+        .then((response) => {
+          this.attendanceData= response.data
+          })
+        .catch(err => {
+          alert(err.message + " 출석부를 불러오는 도중 오류가 발생했습니다 관리자에게 문의하십시오")
         })
-      .catch(err => {
-        alert(err.message + " 출석부를 불러오는 도중 오류가 발생했습니다 관리자에게 문의하십시오")
-      })
+      },
+      
+    attendedStudents: function() {      
+      console.log(this.absentStudents)
+      console.log(this.attendedStudents)
     }
   },
 
+
+
   created () {
     this.$store.commit('changeHeaderName', '출석부 기입')
+    this.absentStudents = this.attendedStudents
   }
 };
 </script>
