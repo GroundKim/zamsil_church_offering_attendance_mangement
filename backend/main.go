@@ -12,7 +12,7 @@ import (
 func main() {
 	conf := config.GetConf("dev")
 	models.InitDb(conf)
-	mappings.CreateUrlMappings()
+	mappings.CreateUrlMappings(conf)
 	mappings.Router.Use(cors.Default())
 	mappings.Router.Run()
 
