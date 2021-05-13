@@ -13,11 +13,11 @@ var DB *gorm.DB
 func InitDb(conf *config.Config) {
 	dbCredentials := fmt.Sprintf(
 		"%s:%s@tcp(%s:%s)/%s?charset=utf8&parseTime=True&loc=Local",
-		conf.DB_USERNAME,
-		conf.DB_PASSWORD,
-		conf.DB_HOST,
-		conf.DB_PORT,
-		conf.DB_NAME,
+		conf.DATABASE.DB_USERNAME,
+		conf.DATABASE.DB_PASSWORD,
+		conf.DATABASE.DB_HOST,
+		conf.DATABASE.DB_PORT,
+		conf.DATABASE.DB_NAME,
 	)
 
 	db, err := gorm.Open(mysql.Open(dbCredentials))
@@ -39,6 +39,8 @@ func Migrate(db *gorm.DB) {
 		OfferingType{},
 		OfferingDiary{},
 		AttendanceDiary{},
+		User{},
+		AuthToken{},
 	)
 	fmt.Println("Auto Migration has been excuted")
 }
