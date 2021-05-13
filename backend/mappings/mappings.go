@@ -1,16 +1,24 @@
 package mappings
 
 import (
+	"zamsil_church_offering_attendance_mangement/config"
 	"zamsil_church_offering_attendance_mangement/controllers"
+	"zamsil_church_offering_attendance_mangement/middlewares"
 
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 )
 
 var Router *gin.Engine
 
-func CreateUrlMappings() {
+func CreateUrlMappings(conf *config.Config) {
 	Router = gin.Default()
-	Youth := Router.Group("Youth")
+	Router.Use(cors.Default())
+
+	Router.POST("/Youth/login", controllers.Login(conf))
+
+	// Router Get with middlewares AUthorize
+	Youth := Router.Group("Youth").Use(middlewares.Authorize(conf))
 
 	Youth.GET("/attendances", controllers.GetAttendanceInfoByDepartment)
 	Youth.POST("/attendances", controllers.PostAttendanceInfo)
