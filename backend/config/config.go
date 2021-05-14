@@ -18,6 +18,11 @@ type Config struct {
 	AUTH struct {
 		SECRETKEY string `yaml:"SECRETKEY"`
 	} `yaml:"AUTH"`
+
+	CORS struct {
+		ALLOWORIGINS                  string `yaml:"ALLOWORIGINS"`
+		ACCESSCONTROLALLOWCREDENTIALS bool   `yaml:"ACCESSCONTROLALLOWCREDENTIALS"`
+	}
 }
 
 // Read the config file from the current directory and marshal
