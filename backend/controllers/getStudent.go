@@ -8,9 +8,6 @@ import (
 )
 
 func GetStudents(c *gin.Context) {
-
-	c.Writer.Header().Add("Access-Control-Allow-Origin", "*")
-
 	var students []models.Student
 
 	if len(c.Query("department_id")) != 0 {

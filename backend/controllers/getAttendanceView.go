@@ -9,9 +9,6 @@ import (
 
 func GetAttendanceView(c *gin.Context) {
 	if len(c.Query("year")) != 0 {
-
-		c.Writer.Header().Add("Access-Control-Allow-Origin", "*")
-
 		year := c.Query("year")
 		parsedYear, _ := time.Parse("2006", year)
 		var attendanceDiaries []models.AttendanceDiary

@@ -8,9 +8,6 @@ import (
 )
 
 func PostOffering(c *gin.Context) {
-
-	c.Writer.Header().Add("Access-Control-Allow-Origin", "*")
-
 	var offeringDiarys []models.OfferingDiary
 	if err := c.Bind(&offeringDiarys); err != nil {
 		fmt.Println("Error in json bind: post specific offering diary", err)

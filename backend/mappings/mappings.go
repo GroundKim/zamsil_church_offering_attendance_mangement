@@ -13,7 +13,13 @@ var Router *gin.Engine
 
 func CreateUrlMappings(conf *config.Config) {
 	Router = gin.Default()
-	Router.Use(cors.Default())
+
+	// middelware for cors
+	Router.Use(cors.New(cors.Config{
+		AllowOrigins:     []string{conf.CORS.ALLOWORIGINS},
+		AllowCredentials: conf.CORS.ACCESSCONTROLALLOWCREDENTIALS,
+		AllowHeaders:     []string{"content-type"},
+	}))
 
 	Router.POST("/Youth/login", controllers.Login(conf))
 

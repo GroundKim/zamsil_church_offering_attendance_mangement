@@ -21,7 +21,6 @@ type studentIDandName struct {
 
 // response with teacher, student , the number of classes
 func GetAttendanceInfoByDepartment(c *gin.Context) {
-	c.Writer.Header().Add("Access-Control-Allow-Origin", "*")
 
 	departmentID, _ := strconv.Atoi(c.Query("department_id"))
 

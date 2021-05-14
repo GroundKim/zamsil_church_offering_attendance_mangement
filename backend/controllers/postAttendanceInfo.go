@@ -9,9 +9,6 @@ import (
 
 // save attendance information into database
 func PostAttendanceInfo(c *gin.Context) {
-
-	c.Writer.Header().Add("Access-Control-Allow-Origin", "*")
-
 	var attendanceDiarys []models.AttendanceDiary
 	if err := c.Bind(&attendanceDiarys); err != nil {
 		fmt.Println("Error in json bind: post attendance diary ", err)

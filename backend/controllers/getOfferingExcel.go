@@ -14,7 +14,6 @@ func GetOfferingExcel(c *gin.Context) {
 	if len(date) != 0 {
 		makeExcel.SaveOfferingViewExcel(parsedDate) //...  get createdBy from gorm(mysql)
 		c.Writer.Header().Add("Content-type", "application/octet-stream")
-		c.Writer.Header().Add("Access-Control-Allow-Origin", "*")
 		date := c.Query("date")
 		c.FileAttachment(fmt.Sprintf("./data/offeringDiary/excel/%s.xlsx", date), fmt.Sprintf("헌금통계표_%s.xlsx", date))
 		return

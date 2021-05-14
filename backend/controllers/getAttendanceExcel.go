@@ -14,7 +14,6 @@ func GetAttendanceExcel(c *gin.Context) {
 	if len(date) != 0 {
 		makeExcel.SaveAttendaceViewExcel(parsedDate)
 		c.Writer.Header().Add("Content-type", "application/octet-stream")
-		c.Writer.Header().Add("Access-Control-Allow-Origin", "*")
 		date := c.Query("date")
 		c.FileAttachment(fmt.Sprintf("./data/attendanceDiary/excel/%s.xlsx", date), fmt.Sprintf("출석부_%s.xlsx", date))
 		return

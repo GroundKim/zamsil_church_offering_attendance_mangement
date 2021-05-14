@@ -7,9 +7,6 @@ import (
 )
 
 func GetOfferingType(c *gin.Context) {
-
-	c.Writer.Header().Add("Access-Control-Allow-Origin", "*")
-
 	var offeringTypes []models.OfferingType
 	models.GetOfferingType(&offeringTypes)
 
