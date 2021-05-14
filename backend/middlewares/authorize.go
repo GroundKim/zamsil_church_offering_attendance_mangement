@@ -11,14 +11,14 @@ import (
 
 func Authorize(conf *config.Config) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		clientToken := c.Request.Header.Get("Authorization")
-		if clientToken == "" {
+		clientToken, _ := c.Request.Cookie("auth_token")
+		token := clientToken.Value
+		if token == "" {
 			c.JSON(http.StatusForbidden, "No Authorization token")
 			c.Abort()
 			return
 		}
 
-		token := clientToken[7:]
 		_, err := models.ValidateToken(token, conf)
 		if err != nil {
 			c.JSON(http.StatusUnauthorized, "token Unauthorized")

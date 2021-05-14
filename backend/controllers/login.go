@@ -11,6 +11,7 @@ import (
 
 func Login(conf *config.Config) gin.HandlerFunc {
 	return func(c *gin.Context) {
+
 		var user models.User
 		if err := c.ShouldBindJSON(&user); err != nil {
 			c.JSON(http.StatusUnprocessableEntity, "Invalid json provided")
@@ -20,6 +21,8 @@ func Login(conf *config.Config) gin.HandlerFunc {
 
 		if user.ValidateUser() {
 			token, _ := models.GenerateToken(conf)
+			c.SetCookie("auth_token", token, 60*60*24*31*3, "/", "localhost", false, false)
+
 			c.JSON(http.StatusOK, gin.H{
 				"token": token,
 			})
