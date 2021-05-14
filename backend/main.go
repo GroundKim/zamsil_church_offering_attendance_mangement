@@ -10,10 +10,9 @@ import (
 
 // Main program.
 func main() {
-	conf := config.GetConf("dev")
+	conf := config.GetConf()
 	models.InitDb(conf)
 	mappings.CreateUrlMappings(conf)
 	mappings.Router.Use(cors.Default())
 	mappings.Router.Run()
-
 }

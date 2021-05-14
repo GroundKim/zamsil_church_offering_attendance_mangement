@@ -21,8 +21,7 @@ pnpm-debug.log*
 *.sln
 *.sw?
 *.xlsx
-*.yaml
 *.env.*
 
-# for choosing config in main.go between dev and product
-main.go
+# ignore config file
+config*.yaml

@@ -27,8 +27,8 @@ type Config struct {
 
 // Read the config file from the current directory and marshal
 // into the conf config struct.
-func GetConf(env string) *Config {
-	filename := fmt.Sprintf("./%s_config", env)
+func GetConf() *Config {
+	filename := "./config"
 	viper.AddConfigPath("./config")
 	viper.SetConfigName(filename)
 	err := viper.ReadInConfig()
