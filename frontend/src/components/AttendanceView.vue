@@ -1,113 +1,125 @@
 <template>
-    <v-container>
-        <div class="float-md-left">
-            <h1> {{ year }}년 기록 </h1>
-        </div>
-        <v-container>
-            <v-btn
-                class="mx-2"
-                fab
-                dark
-                x-small
-                color="indigo"
-                @click="plusYear()"
-            >
-                <v-icon dark>
-                    mdi-plus
-                </v-icon>
-            </v-btn>
+  <v-container>
+    <v-row class="mt-5">
+      <v-col>
+        <h1>{{ year }}년 기록
+          <v-btn
+            class="mx-2 mb-1"
+            fab
+            outlined
+            x-small
+            color="primary"
+            @click="plusYear()"
+          >
+            <v-icon>
+              mdi-plus
+            </v-icon>
+          </v-btn>
 
-            <v-btn
-                class="mx-2"
-                fab
-                dark
-                x-small
-                color="primary"
-                @click="minusYear()"
-            >
-                <v-icon dark>
-                    mdi-minus
-                </v-icon>
-            </v-btn>
-        </v-container>
+          <v-btn
+            class="mx-2 mb-1"
+            fab
+            outlined
+            x-small
+            color="blue-grey"
+            @click="minusYear()"
+          >
+            <v-icon>
+              mdi-minus
+            </v-icon>
+          </v-btn>
+          </h1>
+      </v-col>
+    </v-row>
 
+    <v-row>
+      <v-col>
         <v-sheet
-            v-for="(attendedAt, i) in attendedAts" 
-            :key="i"
-            class="ma-5"
+          v-for="(attendedAt, i) in attendedAts" 
+          :key="i"
+          class="ma-3 pa-2"
         >
-            {{ attendedAt.substr(0, 10) }}
+          <h3>{{ attendedAt.substr(0, 10) }}
             <v-btn 
-                @click="downloadAttendanceExcelByDate(attendedAt)"
-                class="ma-10"
+              @click="downloadAttendanceExcelByDate(attendedAt)"
+              fab
+              outlined
+              x-small
+              color="indigo"
+              class="ml-3"
             >
-                excel download
+              <v-icon>
+                mdi-download
+              </v-icon>
             </v-btn>
+          </h3>
         </v-sheet>
-    </v-container>
+      </v-col>
+    </v-row>
+  </v-container>
 </template>
 
 <script>
 import axios from 'axios'
 import moment from 'moment'
+
 export default {
-    name: 'AttendanceView',
+  name: 'AttendanceView',
 
-    data () {
-        return {
-            year: null,
-            attendedAts: [],
-        }
+  data () {
+    return {
+      year: null,
+      attendedAts: [],
+    }
+  },
+
+  methods: {
+    getAttendedAtsByYear (year) {
+      axios
+      .get(`${this.$serverAddress}/Youth/attendance/view?year=${year}`, {withCredentials: true})
+      .then(res => {
+        this.attendedAts = res.data.attendedAts
+      })
+      .catch(err => {
+        alert(err.message + "에러 발생")
+      })
     },
 
-    methods: {
-        getAttendedAtsByYear (year) {
-            axios
-            .get(`${this.$serverAddress}/Youth/attendance/view?year=${year}`, {withCredentials: true})
-            .then(res => {
-                this.attendedAts = res.data.attendedAts
-            })
-            .catch(err => {
-                alert(err.message + "에러 발생")
-            })
-        },
-
-        plusYear () {
-            this.year++
-        },
-
-        minusYear () {
-            this.year--
-        },
-
-        downloadAttendanceExcelByDate (date) {
-            let yearMonthDate = date.substring(0,10)
-            axios({
-                url: `${this.$serverAddress}/Youth/attendance/view/excel?date=${yearMonthDate}`, 
-                method: 'GET',
-                responseType: 'blob', // important
-                withCredentials: true,
-            }).then((response) => {
-                const url = window.URL.createObjectURL(new Blob([response.data]))
-                const link = document.createElement('a')
-                link.href = url
-                link.setAttribute('download', `출석부_${yearMonthDate}.xlsx`)
-                document.body.appendChild(link)
-                link.click()
-            })
-            
-        }
+    plusYear () {
+      this.year++
     },
 
-    watch: {
-        year: function() {
-            this.getAttendedAtsByYear(this.year)
-        }
+    minusYear () {
+      this.year--
     },
 
-    created () {
-        this.year = moment().year()
-        this.$store.commit('changeHeaderName', '출석부 보기')
-    },
+    downloadAttendanceExcelByDate (date) {
+      let yearMonthDate = date.substring(0,10)
+      axios({
+        url: `${this.$serverAddress}/Youth/attendance/view/excel?date=${yearMonthDate}`, 
+        method: 'GET',
+        responseType: 'blob', // important
+        withCredentials: true,
+      }).then((response) => {
+        const url = window.URL.createObjectURL(new Blob([response.data]))
+        const link = document.createElement('a')
+        link.href = url
+        link.setAttribute('download', `출석부_${yearMonthDate}.xlsx`)
+        document.body.appendChild(link)
+        link.click()
+      })
+    }
+  },
+
+  watch: {
+    year: function() {
+      this.getAttendedAtsByYear(this.year)
+    }
+  },
+
+  created () {
+    this.year = moment().year()
+    this.$store.commit('changeHeaderName', '출석부 보기')
+  },
 }
 </script>
