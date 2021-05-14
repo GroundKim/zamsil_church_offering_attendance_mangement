@@ -56,10 +56,13 @@ export default {
 				clientId: this.id,
 				password: this.password,
 			}
-			axios.post(`${this.$serverAddress}/Youth/login`, JSON.stringify(payload))
-				.then(res => {
-					console.log(this.$serverAddress)
-				})
+
+			axios.post(`${this.$serverAddress}/Youth/login`, JSON.stringify(payload), {withCredentials: true})
+				.then(()=> {
+					alert("로그인 되었습니다!")
+					this.$router.push('/attendance/input')
+					}
+				)
 				.catch(err => {
 					console.log(err)
 					if (err.response.status === 401) {

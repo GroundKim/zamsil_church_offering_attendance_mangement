@@ -63,7 +63,7 @@ export default {
     methods: {
         getAttendedAtsByYear (year) {
             axios
-            .get(`${this.$serverAddress}/Youth/attendance/view?year=${year}`)
+            .get(`${this.$serverAddress}/Youth/attendance/view?year=${year}`, {withCredentials: true})
             .then(res => {
                 this.attendedAts = res.data.attendedAts
             })
@@ -83,9 +83,10 @@ export default {
         downloadAttendanceExcelByDate (date) {
             let yearMonthDate = date.substring(0,10)
             axios({
-                url: `${this.$serverAddress}/Youth/attendance/view/excel?date=${yearMonthDate}`,
+                url: `${this.$serverAddress}/Youth/attendance/view/excel?date=${yearMonthDate}`, 
                 method: 'GET',
                 responseType: 'blob', // important
+                withCredentials: true,
             }).then((response) => {
                 const url = window.URL.createObjectURL(new Blob([response.data]))
                 const link = document.createElement('a')

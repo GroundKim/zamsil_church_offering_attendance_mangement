@@ -195,7 +195,7 @@ export default {
 
             await axios
                 .post(
-                    `${this.$serverAddress}/Youth/offering`, JSON.stringify(specificOfferingPayload), {headers: headers}
+                    `${this.$serverAddress}/Youth/offering`, JSON.stringify(specificOfferingPayload), {headers: headers}, {withCredentials: true}
                 )
                 .then(res => {
                     console.log(res.data)
@@ -225,7 +225,7 @@ export default {
         setStudents: async function() {
             let getURL = `${this.$serverAddress}/Youth/students?department_id=${this.departmentId + 1}`
             await axios
-            .get(getURL)
+            .get(getURL, {withCredentials: true})
             .then((response) => {              
                 this.$store.commit('setStudents', response.data)
                 })
@@ -237,7 +237,7 @@ export default {
         setOfferingType: async function() {
             let getURL = `${this.$serverAddress}/Youth/offering/type`
             await axios
-                .get(getURL)
+                .get(getURL, {withCredentials: true})
                 .then((response) => {
                     this.$store.commit('setOfferingType', response.data)
                 })

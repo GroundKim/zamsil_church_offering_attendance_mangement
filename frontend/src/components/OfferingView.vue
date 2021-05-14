@@ -62,7 +62,7 @@ export default {
     methods: {
         getOfferedAtsByYear (year) {
             axios
-            .get(`${this.$serverAddress}/Youth/offering/view?year=${year}`)
+            .get(`${this.$serverAddress}/Youth/offering/view?year=${year}`, {withCredentials: true})
             .then(res => {
                 this.offeredAts = res.data.offeredAts
             })
@@ -85,6 +85,7 @@ export default {
                 url: `${this.$serverAddress}/Youth/offering/view/excel?date=${yearMonthDate}`,
                 method: 'GET',
                 responseType: 'blob', // important
+                withCredentials: true,
             }).then((response) => {
                 const url = window.URL.createObjectURL(new Blob([response.data]))
                 const link = document.createElement('a')
