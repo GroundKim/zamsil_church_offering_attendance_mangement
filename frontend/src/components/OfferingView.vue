@@ -81,7 +81,15 @@ export default {
         this.offeredAts = res.data.offeredAts
       })
       .catch(err => {
-        alert(err.message + "에러 발생")
+        let errStatusCode = err.response.status
+        if (errStatusCode === 404) {
+          alert(err.message + ": 오류 발생 관리자에게 문의하십시오")
+        }
+
+        if (errStatusCode === 403) {
+          alert('로그인을 해주세요')
+          this.$router.push('/login')
+        }
       })
     },
 
@@ -100,7 +108,8 @@ export default {
         method: 'GET',
         responseType: 'blob', // important
         withCredentials: true,
-      }).then((response) => {
+      })
+      .then((response) => {
         const url = window.URL.createObjectURL(new Blob([response.data]))
         const link = document.createElement('a')
         link.href = url
@@ -108,7 +117,17 @@ export default {
         document.body.appendChild(link)
         link.click()
       })
-      
+      .catch(err => {
+        let errStatusCode = err.response.status
+        if (errStatusCode === 404) {
+          alert(err.message + ": 오류 발생 관리자에게 문의하십시오")
+        }
+
+        if (errStatusCode === 403) {
+          alert('로그인을 해주세요')
+          this.$router.push('/login')
+        }
+      })
     }
   },
 

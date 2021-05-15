@@ -165,8 +165,7 @@ export default {
       }  
     }
   }),
-
-
+  
   methods: {
     async sendPost() {
       let hasPostError = false
@@ -200,10 +199,17 @@ export default {
           this.$store.commit('deleteSpecificOffering')
         })
         .catch(err => {
-          hasPostError = true
-          alert(err.message + ' 등록중 오류 발생 관리자에게 문의하십시오')
-          this.$store.commit('deleteSpecificOffering')
+          let errStatusCode = err.response.status
+          if (errStatusCode === 404) {
+            alert(err.message + ": 등록중 오류 발생 관리자에게 문의하십시오")
+          }
 
+          if (errStatusCode === 403) {
+            alert('로그인을 해주세요')
+            this.$router.push('/login')
+          }
+          hasPostError = true
+          this.$store.commit('deleteSpecificOffering')
         })
       
       if (!hasPostError) {

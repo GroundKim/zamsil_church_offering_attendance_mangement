@@ -11,15 +11,15 @@ import (
 
 func Authorize(conf *config.Config) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		clientToken, _ := c.Request.Cookie("auth_token")
-		token := clientToken.Value
-		if token == "" {
+		clientToken, err := c.Request.Cookie("auth_token")
+		if err != nil {
 			c.JSON(http.StatusForbidden, "No Authorization token")
 			c.Abort()
 			return
 		}
+		token := clientToken.Value
 
-		_, err := models.ValidateToken(token, conf)
+		_, err = models.ValidateToken(token, conf)
 		if err != nil {
 			c.JSON(http.StatusUnauthorized, "token Unauthorized")
 			c.Abort()
