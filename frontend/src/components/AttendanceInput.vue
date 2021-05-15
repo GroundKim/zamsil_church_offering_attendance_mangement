@@ -52,7 +52,7 @@
                 </v-menu>
                 <v-text-field
                   v-model="createdBy"
-                  label="Who are you ?"
+                  label="작성자"
                   required
                 ></v-text-field>
               </v-card-text>

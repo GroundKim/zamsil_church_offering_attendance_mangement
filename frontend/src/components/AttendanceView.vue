@@ -2,20 +2,7 @@
   <v-container>
     <v-row class="mt-5">
       <v-col>
-        <h1>{{ year }}년 기록
-          <v-btn
-            class="mx-2 mb-1"
-            fab
-            outlined
-            x-small
-            color="primary"
-            @click="plusYear()"
-          >
-            <v-icon>
-              mdi-plus
-            </v-icon>
-          </v-btn>
-
+        <h1>
           <v-btn
             class="mx-2 mb-1"
             fab
@@ -28,7 +15,21 @@
               mdi-minus
             </v-icon>
           </v-btn>
-          </h1>
+          {{ year }}
+          <v-btn
+            class="mx-2 mb-1"
+            fab
+            outlined
+            x-small
+            color="primary"
+            @click="plusYear()"
+          >
+            <v-icon>
+              mdi-plus
+            </v-icon>
+          </v-btn>
+          년 출석부 기록
+        </h1>
       </v-col>
     </v-row>
 

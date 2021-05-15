@@ -5,7 +5,7 @@
       dense
       dark
     >
-      <v-tabs>
+      <v-tabs class="d-flex justify-center">
         <v-tab
           v-for="(link, index) in links"
           :key="index"
