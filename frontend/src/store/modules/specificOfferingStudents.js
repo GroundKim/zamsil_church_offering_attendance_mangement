@@ -34,7 +34,11 @@ const mutations = {
         state.payloadStudents.push(student)
     },
 
-    pushOffering(state, newOffering) {
+    async pushOffering (state, newOffering) {
+        await state.payloadOfferings.push(newOffering)
+    },
+    
+    pushOffering1(state, newOffering) {
         state.payloadOfferings.push(newOffering)
     },
 
@@ -56,7 +60,11 @@ const getters = {
         return state.createdBy
     },
 
-    getOfferingPayload(state) {
+    async getOfferingPayload(state) {
+        return await state.payloadOfferings
+    },
+
+    getOfferingPayload1(state) {
         return state.payloadOfferings
     },
 

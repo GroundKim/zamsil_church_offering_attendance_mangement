@@ -151,8 +151,7 @@ export default {
         .post(
           `${this.$serverAddress}/Youth/attendances`,
           JSON.stringify(payload),
-          { headers: headers },
-          { withCredentials: true }
+          { withCredentials: true, headers: headers }
         )
         .then((res) => {
           console.log(res.data);
@@ -190,8 +189,7 @@ export default {
     },
 
     attendedStudents: function () {
-      console.log(this.absentStudents);
-      console.log(this.attendedStudents);
+
     },
   },
 

@@ -127,7 +127,7 @@ export default {
     menu: false,
     modal: false,
     menu2: false,
-    departmentId: "1",
+    departmentId: null,
     studentData: [],
     departmentsLabel: ["1부", "2부"],
     weekOfferingCost: null,
@@ -146,12 +146,11 @@ export default {
   }),
 
   methods: {
-    async sendPost() {
-      let hasPostError = false;
+    sendPost: async function() {
       this.specificOfferingTrigger++;
-      let specificOfferingPayload = await this.$store.getters
-        .getOfferingPayload;
       this.date += moment().format().substr(10);
+      let hasPostError = false;
+      
       let weekOfferingPayload = {
         studentId: null,
         offeringTypeId: 1,
@@ -161,23 +160,22 @@ export default {
         createdAt: moment().format(),
         createdBy: this.createdBy,
       };
-      console.log(specificOfferingPayload);
-      specificOfferingPayload.push(weekOfferingPayload);
-      console.log(JSON.stringify(specificOfferingPayload));
+
+      let specificOfferingPayload = await this.$store.getters.getOfferingPayload
+      console.log(JSON.stringify(specificOfferingPayload))
+      await specificOfferingPayload.push(weekOfferingPayload);
+      console.log(JSON.stringify(specificOfferingPayload))
 
       const headers = {
         "Content-Type": "application/json",
       };
-
       await axios
         .post(
           `${this.$serverAddress}/Youth/offering`,
           JSON.stringify(specificOfferingPayload),
-          { headers: headers },
-          { withCredentials: true }
+          { withCredentials: true, headers: headers }
         )
-        .then((res) => {
-          console.log(res.data);
+        .then(() => {
           alert("등록 완료!");
           this.$store.commit("deleteSpecificOffering");
         })
@@ -228,7 +226,7 @@ export default {
       await axios
         .get(getURL, { withCredentials: true })
         .then((response) => {
-          this.$store.commit("setOfferingType", response.data);
+          this.$store.commit("setOfferingType", response.data)
         })
         .catch((err) => {
           alert(
@@ -254,7 +252,7 @@ export default {
   watch: {
     departmentId: async function () {
       await this.setStudents();
-      this.setDepartmentId();
+      await this.setDepartmentId();
     },
 
     createdBy: function () {
@@ -267,6 +265,7 @@ export default {
   },
 
   async created() {
+    this.departmentId = '1';
     await this.$store.commit("changeHeaderName", "헌금 기입");
     await this.setStudents();
     await this.setOfferingType();

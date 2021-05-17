@@ -60,17 +60,17 @@ export default {
       return sendPost
     },
 
-    makePayload() {
+    makePayload: async function() {
       let offeringPayload = {
         offeringTypeId: this.offeringTypeValue['offeringTypeId'],
         studentId: this.offerorValue['studentId'],
         offeringCost: parseInt(this.offeringCost),
         createdAt: moment().format(),
-        createdBy: this.$store.getters.getCreatedBy,
-        offeredAt: this.$store.getters.getOfferedAt,
-        departmentId: this.$store.getters.getDepartmentId,
+        createdBy: await this.$store.getters.getCreatedBy,
+        offeredAt: await this.$store.getters.getOfferedAt,
+        departmentId: parseInt(await this.$store.getters.getDepartmentId),
       }
-      this.$store.commit('pushOffering', offeringPayload)
+      await this.$store.commit('pushOffering', offeringPayload)
     }
   },
 
@@ -86,8 +86,8 @@ export default {
       this.students = this.$store.getters.getStudents
     },
 
-    offerPostTrigger: function() {
-      this.makePayload()
+    offerPostTrigger: async function() {
+      await this.makePayload()
     },
   },
 

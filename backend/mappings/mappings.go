@@ -13,7 +13,6 @@ var Router *gin.Engine
 
 func CreateUrlMappings(conf *config.Config) {
 	Router = gin.Default()
-
 	// middelware for cors
 	Router.Use(cors.New(cors.Config{
 		AllowOrigins:     []string{conf.CORS.ALLOWORIGINS},
