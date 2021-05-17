@@ -7,6 +7,10 @@ const state = {
     offeredAt: null,
     createdBy: null,
     departmentId: null,
+    isFinishedMakingPayload: false,
+    postTrigger: 0,
+    offeringError: [],
+    
 }
 
 const mutations = {
@@ -34,21 +38,41 @@ const mutations = {
         state.payloadStudents.push(student)
     },
 
-    async pushOffering (state, newOffering) {
-        await state.payloadOfferings.push(newOffering)
-    },
-    
-    pushOffering1(state, newOffering) {
+    pushOffering (state, newOffering) {
         state.payloadOfferings.push(newOffering)
     },
-
+    
     deleteSpecificOffering(state) {
         state.payloadOfferings = []
+    },
+    
+    setFinishMakingPayload(state, bool) {
+        state.isFinishedMakingPayload = bool
+    },
+
+    triggerPost(state) {
+        state.postTrigger++
+    },
+
+    addOfferingError(state, error) {
+        state.offeringError.push(error)
     }
 }
 
 const actions = {
+    pushOffering: function (context, newOffering) {
+        return context.commit('pushOffering', newOffering)
+    },
 
+    setFinishMakingPayload: function (context) {
+        return context.commit('setFinishMakingPayload')
+    },
+
+    triggerPost: function (context) {
+        return context.commit('triggerPost')
+    }
+
+    
 }
 
 const getters = {
@@ -60,11 +84,7 @@ const getters = {
         return state.createdBy
     },
 
-    async getOfferingPayload(state) {
-        return await state.payloadOfferings
-    },
-
-    getOfferingPayload1(state) {
+    getOfferingPayload(state) {
         return state.payloadOfferings
     },
 
@@ -78,7 +98,16 @@ const getters = {
 
     getOfferedAt(state) {
         return state.offeredAt
+    },
+
+    getIsFinishedMakingPayload(state) {
+        return state.isFinishedMakingPayload
+    },
+
+    getPostTrigger(state) {
+        return state.postTrigger
     }
+
 }
 
 export default {

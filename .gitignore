@@ -147,3 +147,4 @@ dist
 
 # Config files
 config*.yaml
+*.yaml

@@ -35,6 +35,7 @@
 
 <script>
 import moment from 'moment'
+import axios from 'axios'
 
 export default {
   name: 'SpecificOfferingInput',
@@ -45,6 +46,7 @@ export default {
     offeringCost: null,
     students: null,
 
+
     rules: {
       offering: value => {
         const pattern = /^[0-9]+$/
@@ -53,24 +55,42 @@ export default {
     }
   }),
   
-  props:['offerPostTrigger'],
   methods: {
-    watchSendPost() {
-      const {sendPost} = this
-      return sendPost
-    },
-
     makePayload: async function() {
       let offeringPayload = {
-        offeringTypeId: this.offeringTypeValue['offeringTypeId'],
         studentId: this.offerorValue['studentId'],
+        offeringTypeId: this.offeringTypeValue['offeringTypeId'],
         offeringCost: parseInt(this.offeringCost),
+        departmentId: parseInt(await this.$store.getters.getDepartmentId),
+        offeredAt: await this.$store.getters.getOfferedAt + moment().format().substr(10),
         createdAt: moment().format(),
         createdBy: await this.$store.getters.getCreatedBy,
-        offeredAt: await this.$store.getters.getOfferedAt,
-        departmentId: parseInt(await this.$store.getters.getDepartmentId),
       }
-      await this.$store.commit('pushOffering', offeringPayload)
+
+      return offeringPayload
+      // await this.$store.dispatch('pushOffering', offeringPayload)
+      // console.log(JSON.stringify(this.$store.getters.getOfferingPayload))
+      // console.log("push finished")
+    },
+
+    sendPost: async function() {
+      let payload = []
+      payload.push(await this.makePayload())
+      console.log(JSON.stringify(payload))
+      const headers = {
+        "Content-Type": "application/json",
+      }
+      axios.post(
+        `${this.$serverAddress}/Youth/offering`,
+        JSON.stringify(payload),
+        {withCredentials: true, headers: headers}
+      )
+      .then()
+      .catch((err) => {
+        this.$store.commit('addOfferingError', err)
+      })
+
+
     }
   },
 
@@ -79,6 +99,10 @@ export default {
     getStudents() {
       return this.$store.getters.getStudents
     },
+
+    getPostTrigger() {
+      return this.$store.getters.getPostTrigger
+    }
   },
 
   watch: {
@@ -86,9 +110,9 @@ export default {
       this.students = this.$store.getters.getStudents
     },
 
-    offerPostTrigger: async function() {
-      await this.makePayload()
-    },
+    getPostTrigger: async function() {
+      this.sendPost()
+    }
   },
 
   created() {

@@ -65,6 +65,7 @@ export default {
   },
 
 	created() {
+    console.log(this.$serverAddress)
 	}
 }
 </script>

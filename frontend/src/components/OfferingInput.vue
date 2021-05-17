@@ -147,7 +147,9 @@ export default {
 
   methods: {
     sendPost: async function() {
-      this.specificOfferingTrigger++;
+      this.$store.dispatch('triggerPost')
+      let specificOfferingPayload = await this.$store.getters.getOfferingPayload
+
       this.date += moment().format().substr(10);
       let hasPostError = false;
       
@@ -161,10 +163,9 @@ export default {
         createdBy: this.createdBy,
       };
 
-      let specificOfferingPayload = await this.$store.getters.getOfferingPayload
-      console.log(JSON.stringify(specificOfferingPayload))
       await specificOfferingPayload.push(weekOfferingPayload);
       console.log(JSON.stringify(specificOfferingPayload))
+      console.log("payload finished")
 
       const headers = {
         "Content-Type": "application/json",
