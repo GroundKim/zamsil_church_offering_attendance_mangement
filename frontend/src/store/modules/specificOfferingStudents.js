@@ -2,7 +2,7 @@ const state = {
     students: null,
     offeringType: [],
     payloadStudents: [],
-    payloadOfferings: [],
+    payloadOfferings: {},
     sendPost: false,
     offeredAt: null,
     createdBy: null,
@@ -10,7 +10,7 @@ const state = {
     isFinishedMakingPayload: false,
     postTrigger: 0,
     offeringError: [],
-    
+    countOfferings: 0,
 }
 
 const mutations = {
@@ -39,7 +39,13 @@ const mutations = {
     },
 
     pushOffering (state, newOffering) {
-        state.payloadOfferings.push(newOffering)
+        state.payloadOfferings[newOffering.id] = newOffering
+    },
+
+    updateOffering (state, newOffering) {
+        state.payloadOfferings[newOffering.id].studentId = newOffering.studentId
+        state.payloadOfferings[newOffering.id].offeringTypeId = newOffering.offeringTypeId
+        state.payloadOfferings[newOffering.id].offeringCost = newOffering.offeringCost
     },
     
     deleteSpecificOffering(state) {
@@ -52,6 +58,10 @@ const mutations = {
 
     triggerPost(state) {
         state.postTrigger++
+    },
+
+    addOffering(state) {
+        state.countOfferings++
     },
 
     addOfferingError(state, error) {
@@ -106,6 +116,10 @@ const getters = {
 
     getPostTrigger(state) {
         return state.postTrigger
+    },
+
+    getOfferingId(state) {
+        return state.countOfferings
     }
 
 }

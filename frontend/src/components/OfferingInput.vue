@@ -86,7 +86,6 @@
                 v-for="(item, i) in offerings"
                 :key="i"
                 :is="item"
-                :offerPostTrigger="specificOfferingTrigger"
               ></component>
             </v-card-text>
 
@@ -134,7 +133,6 @@ export default {
     createdBy: null,
     students: [],
     offerings: [],
-    specificOfferingTrigger: 0,
 
     rules: {
       required: (value) => !!value || "Required.",
@@ -147,8 +145,8 @@ export default {
 
   methods: {
     sendPost: async function() {
-      this.$store.dispatch('triggerPost')
       let specificOfferingPayload = await this.$store.getters.getOfferingPayload
+      console.log(specificOfferingPayload)
 
       this.date += moment().format().substr(10);
       let hasPostError = false;
@@ -200,6 +198,8 @@ export default {
     },
 
     addOffering() {
+      // child id
+      this.$store.commit('addOffering');
       this.offerings.push("SpecificOfferingInput");
     },
 

@@ -13,7 +13,7 @@
 
     <v-col class="py-0">
       <v-autocomplete
-        v-model="offerorValue"
+        v-model="offerorId"
         label="이름"
         :items="students"
         item-text="name"
@@ -35,17 +35,16 @@
 
 <script>
 import moment from 'moment'
-import axios from 'axios'
 
 export default {
   name: 'SpecificOfferingInput',
   data: () => ({
+    id: null,
     offeringType: [], //... backend 서버에서 get offering type
     offeringTypeValue: null,
-    offerorValue: null,
+    offerorId: null,
     offeringCost: null,
     students: null,
-
 
     rules: {
       offering: value => {
@@ -56,42 +55,36 @@ export default {
   }),
   
   methods: {
-    makePayload: async function() {
+    updatePayload: function() {
       let offeringPayload = {
-        studentId: this.offerorValue['studentId'],
+        id: this.id,
+        studentId: this.offerorId['studentId'],
         offeringTypeId: this.offeringTypeValue['offeringTypeId'],
         offeringCost: parseInt(this.offeringCost),
-        departmentId: parseInt(await this.$store.getters.getDepartmentId),
-        offeredAt: await this.$store.getters.getOfferedAt + moment().format().substr(10),
-        createdAt: moment().format(),
-        createdBy: await this.$store.getters.getCreatedBy,
       }
 
-      return offeringPayload
-      // await this.$store.dispatch('pushOffering', offeringPayload)
-      // console.log(JSON.stringify(this.$store.getters.getOfferingPayload))
-      // console.log("push finished")
+      this.$store.commit('updateOffering', offeringPayload)
+      console.log(JSON.stringify(this.$store.getters.getOfferingPayload))
+      console.log("push finished")
     },
 
-    sendPost: async function() {
-      let payload = []
-      payload.push(await this.makePayload())
-      console.log(JSON.stringify(payload))
-      const headers = {
-        "Content-Type": "application/json",
-      }
-      axios.post(
-        `${this.$serverAddress}/Youth/offering`,
-        JSON.stringify(payload),
-        {withCredentials: true, headers: headers}
-      )
-      .then()
-      .catch((err) => {
-        this.$store.commit('addOfferingError', err)
-      })
-
-
-    }
+    // sendPost: async function() {
+    //   let payload = []
+    //   payload.push(await this.makePayload())
+    //   console.log(JSON.stringify(payload))
+    //   const headers = {
+    //     "Content-Type": "application/json",
+    //   }
+    //   axios.post(
+    //     `${this.$serverAddress}/Youth/offering`,
+    //     JSON.stringify(payload),
+    //     {withCredentials: true, headers: headers}
+    //   )
+    //   .then()
+    //   .catch((err) => {
+    //     this.$store.commit('addOfferingError', err)
+    //   })
+    // }
   },
 
   computed: {
@@ -110,14 +103,35 @@ export default {
       this.students = this.$store.getters.getStudents
     },
 
-    getPostTrigger: async function() {
-      this.sendPost()
+    offerorId: function () {
+      this.updatePayload()
+    },
+    offeringTypeValue: function () {
+      this.updatePayload()
+    },
+    offeringCost: function () {
+      this.updatePayload()
     }
   },
 
   created() {
+    this.id = this.$store.getters.getOfferingId
     this.students = this.$store.getters.getStudents
+    console.log(JSON.stringify(this.students))
     this.offeringType = this.$store.getters.getOfferingType
+
+    let offeringPayload = {
+      id: this.id,
+      studentId: null,
+      offeringTypeId: null,
+      offeringCost: null,
+      departmentId: parseInt(this.$store.getters.getDepartmentId),
+      offeredAt: this.$store.getters.getOfferedAt + moment().format().substr(10),
+      createdAt: moment().format(),
+      createdBy: this.$store.getters.getCreatedBy,
+    }
+
+    this.$store.dispatch('pushOffering', offeringPayload)
   },
 }
 </script>
