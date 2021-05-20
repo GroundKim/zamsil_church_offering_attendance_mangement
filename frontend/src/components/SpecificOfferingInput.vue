@@ -46,11 +46,11 @@
 </template>
 
 <script>
-
 import moment from 'moment'
+
 export default {
   name: 'SpecificOfferingInput',
-  props: ['offeringId', 'postTrigger'],
+  props: ['offeringId'],
   data: () => ({
     offeringType: [],
     offeringTypeValue: null,
@@ -58,7 +58,16 @@ export default {
     offeringCost: null,
     students: null,
     departmentId: null,
-    offeringPayload: {},
+    offeringPayload: {
+      offeringId: null,
+      studentId: null,
+      offeringTypeId: null,
+      offeringCost: null,
+      departmentId: null,
+      offeredAt: null,
+      createdAt: null,
+      createdBy: null,
+    },
 
     rules: {
       offering: value => {
@@ -73,53 +82,58 @@ export default {
       return this.$store.getters.getDepartmentId
     },
 
+    getCreatedBy() {
+      return this.$store.getters.getCreatedBy
+    },
+
     getOfferedAt() {
       return this.$store.getters.getOfferedAt
-    }
+    },
+
   },
 
   methods: {
     deleteOffering: function (offeringId) {
       this.$emit('delete', offeringId)
-
     }
   },
 
   watch: {
     getDepartmentId: function () {
-      let departmentId = this.getDepartmentId
+      let departmentId = parseInt(this.getDepartmentId)
       // it doesn't look so good
       if (departmentId == 1) this.students = this.$store.getters.getDepartmentOneStudents
       if (departmentId == 2) this.students = this.$store.getters.getDepartmentTwoStudents
       
+      this.offeringPayload.departmentId = departmentId
     },
 
-    postTrigger: function () {
-      this.offeringPayload = {
-        studentId: null,
-        offeringTypeId: null,
-        offeringCost: null,
-        offeredAt: this.$store.getters.getOfferedAt,
-        createdAt: moment().format(),
-        createdBy: this.$store.getters.getCreatedBy,
-      }
-      this.$store.commit('pushOfferingPayload', this.offeringPayload)
+    // repetition is not good
+    getCreatedBy: function () {
+      this.offeringPayload.createdBy = this.getCreatedBy
+      this.$store.commit('updateOfferingPayload', this.offeringPayload)
     },
 
     getOfferedAt: function () {
-      
+      this.offeringPayload.offeredAt = this.getOfferedAt
+      this.$store.commit('updateOfferingPayload', this.offeringPayload)
     },
 
     offeringTypeValue: function() {
+      this.offeringPayload.offeringTypeId = this.offeringTypeValue
+      this.$store.commit('updateOfferingPayload', this.offeringPayload)
+
     },
 
     offerorId: function() {
+      this.offeringPayload.studentId = this.offerorId
+      this.$store.commit('updateOfferingPayload', this.offeringPayload)
     },
 
     offeringCost: function() {
+      this.offeringPayload.offeringCost = parseInt(this.offeringCost)
+      this.$store.commit('updateOfferingPayload', this.offeringPayload)
     }
-
-
   },
 
   created() {
@@ -130,8 +144,14 @@ export default {
     // it doesn't look so good
     if (this.departmentId == 1) this.students = this.$store.getters.getDepartmentOneStudents
     if (this.departmentId == 2) this.students = this.$store.getters.getDepartmentTwoStudents
-    
 
+    this.offeringPayload.offeringId = this.offeringId
+    this.offeringPayload.departmentId = parseInt(this.$store.getters.getDepartmentId)
+    this.offeringPayload.offeredAt = this.$store.getters.getOfferedAt
+    this.offeringPayload.createdAt = moment().format()
+    this.offeringPayload.createdBy = this.$store.getters.getCreatedBy
+
+    this.$store.commit('pushOfferingPayloads', this.offeringPayload)
   }
   
 }

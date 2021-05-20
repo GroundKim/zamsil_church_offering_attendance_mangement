@@ -7,13 +7,13 @@ import (
 
 type OfferingDiary struct {
 	ID             int
-	StudentID      *int `json:"studentId"`
-	OfferingTypeID int  `gorm:"not null;" json:"offeringTypeId"`
-	// DepartmentID   int       `gorm:"not null;" json:"departmentId"`
-	Cost      int       `gorm:"not null;" json:"offeringCost"`
-	OfferedAt time.Time `gorm:"not null; type:date" json:"offeredAt"`
-	CreatedAt time.Time `gorm:"not null;" json:"createdAt"`
-	CreatedBy string    `gorm:"not null;" json:"createdBy"`
+	StudentID      *int      `json:"studentId"`
+	OfferingTypeID int       `gorm:"not null;" json:"offeringTypeId"`
+	DepartmentID   int       `gorm:"not null;" json:"departmentId"`
+	Cost           int       `gorm:"not null;" json:"offeringCost"`
+	OfferedAt      time.Time `gorm:"not null; type:date" json:"offeredAt"`
+	CreatedAt      time.Time `gorm:"not null;" json:"createdAt"`
+	CreatedBy      string    `gorm:"not null;" json:"createdBy"`
 
 	Student      Student      `gorm:"references:ID"`
 	OfferingType OfferingType `gorm:"references:ID"`

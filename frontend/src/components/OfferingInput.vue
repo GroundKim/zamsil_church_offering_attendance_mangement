@@ -76,7 +76,6 @@
                 :is="offering.type"
                 :key="index"
                 :offeringId="offering.offeringId"
-                :postTrigger="postTrigger"
                 @delete="deleteOffering"
               ></component>
             </v-card-text>
@@ -144,33 +143,36 @@ export default {
         studentId: null,
         offeringTypeId: 1,
         offeringCost: parseInt(this.weekOfferingCost),
-        // departmentId: parseInt(this.departmentId),
+        departmentId: parseInt(this.departmentId),
         offeredAt: this.date + moment().format().substr(10),
         createdAt: moment().format(),
         createdBy: this.createdBy,
       }
-      
-      this.postTrigger++
+      // push week offering
       offeringPayload.push(weekOfferingPayload)
-      console.log(JSON.stringify(this.$store.getters.getOfferingPayloads))
+
+      // push specific offering
+      offeringPayload = offeringPayload.concat(this.$store.getters.getOfferingPayloads)
+      console.log(JSON.stringify(offeringPayload))
+
       // set header for JSON post
-      // const headers = {
-      //  'content-type': 'application/json' 
-      // }
+      const headers = {
+       'content-type': 'application/json' 
+      }
 
       // axios post
-      // await axios
-      //   .post(
-      //     `${this.$serverAddress}/Youth/offering`,
-      //     JSON.stringify(offeringPayload),
-      //     { withCredentials: true, headers: headers}
-      //   )
-      //   .then(() => {
-      //     alert('등록완료')
-      //   })
-      //   .catch((err) => {
-      //     this.alertError(err)
-      //   })
+      await axios
+        .post(
+          `${this.$serverAddress}/Youth/offering`,
+          JSON.stringify(offeringPayload),
+          { withCredentials: true, headers: headers}
+        )
+        .then(() => {
+          alert('등록완료')
+        })
+        .catch((err) => {
+          this.alertError(err)
+        })
     },
 
     // add offering component
@@ -185,6 +187,7 @@ export default {
 
     deleteOffering(id) {
       let index = this.offerings.findIndex(o => o.offeringId == id)
+      this.$store.commit('deleteOfferingPayload', id)
       this.offerings.splice(index, 1)
     }
   },
@@ -207,7 +210,7 @@ export default {
 
     createdBy: function () {
       this.$store.commit('setCreatedBy', this.createdBy)
-    }
+    },
 
   },
   
@@ -242,7 +245,8 @@ export default {
         this.$store.commit('pushDepartmentTwoStudent', student)
       }
     });
-
+    // store offeredAt in vuex with proper date formate for server; asking Len
+    this.$store.commit('setOfferedAt', this.date + moment().format().substr(10))
     this.departmentId = '1'
     this.offerings.push({
       'type':SpecificOfferingInput,

@@ -54,10 +54,28 @@ const mutations = {
         state.offeredAt = offeredAt
     },
 
-    updateOffering (state, newOffering) {
-        state.offeringPayloads[newOffering.id].studentId = newOffering.studentId
-        state.offeringPayloads[newOffering.id].offeringTypeId = newOffering.offeringTypeId
-        state.offeringPayloads[newOffering.id].offeringCost = newOffering.offeringCost
+    //
+    pushOfferingPayloads (state, offering) {
+        state.offeringPayloads.push(offering)
+    },
+
+    updateOfferingPayload (state, offeringPayload) {
+        // state.offeringPayloads[offering.id].studentId = offering.studentId
+        // state.offeringPayloads[offering.id].offeringTypeId = offering.offeringTypeId
+        // state.offeringPayloads[offering.id].offeringCost = offering.offeringCost
+        const index = state.offeringPayloads.findIndex(o => o.offeringId == offeringPayload.offeringId)
+        state.offeringPayloads[index].studentId = offeringPayload.studentId
+        state.offeringPayloads[index].offeringTypeId = offeringPayload.offeringTypeId
+        state.offeringPayloads[index].offeringCost = offeringPayload.offeringCost
+        state.offeringPayloads[index].departmentId = offeringPayload.departmentId
+        state.offeringPayloads[index].offeredAt = offeringPayload.offeredAt
+        state.offeringPayloads[index].createdBy = offeringPayload.createdBy
+    },
+
+    deleteOfferingPayload (state, id) {
+        const index = state.offeringPayloads.findIndex(o => o.offeringId == id)
+        state.offeringPayloads.splice(index, 1)
+
     },
     
     setCreatedBy(state, createdBy) {
@@ -68,22 +86,10 @@ const mutations = {
         state.payloadStudents.push(student)
     },
 
-    //
-    pushOfferingPayload (state, offeringPayload) {
-        state.offeringPayloads.push(offeringPayload)
-    },
-
     deleteSpecificOffering(state) {
         state.payloadOfferings = []
     },
     
-    setFinishMakingPayload(state, bool) {
-        state.isFinishedMakingPayload = bool
-    },
-
-    triggerPost(state) {
-        state.postTrigger++
-    },
 
     addOffering(state) {
         state.countOfferings++

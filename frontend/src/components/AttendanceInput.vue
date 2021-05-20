@@ -153,8 +153,7 @@ export default {
           JSON.stringify(payload),
           { withCredentials: true, headers: headers }
         )
-        .then((res) => {
-          console.log(res.data);
+        .then(() => {
           alert("등록 완료!");
           location.reload();
         })
