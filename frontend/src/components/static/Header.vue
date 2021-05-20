@@ -5,65 +5,50 @@
       dense
       dark
     >
-    <v-menu
-        left
-        bottom
-    >
-      <template v-slot:activator="{ on, attrs }">
-        <v-btn
-          icon
-          v-bind="attrs"
-          v-on="on"
-        >
-          <v-app-bar-nav-icon></v-app-bar-nav-icon>
-        </v-btn>
-      </template>
-
-      <v-list>
-        <v-list-item
+      <v-tabs class="d-flex justify-center">
+        <v-tab
           v-for="(link, index) in links"
           :key="index"
           @click="movePage(link)"
         >
-          <v-list-item-title>{{ link.title }}</v-list-item-title>
-        </v-list-item>
-      </v-list>
-    </v-menu>
-
-      <v-toolbar-title><h4>{{ headerName }}</h4></v-toolbar-title>
-
-      <v-spacer></v-spacer>
+          <v-icon>mdi-{{ link.icon }}</v-icon>
+          <span class="d-none d-md-flex ml-2">{{ link.title }}</span>
+        </v-tab>
+      </v-tabs>
     </v-app-bar>
   </div>
 </template>
 
 <script>
-  export default {
-    data: () => ({
-      headerName: "",
-      links: [
-        { 
-          title: '출석부 기입',
-          target: 'attendanceInput'
-        },
-        { 
-          title: '출석부 보기',
-          target: 'attendanceView'
-        },
-        { 
-          title: '헌금 기입',
-          target: 'offeringInput'
-        },
-        { 
-          title: '헌금 보기',
-          target: 'offeringView'
-        },
-      ]
-    }),
+export default {
+  data: () => ({
+    links: [
+      {
+        icon: 'clipboard-edit',
+        title: '출석부 기입',
+        target: 'attendanceInput'
+      },
+      {
+        icon: 'clipboard-outline',
+        title: '출석부 보기',
+        target: 'attendanceView'
+      },
+      {
+        icon: 'book-edit',
+        title: '헌금 기입',
+        target: 'offeringInput'
+      },
+      {
+        icon: 'book-outline',
+        title: '헌금 보기',
+        target: 'offeringView'
+      },
+    ]
+  }),
 
-    methods: {
+  methods: {
       movePage(link) {
-        // avoid catch error for same url, but it is not good way
+        // avoid catch error for same url, but it is not a good way
         this.headerName = link.title
         this.$router.push({name: link.target}).catch(() => {})
       },
@@ -72,10 +57,5 @@
     mounted () {
       this.headerName = this.$store.state.headerName
     },
-
-
-    
-
-
-  }
+}
 </script>

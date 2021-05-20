@@ -11,10 +11,10 @@ type attendanceInfo struct {
 	DepartmentID      int                `json:"departmentId"`
 	ClassName         string             `json:"className"`
 	TeachersName      []string           `json:"teacherName"`
-	StudentsIDandName []studentIDandName `json:"studentsIdandName"`
+	StudentsIdAndName []studentIDAndName `json:"studentsIdandName"`
 }
 
-type studentIDandName struct {
+type studentIDAndName struct {
 	StudentID   int    `json:"studentId"`
 	StudentName string `json:"studentName"`
 }
@@ -31,8 +31,8 @@ func GetAttendanceInfoByDepartment(c *gin.Context) {
 	var attendanceInfos []attendanceInfo
 
 	models.GetClassesByDepartment(&classes, departmentID)
-	models.GetTeacherByDepartment(&teachers, departmentID)
-	models.GetStudentByDepartment(&students, departmentID)
+	models.GetTeachersByDepartment(&teachers, departmentID)
+	models.GetStudentsByDepartment(&students, departmentID)
 
 	for _, class := range classes {
 		attendance := &attendanceInfo{DepartmentID: departmentID, ClassName: class.Name}
@@ -44,8 +44,8 @@ func GetAttendanceInfoByDepartment(c *gin.Context) {
 
 		for _, student := range students {
 			if class.ID == student.ClassID {
-				idAndName := &studentIDandName{student.ID, student.Name}
-				attendance.StudentsIDandName = append(attendance.StudentsIDandName, *idAndName)
+				idAndName := &studentIDAndName{student.ID, student.Name}
+				attendance.StudentsIdAndName = append(attendance.StudentsIdAndName, *idAndName)
 			}
 		}
 

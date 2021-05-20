@@ -13,7 +13,6 @@ var Router *gin.Engine
 
 func CreateUrlMappings(conf *config.Config) {
 	Router = gin.Default()
-
 	// middelware for cors
 	Router.Use(cors.New(cors.Config{
 		AllowOrigins:     []string{conf.CORS.ALLOWORIGINS},
@@ -39,4 +38,5 @@ func CreateUrlMappings(conf *config.Config) {
 	Youth.GET("/offering/view", controllers.GetOfferingView)
 	Youth.GET("/offering/view/excel", controllers.GetOfferingExcel)
 
+	Youth.POST("/students", controllers.PostStudent)
 }

@@ -11,6 +11,7 @@ import (
 
 func Authorize(conf *config.Config) gin.HandlerFunc {
 	return func(c *gin.Context) {
+
 		clientToken, err := c.Request.Cookie("auth_token")
 		if err != nil {
 			c.JSON(http.StatusForbidden, "No Authorization token")

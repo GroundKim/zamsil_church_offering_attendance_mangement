@@ -5,6 +5,7 @@ import router from './router'
 import vuetify from './plugins/vuetify'
 import store from './store'
 import VueCookies from 'vue-cookies'
+import alertError from './assets/common.js'
 
 Vue.use(VueCookies)
 
@@ -16,6 +17,12 @@ const port = process.env.VUE_APP_PORT
 
 Vue.prototype.$serverAddress = `${protocol}://${address}:${port}`
 Vue.prototype.$address = `${address}`
+
+Vue.mixin({
+  methods: {
+    alertError
+  }
+})
 
 new Vue({
   store,

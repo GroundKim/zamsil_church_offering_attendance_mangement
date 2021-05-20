@@ -11,20 +11,20 @@ import (
 
 func SaveOfferingViewExcel(date time.Time) {
 	f := excelize.NewFile()
-	var offeringDiarys []models.OfferingDiary
+	var offeringDiaries []models.OfferingDiary
 	var createdBys []string
-	models.GetOfferingDiaryByDate(&offeringDiarys, date)
+	models.GetOfferingDiaryByDate(&offeringDiaries, date)
 
-	for i := 0; i < len(offeringDiarys); i++ {
+	for i := 0; i < len(offeringDiaries); i++ {
 		hasSameName := false
-		for j := i + 1; j < len(offeringDiarys); j++ {
-			if offeringDiarys[i].CreatedBy == offeringDiarys[j].CreatedBy {
+		for j := i + 1; j < len(offeringDiaries); j++ {
+			if offeringDiaries[i].CreatedBy == offeringDiaries[j].CreatedBy {
 				hasSameName = true
 			}
 		}
 
 		if !hasSameName {
-			createdBys = append(createdBys, offeringDiarys[i].CreatedBy)
+			createdBys = append(createdBys, offeringDiaries[i].CreatedBy)
 		}
 	}
 	offeringDiarySheetName := date.Format("2006-01-12") + "_헌금통계표"
@@ -52,19 +52,19 @@ func SaveOfferingViewExcel(date time.Time) {
 
 	var (
 		totalWeekOfferingCost     []int = []int{0, 0}
-		totalTithOfferingCost     []int = []int{0, 0}
+		totalTitheOfferingCost    []int = []int{0, 0}
 		totalThanksOfferingCost   []int = []int{0, 0}
 		totalSeasonalOfferingCost []int = []int{0, 0}
 		totalEtcOfferingCost      []int = []int{0, 0}
 
 		// [departmentID - 1 ][name]
-		tithOfferingName     map[int]string = make(map[int]string)
+		titheOfferingName    map[int]string = make(map[int]string)
 		thanksOfferingName   map[int]string = make(map[int]string)
 		seasonalOfferingName map[int]string = make(map[int]string)
 		etcOfferingName      map[int]string = make(map[int]string)
 	)
 
-	for _, offeringDiary := range offeringDiarys {
+	for _, offeringDiary := range offeringDiaries {
 		switch offeringDiary.OfferingType.OfferingTypeName {
 		case "주일헌금":
 			if offeringDiary.DepartmentID == 1 {
@@ -76,12 +76,12 @@ func SaveOfferingViewExcel(date time.Time) {
 
 		case "십일조헌금":
 			if offeringDiary.DepartmentID == 1 {
-				totalTithOfferingCost[0] += offeringDiary.Cost
-				tithOfferingName[0] += offeringDiary.Student.Name + " "
+				totalTitheOfferingCost[0] += offeringDiary.Cost
+				titheOfferingName[0] += offeringDiary.Student.Name + " "
 			}
 			if offeringDiary.DepartmentID == 2 {
-				totalTithOfferingCost[1] += offeringDiary.Cost
-				tithOfferingName[1] += offeringDiary.Student.Name + " "
+				totalTitheOfferingCost[1] += offeringDiary.Cost
+				titheOfferingName[1] += offeringDiary.Student.Name + " "
 			}
 
 		case "감사헌금":
@@ -120,9 +120,9 @@ func SaveOfferingViewExcel(date time.Time) {
 	f.SetCellValue(offeringDiarySheetName, "C5", totalWeekOfferingCost[1])
 	f.SetCellValue(offeringDiarySheetName, "D5", totalWeekOfferingCost[0]+totalWeekOfferingCost[1])
 
-	f.SetCellValue(offeringDiarySheetName, "B6", totalTithOfferingCost[0])
-	f.SetCellValue(offeringDiarySheetName, "C6", totalTithOfferingCost[1])
-	f.SetCellValue(offeringDiarySheetName, "D6", totalTithOfferingCost[0]+totalTithOfferingCost[1])
+	f.SetCellValue(offeringDiarySheetName, "B6", totalTitheOfferingCost[0])
+	f.SetCellValue(offeringDiarySheetName, "C6", totalTitheOfferingCost[1])
+	f.SetCellValue(offeringDiarySheetName, "D6", totalTitheOfferingCost[0]+totalTitheOfferingCost[1])
 
 	f.SetCellValue(offeringDiarySheetName, "B7", totalThanksOfferingCost[0])
 	f.SetCellValue(offeringDiarySheetName, "C7", totalThanksOfferingCost[1])
@@ -137,8 +137,8 @@ func SaveOfferingViewExcel(date time.Time) {
 	f.SetCellValue(offeringDiarySheetName, "D9", totalEtcOfferingCost[0]+totalEtcOfferingCost[1])
 
 	var totalOfferingCostByDepartment []int = []int{0, 0}
-	totalOfferingCostByDepartment[0] = totalWeekOfferingCost[0] + totalTithOfferingCost[0] + totalThanksOfferingCost[0] + totalSeasonalOfferingCost[0] + totalEtcOfferingCost[0]
-	totalOfferingCostByDepartment[1] = totalWeekOfferingCost[1] + totalTithOfferingCost[1] + totalThanksOfferingCost[1] + totalSeasonalOfferingCost[1] + totalEtcOfferingCost[1]
+	totalOfferingCostByDepartment[0] = totalWeekOfferingCost[0] + totalTitheOfferingCost[0] + totalThanksOfferingCost[0] + totalSeasonalOfferingCost[0] + totalEtcOfferingCost[0]
+	totalOfferingCostByDepartment[1] = totalWeekOfferingCost[1] + totalTitheOfferingCost[1] + totalThanksOfferingCost[1] + totalSeasonalOfferingCost[1] + totalEtcOfferingCost[1]
 	f.SetCellValue(offeringDiarySheetName, "B10", totalOfferingCostByDepartment[0])
 	f.SetCellValue(offeringDiarySheetName, "C10", totalOfferingCostByDepartment[1])
 	f.SetCellValue(offeringDiarySheetName, "D10", totalOfferingCostByDepartment[0]+totalOfferingCostByDepartment[1])
@@ -148,7 +148,7 @@ func SaveOfferingViewExcel(date time.Time) {
 	f.MergeCell(offeringDiarySheetName, "A14", "D14")
 	f.MergeCell(offeringDiarySheetName, "A15", "D15")
 
-	f.SetCellValue(offeringDiarySheetName, "A12", fmt.Sprintf("1부: %s\n2부: %s", tithOfferingName[0], tithOfferingName[1]))
+	f.SetCellValue(offeringDiarySheetName, "A12", fmt.Sprintf("1부: %s\n2부: %s", titheOfferingName[0], titheOfferingName[1]))
 	f.SetCellValue(offeringDiarySheetName, "A13", fmt.Sprintf("1부: %s\n2부: %s", thanksOfferingName[0], thanksOfferingName[1]))
 	f.SetCellValue(offeringDiarySheetName, "A14", fmt.Sprintf("1부: %s\n2부: %s", seasonalOfferingName[0], seasonalOfferingName[1]))
 	f.SetCellValue(offeringDiarySheetName, "A15", fmt.Sprintf("1부: %s\n2부: %s", etcOfferingName[0], etcOfferingName[1]))

@@ -9,12 +9,12 @@ import (
 
 // save attendance information into database
 func PostAttendanceInfo(c *gin.Context) {
-	var attendanceDiarys []models.AttendanceDiary
-	if err := c.Bind(&attendanceDiarys); err != nil {
+	var attendanceDiaries []models.AttendanceDiary
+	if err := c.Bind(&attendanceDiaries); err != nil {
 		fmt.Println("Error in json bind: post attendance diary ", err)
 	}
 
-	for _, attendanceDiary := range attendanceDiarys {
+	for _, attendanceDiary := range attendanceDiaries {
 		attendanceDiary.SaveAttendanceDiary()
 	}
 }
