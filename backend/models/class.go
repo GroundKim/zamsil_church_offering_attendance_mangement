@@ -14,10 +14,11 @@ type Department struct {
 }
 
 type Class struct {
-	ID           int
-	Name         string    `gorm:"not null;"`
-	DepartmentID int       `gorm:"not null;"`
-	CreatedAt    time.Time `gorm:"not null;"`
+	ID           int       `json:"classId"`
+	Name         string    `gorm:"not null;" json:"name"`
+	DepartmentID int       `gorm:"not null;" json:"departmentId"`
+	CreatedAt    time.Time `gorm:"not null;" json:"createdAt"`
+	UpdatedAt    time.Time `gorm:"not null;" json:"updatedAt"`
 }
 
 func GetClasses(classes *[]Class) (err error) {

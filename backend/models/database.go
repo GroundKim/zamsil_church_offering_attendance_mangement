@@ -41,6 +41,7 @@ func Migrate(db *gorm.DB) {
 		AttendanceDiary{},
 		User{},
 		AuthToken{},
+		AbsenceDiary{},
 	)
 	fmt.Println("Auto Migration has been excuted")
 }

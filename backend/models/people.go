@@ -49,6 +49,7 @@ func SaveStudents(students []Student) (err error) {
 	for _, student := range students {
 		if err = DB.Create(&student).Error; err != nil {
 			fmt.Println("Error in SaveStudent")
+			return err
 		}
 	}
 	return nil
@@ -66,6 +67,16 @@ func GetTeachers(teachers *[]Teacher) (err error) {
 	if err = DB.Find(teachers).Error; err != nil {
 		fmt.Println("Error in getAllTeacher")
 		return err
+	}
+	return nil
+}
+
+func SaveTeachers(teachers []Teacher) (err error) {
+	for _, teacher := range teachers {
+		if err = DB.Create(&teacher).Error; err != nil {
+			fmt.Println("error In SaveTeachers")
+			return err
+		}
 	}
 	return nil
 }

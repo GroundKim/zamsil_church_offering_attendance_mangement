@@ -15,6 +15,24 @@ type AttendanceDiary struct {
 	Student Student `gorm:"references:ID"`
 }
 
+type AbsenceDiary struct {
+	ID            int
+	StudentID     int       `gorm:"not null" json:"studentId"`
+	AbsentAt      time.Time `gorm:"not null; type:date" json:"absentAt"`
+	AbsenceTypeID int       `gorm:"not null;" json:"absenceTypeId"`
+	Reason        string    `json:"reason"`
+	CreatedAt     time.Time `gorm:"not null" sql:"DEFAULT:current_timestamp" json:"createdAt"`
+	CreatedBy     string    `gorm:"not null" json:"createdBy"`
+
+	Student     Student     `gorm:"references:ID"`
+	AbsenceType AbsenceType `gorm:"references:ID"`
+}
+
+type AbsenceType struct {
+	ID   int
+	Name string
+}
+
 func (attendanceDiary *AttendanceDiary) SaveAttendanceDiary() {
 	DB.Create(&attendanceDiary)
 }
@@ -53,4 +71,8 @@ func GetAttendanceViewByYear(AttendanceDiaries *[]AttendanceDiary, date time.Tim
 
 func (AttendanceDiary) TableName() string {
 	return "attendance_diary"
+}
+
+func (AbsenceDiary) TableName() string {
+	return "absence_diary"
 }
