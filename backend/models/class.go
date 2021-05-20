@@ -6,9 +6,9 @@ import (
 )
 
 type Department struct {
-	ID           int
-	DepartmentID int       `gorm:"not null;"`
-	CreatedAt    time.Time `gorm:"not null;"`
+	ID             int
+	DepartmentName int       `gorm:"not null;"`
+	CreatedAt      time.Time `gorm:"not null;"`
 
 	Classes []Class `gorm:"foreignKeys:DepartmentID"`
 }

@@ -67,25 +67,17 @@
                 >
                   <v-icon dark> mdi-pencil-outline </v-icon>
                 </v-btn>
-
-                <v-btn
-                  class="mx-2"
-                  fab
-                  outlined
-                  small
-                  color="blue-grey"
-                  @click="deleteOffering()"
-                >
-                  <v-icon dark> mdi-trash-can-outline </v-icon>
-                </v-btn>
               </div>
 
               <v-divider class="mt-5 mb-5"></v-divider>
 
               <component
-                v-for="(item, i) in offerings"
-                :key="i"
-                :is="item"
+                v-for="(offering, index) in offerings"
+                :is="offering.type"
+                :key="index"
+                :offeringId="offering.offeringId"
+                :postTrigger="postTrigger"
+                @delete="deleteOffering"
               ></component>
             </v-card-text>
 
@@ -97,6 +89,7 @@
                 rounded
                 outlined
                 x-large
+                
               >
                 제출
               </v-btn>
@@ -110,11 +103,10 @@
 </template>
 
 <script>
-import SpecificOfferingInput from "./SpecificOfferingInput";
+import SpecificOfferingInput from './SpecificOfferingInput'
 
-import axios from "axios";
-import moment from "moment";
-
+import moment from "moment"
+import axios from'axios'
 export default {
   name: "OfferingInput",
   components: {
@@ -127,12 +119,13 @@ export default {
     modal: false,
     menu2: false,
     departmentId: null,
-    studentData: [],
     departmentsLabel: ["1부", "2부"],
     weekOfferingCost: null,
     createdBy: null,
-    students: [],
     offerings: [],
+    offeringCount: 0,
+    students: [],
+    postTrigger: 0,
 
     rules: {
       required: (value) => !!value || "Required.",
@@ -144,134 +137,118 @@ export default {
   }),
 
   methods: {
+    // sendPost
     sendPost: async function() {
-      let specificOfferingPayload = await this.$store.getters.getOfferingPayload
-      console.log(specificOfferingPayload)
-
-      this.date += moment().format().substr(10);
-      let hasPostError = false;
-      
+      let offeringPayload = []
       let weekOfferingPayload = {
         studentId: null,
         offeringTypeId: 1,
         offeringCost: parseInt(this.weekOfferingCost),
-        departmentId: parseInt(this.departmentId),
-        offeredAt: this.date,
+        // departmentId: parseInt(this.departmentId),
+        offeredAt: this.date + moment().format().substr(10),
         createdAt: moment().format(),
         createdBy: this.createdBy,
-      };
-
-      await specificOfferingPayload.push(weekOfferingPayload);
-      console.log(JSON.stringify(specificOfferingPayload))
-      console.log("payload finished")
-
-      const headers = {
-        "Content-Type": "application/json",
-      };
-      await axios
-        .post(
-          `${this.$serverAddress}/Youth/offering`,
-          JSON.stringify(specificOfferingPayload),
-          { withCredentials: true, headers: headers }
-        )
-        .then(() => {
-          alert("등록 완료!");
-          this.$store.commit("deleteSpecificOffering");
-        })
-        .catch((err) => {
-          let errStatusCode = err.response.status;
-          if (errStatusCode === 404) {
-            alert(err.message + ": 등록중 오류 발생 관리자에게 문의하십시오");
-          }
-
-          if (errStatusCode === 403) {
-            alert("로그인을 해주세요");
-            this.$router.push("/login");
-          }
-          hasPostError = true;
-          this.$store.commit("deleteSpecificOffering");
-        });
-
-      if (!hasPostError) {
-        window.location.reload();
       }
+      
+      this.postTrigger++
+      offeringPayload.push(weekOfferingPayload)
+      console.log(JSON.stringify(this.$store.getters.getOfferingPayloads))
+      // set header for JSON post
+      // const headers = {
+      //  'content-type': 'application/json' 
+      // }
+
+      // axios post
+      // await axios
+      //   .post(
+      //     `${this.$serverAddress}/Youth/offering`,
+      //     JSON.stringify(offeringPayload),
+      //     { withCredentials: true, headers: headers}
+      //   )
+      //   .then(() => {
+      //     alert('등록완료')
+      //   })
+      //   .catch((err) => {
+      //     this.alertError(err)
+      //   })
     },
 
-    addOffering() {
-      // child id
-      this.$store.commit('addOffering');
-      this.offerings.push("SpecificOfferingInput");
+    // add offering component
+    addOffering: function () {
+      this.offeringCount++
+      this.offerings.push({
+        'type': SpecificOfferingInput,
+        offeringId: this.offeringCount
+      })
+
     },
 
-    deleteOffering() {
-      this.offerings.pop();
+    deleteOffering(id) {
+      let index = this.offerings.findIndex(o => o.offeringId == id)
+      this.offerings.splice(index, 1)
+    }
+  },
+
+  computed: {
+    getDeleteOfferingId: function () {
+      return this.$store.getters.getDeleteOfferingId
     },
 
-    setStudents: async function () {
-      let getURL = `${this.$serverAddress}/Youth/students?department_id=${this.departmentId}`;
-      await axios
-        .get(getURL, { withCredentials: true })
-        .then((response) => {
-          this.$store.commit("setStudents", response.data);
-        })
-        .catch((err) => {
-          alert(
-            err.message +
-              " 학생정보를 불러오는 도중 오류가 발생했습니다 관리자에게 문의하십시오"
-          );
-        });
-    },
-
-    setOfferingType: async function () {
-      let getURL = `${this.$serverAddress}/Youth/offering/type`;
-      await axios
-        .get(getURL, { withCredentials: true })
-        .then((response) => {
-          this.$store.commit("setOfferingType", response.data)
-        })
-        .catch((err) => {
-          alert(
-            err.message +
-              " offeriny type을 불러오는 도중 오류가 발생했습니다. 관리자에게 문의하십시오"
-          );
-        });
-    },
-
-    setCreatedBy() {
-      this.$store.commit("setCreatedBy", this.createdBy);
-    },
-
-    setOfferedAt() {
-      this.$store.commit("setOfferedAt", this.date);
-    },
-
-    setDepartmentId() {
-      this.$store.commit("setDepartmentId", this.departmentId);
-    },
   },
 
   watch: {
-    departmentId: async function () {
-      await this.setStudents();
-      await this.setDepartmentId();
-    },
-
-    createdBy: function () {
-      this.setCreatedBy();
+    departmentId: function () {
+      this.$store.commit('setDepartmentId', this.departmentId)
     },
 
     date: function () {
-      this.setOfferedAt();
+      this.$store.commit('setOfferedAt', this.date)
     },
-  },
 
-  async created() {
-    this.departmentId = '1';
-    await this.$store.commit("changeHeaderName", "헌금 기입");
-    await this.setStudents();
-    await this.setOfferingType();
-    this.setOfferedAt();
-    this.offerings.push("SpecificOfferingInput");
+    createdBy: function () {
+      this.$store.commit('setCreatedBy', this.createdBy)
+    }
+
   },
-};
+  
+  created: async function () {
+    // get offering Type
+    await axios
+      .get(`${this.$serverAddress}/Youth/offering/type`, { withCredentials: true})
+      .then((res) => {
+        this.$store.commit('setOfferingType', res.data)
+      })
+      .catch((err) => {
+        this.alertError(err)
+      })
+
+    // get all students
+    await axios
+      .get(`${this.$serverAddress}/Youth/students`, { withCredentials: true })
+      .then((res) => {
+        this.students = res.data
+      })
+      .catch((err) => {
+        this.alertError(err)
+      })
+
+    //split students into department 1 and 2
+    await this.students.forEach(student => {
+      if (student.departmentId === 1) {
+        this.$store.commit('pushDepartmentOneStudent', student)
+      }
+
+      if (student.departmentId === 2) {
+        this.$store.commit('pushDepartmentTwoStudent', student)
+      }
+    });
+
+    this.departmentId = '1'
+    this.offerings.push({
+      'type':SpecificOfferingInput,
+      offeringId: this.offeringCount
+      })
+    
+  }
+}
 </script>

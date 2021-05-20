@@ -7,13 +7,13 @@ import (
 
 type OfferingDiary struct {
 	ID             int
-	StudentID      *int      `json:"studentId"`
-	OfferingTypeID int       `gorm:"not null;" json:"offeringTypeId"`
-	DepartmentID   int       `gorm:"not null;" json:"departmentId"`
-	Cost           int       `gorm:"not null;" json:"offeringCost"`
-	OfferedAt      time.Time `gorm:"not null; type:date" json:"offeredAt"`
-	CreatedAt      time.Time `gorm:"not null;" json:"createdAt"`
-	CreatedBy      string    `gorm:"not null;" json:"createdBy"`
+	StudentID      *int `json:"studentId"`
+	OfferingTypeID int  `gorm:"not null;" json:"offeringTypeId"`
+	// DepartmentID   int       `gorm:"not null;" json:"departmentId"`
+	Cost      int       `gorm:"not null;" json:"offeringCost"`
+	OfferedAt time.Time `gorm:"not null; type:date" json:"offeredAt"`
+	CreatedAt time.Time `gorm:"not null;" json:"createdAt"`
+	CreatedBy string    `gorm:"not null;" json:"createdBy"`
 
 	Student      Student      `gorm:"references:ID"`
 	OfferingType OfferingType `gorm:"references:ID"`
@@ -25,20 +25,20 @@ type OfferingType struct {
 	OfferingTypeName string `gorm:"not null;" json:"offeringName"`
 }
 
-func GetOfferingDiaryByDate(offeringDiarys *[]OfferingDiary, date time.Time) (err error) {
+func GetOfferingDiaryByDate(offeringDiaries *[]OfferingDiary, date time.Time) (err error) {
 	theDay := date.Format("2006-01-02 ") + "00:00:00"
 	theDayRange := theDay[0:11] + "23:59:59"
-	if err = DB.Preload("OfferingType").Preload("Student").Where("offered_at BETWEEN ? AND ?", theDay, theDayRange).Find(&offeringDiarys).Error; err != nil {
+	if err = DB.Preload("OfferingType").Preload("Student").Where("offered_at BETWEEN ? AND ?", theDay, theDayRange).Find(&offeringDiaries).Error; err != nil {
 		fmt.Println("Error in get Offering Diary by date")
 		return err
 	}
 	return nil
 }
 
-func GetOfferingDiaryByYear(offeringDiarys *[]OfferingDiary, date time.Time) (err error) {
+func GetOfferingDiaryByYear(offeringDiaries *[]OfferingDiary, date time.Time) (err error) {
 	theYear := date.Format("2006-01-02 ") + "00:00:00"
 	theYearRange := theYear[0:4] + "-12-31 11:59:59"
-	if err = DB.Preload("OfferingType").Preload("Student").Where("offered_at BETWEEN ? AND ?", theYear, theYearRange).Find(&offeringDiarys).Error; err != nil {
+	if err = DB.Preload("OfferingType").Preload("Student").Where("offered_at BETWEEN ? AND ?", theYear, theYearRange).Find(&offeringDiaries).Error; err != nil {
 		fmt.Println("Error in get Offering Diary by date")
 		return err
 	}

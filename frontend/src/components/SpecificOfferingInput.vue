@@ -5,9 +5,9 @@
         v-model="offeringTypeValue"
         label="종류"
         :items="offeringType"
-        item-text="offeringName"
         required
-        return-object
+        item-text="offeringName"
+        item-value="offeringTypeId"
       ></v-autocomplete>
     </v-col>
 
@@ -16,9 +16,9 @@
         v-model="offerorId"
         label="이름"
         :items="students"
-        item-text="name"
         required
-        return-object
+        item-text="name"
+        item-value="studentId"
       ></v-autocomplete>
     </v-col>
 
@@ -30,21 +30,35 @@
         :rules="[rules.offering]"
       ></v-text-field>
     </v-col>
+    <div class="ma-auto">
+      <v-btn
+        fab
+        outlined
+        small
+        color="red"
+        @click="deleteOffering(offeringId)"
+      >
+        <v-icon dark> mdi-trash-can-outline </v-icon>
+      </v-btn>
+    </div>
+    {{offeringId}}
   </v-row>
 </template>
 
 <script>
-import moment from 'moment'
 
+import moment from 'moment'
 export default {
   name: 'SpecificOfferingInput',
+  props: ['offeringId', 'postTrigger'],
   data: () => ({
-    id: null,
-    offeringType: [], //... backend 서버에서 get offering type
+    offeringType: [],
     offeringTypeValue: null,
     offerorId: null,
     offeringCost: null,
     students: null,
+    departmentId: null,
+    offeringPayload: {},
 
     rules: {
       offering: value => {
@@ -53,85 +67,72 @@ export default {
       }  
     }
   }),
-  
-  methods: {
-    updatePayload: function() {
-      let offeringPayload = {
-        id: this.id,
-        studentId: this.offerorId['studentId'],
-        offeringTypeId: this.offeringTypeValue['offeringTypeId'],
-        offeringCost: parseInt(this.offeringCost),
-      }
-
-      this.$store.commit('updateOffering', offeringPayload)
-      console.log(JSON.stringify(this.$store.getters.getOfferingPayload))
-      console.log("push finished")
-    },
-
-    // sendPost: async function() {
-    //   let payload = []
-    //   payload.push(await this.makePayload())
-    //   console.log(JSON.stringify(payload))
-    //   const headers = {
-    //     "Content-Type": "application/json",
-    //   }
-    //   axios.post(
-    //     `${this.$serverAddress}/Youth/offering`,
-    //     JSON.stringify(payload),
-    //     {withCredentials: true, headers: headers}
-    //   )
-    //   .then()
-    //   .catch((err) => {
-    //     this.$store.commit('addOfferingError', err)
-    //   })
-    // }
-  },
 
   computed: {
-    // cannot use with method, not a computed because update cycle is not proccessed in methods
-    getStudents() {
-      return this.$store.getters.getStudents
+    getDepartmentId() {
+      return this.$store.getters.getDepartmentId
     },
 
-    getPostTrigger() {
-      return this.$store.getters.getPostTrigger
+    getOfferedAt() {
+      return this.$store.getters.getOfferedAt
+    }
+  },
+
+  methods: {
+    deleteOffering: function (offeringId) {
+      this.$emit('delete', offeringId)
+
     }
   },
 
   watch: {
-    getStudents() {
-      this.students = this.$store.getters.getStudents
+    getDepartmentId: function () {
+      let departmentId = this.getDepartmentId
+      // it doesn't look so good
+      if (departmentId == 1) this.students = this.$store.getters.getDepartmentOneStudents
+      if (departmentId == 2) this.students = this.$store.getters.getDepartmentTwoStudents
+      
     },
 
-    offerorId: function () {
-      this.updatePayload()
+    postTrigger: function () {
+      this.offeringPayload = {
+        studentId: null,
+        offeringTypeId: null,
+        offeringCost: null,
+        offeredAt: this.$store.getters.getOfferedAt,
+        createdAt: moment().format(),
+        createdBy: this.$store.getters.getCreatedBy,
+      }
+      this.$store.commit('pushOfferingPayload', this.offeringPayload)
     },
-    offeringTypeValue: function () {
-      this.updatePayload()
+
+    getOfferedAt: function () {
+      
     },
-    offeringCost: function () {
-      this.updatePayload()
+
+    offeringTypeValue: function() {
+    },
+
+    offerorId: function() {
+    },
+
+    offeringCost: function() {
     }
+
+
   },
 
   created() {
-    this.id = this.$store.getters.getOfferingId
-    this.students = this.$store.getters.getStudents
-    console.log(JSON.stringify(this.students))
     this.offeringType = this.$store.getters.getOfferingType
+    this.departmentId = this.getDepartmentId
+    
 
-    let offeringPayload = {
-      id: this.id,
-      studentId: null,
-      offeringTypeId: null,
-      offeringCost: null,
-      departmentId: parseInt(this.$store.getters.getDepartmentId),
-      offeredAt: this.$store.getters.getOfferedAt + moment().format().substr(10),
-      createdAt: moment().format(),
-      createdBy: this.$store.getters.getCreatedBy,
-    }
+    // it doesn't look so good
+    if (this.departmentId == 1) this.students = this.$store.getters.getDepartmentOneStudents
+    if (this.departmentId == 2) this.students = this.$store.getters.getDepartmentTwoStudents
+    
 
-    this.$store.dispatch('pushOffering', offeringPayload)
-  },
+  }
+  
 }
 </script>

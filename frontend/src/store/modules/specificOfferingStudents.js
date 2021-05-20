@@ -1,53 +1,78 @@
 const state = {
     students: null,
     offeringType: [],
-    payloadStudents: [],
-    payloadOfferings: {},
+    offeringPayloads: [],
     sendPost: false,
     offeredAt: null,
     createdBy: null,
     departmentId: null,
-    isFinishedMakingPayload: false,
-    postTrigger: 0,
-    offeringError: [],
-    countOfferings: 0,
+    departmentOneStudents: [],
+    departmentTwoStudents: [],
+
+    offeringId: 0,
+    deleteOfferingId: null,
 }
 
 const mutations = {
-    setStudents(state, newStudents) {
+    //
+    setStudents (state, newStudents) {
         state.students = newStudents
     },
 
-    setOfferingType(state, newOfferingType) {
-        state.offeringType = newOfferingType
+    //
+    setOfferingId (state, offeringId) {
+        state.offeringId = offeringId
     },
 
-    setCreatedBy(state, createdBy) {
-        state.createdBy = createdBy
+    //
+    setOfferingType (state, offeringType) {
+        state.offeringType = offeringType
+    },
+    
+    //
+    setDepartmentId (state, departmentId) {
+        state.departmentId = departmentId
     },
 
-    setOfferedAt(state, offeredAt) {
+    //
+    setDeleteOfferingId (state, offeringId) {
+        state.deleteOfferingId = offeringId
+    },
+
+    //
+    pushDepartmentOneStudent (state, student) {
+        state.departmentOneStudents.push(student)
+    },
+    
+    //
+    pushDepartmentTwoStudent (state, student) {
+        state.departmentTwoStudents.push(student)
+    },
+    
+    //
+    setOfferedAt (state, offeredAt) {
         state.offeredAt = offeredAt
     },
 
-    setDepartmentId(state, departmentId) {
-        state.departmentId = departmentId
+    updateOffering (state, newOffering) {
+        state.offeringPayloads[newOffering.id].studentId = newOffering.studentId
+        state.offeringPayloads[newOffering.id].offeringTypeId = newOffering.offeringTypeId
+        state.offeringPayloads[newOffering.id].offeringCost = newOffering.offeringCost
+    },
+    
+    setCreatedBy(state, createdBy) {
+        state.createdBy = createdBy
     },
     
     pushStudent(state, student) {
         state.payloadStudents.push(student)
     },
 
-    pushOffering (state, newOffering) {
-        state.payloadOfferings[newOffering.id] = newOffering
+    //
+    pushOfferingPayload (state, offeringPayload) {
+        state.offeringPayloads.push(offeringPayload)
     },
 
-    updateOffering (state, newOffering) {
-        state.payloadOfferings[newOffering.id].studentId = newOffering.studentId
-        state.payloadOfferings[newOffering.id].offeringTypeId = newOffering.offeringTypeId
-        state.payloadOfferings[newOffering.id].offeringCost = newOffering.offeringCost
-    },
-    
     deleteSpecificOffering(state) {
         state.payloadOfferings = []
     },
@@ -66,7 +91,8 @@ const mutations = {
 
     addOfferingError(state, error) {
         state.offeringError.push(error)
-    }
+    },
+
 }
 
 const actions = {
@@ -94,32 +120,44 @@ const getters = {
         return state.createdBy
     },
 
-    getOfferingPayload(state) {
-        return state.payloadOfferings
-    },
-
-    getOfferingType(state) {
+    //
+    getOfferingType (state) {
         return state.offeringType
     },
+
+    //
+    getOfferedAt (state) {
+        return state.offeredAt
+    },
     
-    getDepartmentId(state) {
+    //
+    getDepartmentId (state) {
         return state.departmentId
     },
 
-    getOfferedAt(state) {
-        return state.offeredAt
+    // 
+    getOfferingId (state) {
+        return state.offeringId
     },
 
-    getIsFinishedMakingPayload(state) {
-        return state.isFinishedMakingPayload
+    //
+    getDeleteOfferingId (state) {
+        return state.deleteOfferingId
     },
 
-    getPostTrigger(state) {
-        return state.postTrigger
+    //
+    getDepartmentOneStudents (state) {
+        return state.departmentOneStudents
     },
 
-    getOfferingId(state) {
-        return state.countOfferings
+    //
+    getDepartmentTwoStudents (state) {
+        return state.departmentTwoStudents
+    },
+
+    //
+    getOfferingPayloads (state) {
+        return state.offeringPayloads
     }
 
 }
