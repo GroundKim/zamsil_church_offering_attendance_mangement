@@ -51,6 +51,7 @@
               <v-text-field
                 v-model="weekOfferingCost"
                 label="주일헌금"
+                prefix="₩"
                 :rules="[rules.offering, rules.required]"
                 required
               >
@@ -88,14 +89,12 @@
                 rounded
                 outlined
                 x-large
-                
               >
                 제출
               </v-btn>
             </v-card-actions>
           </v-card>
         </form>
-        <!--<span>{{ departmentId }}</span>-->
       </v-flex>
     </v-layout>
   </v-container>
@@ -129,8 +128,8 @@ export default {
     rules: {
       required: (value) => !!value || "Required.",
       offering: (value) => {
-        const pattern = /^[0-9]+$/;
-        return pattern.test(value);
+        const pattern = /^[0-9]+$/
+        return pattern.test(value)
       },
     },
   }),
@@ -142,7 +141,7 @@ export default {
       let weekOfferingPayload = {
         studentId: null,
         offeringTypeId: 1,
-        offeringCost: parseInt(this.weekOfferingCost),
+        offeringCost: parseInt(this.weekOfferingCost.replace(',','')),
         departmentId: parseInt(this.departmentId),
         offeredAt: this.date + moment().format().substr(10),
         createdAt: moment().format(),
@@ -169,6 +168,7 @@ export default {
         )
         .then(() => {
           alert('등록완료')
+          location.reload()
         })
         .catch((err) => {
           this.alertError(err)
@@ -212,6 +212,11 @@ export default {
       this.$store.commit('setCreatedBy', this.createdBy)
     },
 
+    weekOfferingCost: function(newValue) {
+      const result = newValue.replace(/\D/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+      this.$nextTick(() => this.weekOfferingCost = result)
+    }
+
   },
   
   created: async function () {
@@ -244,8 +249,8 @@ export default {
       if (student.departmentId === 2) {
         this.$store.commit('pushDepartmentTwoStudent', student)
       }
-    });
-    // store offeredAt in vuex with proper date formate for server; asking Len
+    })
+    // store offeredAt in vuex with proper date formate for server asking Len
     this.$store.commit('setOfferedAt', this.date + moment().format().substr(10))
     this.departmentId = '1'
     this.offerings.push({

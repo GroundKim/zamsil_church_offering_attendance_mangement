@@ -25,7 +25,8 @@
     <v-col class="py-0">
       <v-text-field
         v-model="offeringCost"
-        label ="금액" 
+        label ="금액"
+        prefix="₩"
         required
         :rules="[rules.offering]"
       ></v-text-field>
@@ -130,8 +131,10 @@ export default {
       this.$store.commit('updateOfferingPayload', this.offeringPayload)
     },
 
-    offeringCost: function() {
-      this.offeringPayload.offeringCost = parseInt(this.offeringCost)
+    offeringCost: function(newValue) {
+      const result = newValue.replace(/\D/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+      this.$nextTick(() => this.offeringCost = result)
+      this.offeringPayload.offeringCost = parseInt(this.offeringCost.replace(',', ''))
       this.$store.commit('updateOfferingPayload', this.offeringPayload)
     }
   },
