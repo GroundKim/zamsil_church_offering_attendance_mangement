@@ -10,6 +10,7 @@ import (
 )
 
 func SaveOfferingViewExcel(date time.Time) {
+	// EXCEL
 	f := excelize.NewFile()
 	var offeringDiaries []models.OfferingDiary
 	var createdBys []string
@@ -27,11 +28,16 @@ func SaveOfferingViewExcel(date time.Time) {
 			createdBys = append(createdBys, offeringDiaries[i].CreatedBy)
 		}
 	}
-	offeringDiarySheetName := date.Format("2006-01-12") + "_헌금통계표"
+	offeringDiarySheetName := date.Format("2006-01-02") + "_헌금통계표"
 	index := f.NewSheet(offeringDiarySheetName)
 
+	// EXCEL style
+	titleStyle, _ := f.NewStyle(`{"font":{"bold":true} }`)
+	f.SetCellStyle(offeringDiarySheetName, "A1", "A1", titleStyle)
+
+	// EXCEL UI
 	f.SetCellValue(offeringDiarySheetName, "A1", offeringDiarySheetName)
-	f.SetCellValue(offeringDiarySheetName, "A2", fmt.Sprintf("작성자: %s", strings.Join(createdBys, ",")))
+	f.SetCellValue(offeringDiarySheetName, "A2", fmt.Sprintf("작성자: %s", strings.Join(createdBys, ", ")))
 	f.SetCellValue(offeringDiarySheetName, "A3", ("열람 날짜 " + date.Format("2006-01-02")))
 	f.MergeCell(offeringDiarySheetName, "A1", "D1")
 	f.MergeCell(offeringDiarySheetName, "A2", "D2")
@@ -148,10 +154,10 @@ func SaveOfferingViewExcel(date time.Time) {
 	f.MergeCell(offeringDiarySheetName, "A14", "D14")
 	f.MergeCell(offeringDiarySheetName, "A15", "D15")
 
-	f.SetCellValue(offeringDiarySheetName, "A12", fmt.Sprintf("1부: %s\n2부: %s", titheOfferingName[0], titheOfferingName[1]))
-	f.SetCellValue(offeringDiarySheetName, "A13", fmt.Sprintf("1부: %s\n2부: %s", thanksOfferingName[0], thanksOfferingName[1]))
-	f.SetCellValue(offeringDiarySheetName, "A14", fmt.Sprintf("1부: %s\n2부: %s", seasonalOfferingName[0], seasonalOfferingName[1]))
-	f.SetCellValue(offeringDiarySheetName, "A15", fmt.Sprintf("1부: %s\n2부: %s", etcOfferingName[0], etcOfferingName[1]))
+	f.SetCellValue(offeringDiarySheetName, "A12", fmt.Sprintf("십일조헌금: 1부: %s\n2부: %s", titheOfferingName[0], titheOfferingName[1]))
+	f.SetCellValue(offeringDiarySheetName, "A13", fmt.Sprintf("감사헌금 1부: %s\n2부: %s", thanksOfferingName[0], thanksOfferingName[1]))
+	f.SetCellValue(offeringDiarySheetName, "A14", fmt.Sprintf("절기헌금 1부: %s\n2부: %s", seasonalOfferingName[0], seasonalOfferingName[1]))
+	f.SetCellValue(offeringDiarySheetName, "A15", fmt.Sprintf("기타헌금 1부: %s\n2부: %s", etcOfferingName[0], etcOfferingName[1]))
 
 	// 주일헌금 + 십일조 + 감사헌금 + 절기헌금 + 기타헌금 / 합계
 
