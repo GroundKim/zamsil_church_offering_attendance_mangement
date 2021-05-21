@@ -37,7 +37,7 @@ func (a *attendanceInfo) CountAttendanceByClass(departmentID int, className stri
 
 	for _, student := range students {
 		for _, diary := range diaries {
-			if student.Name == diary.Student.Name {
+			if student.ID == diary.Student.ID {
 				a.attendance++
 			}
 		}
@@ -50,7 +50,7 @@ func SaveAttendaceViewExcel(date time.Time) {
 
 	// get attendanceDiaries from DB
 	var attendanceDiaries []models.AttendanceDiary
-	models.GetAttendanceViewByDate(&attendanceDiaries, date)
+	models.GetAttendanceViewByDateWithoutDuplicatedStudentID(&attendanceDiaries, date)
 
 	var classesDepartmentOne []models.Class
 	models.GetClassesByDepartment(&classesDepartmentOne, 1)
@@ -88,17 +88,23 @@ func SaveAttendaceViewExcel(date time.Time) {
 		}
 	}
 
-	/* #region EXCEL ui */
+	/* #region EXCEL */
 	f := excelize.NewFile()
-
 	attendanceDiarySheetName := date.Format("2006-01-02") + "_출석부"
 	index := f.NewSheet(attendanceDiarySheetName)
+	now := time.Now()
+
+	// excelize style
+	titleStyle, _ := f.NewStyle(`{"font":{"bold":true} }`)
+	f.SetCellStyle(attendanceDiarySheetName, "A1", "A1", titleStyle)
+
+	// EXCEL UI
 
 	f.SetActiveSheet(index)
 
 	f.SetCellValue(attendanceDiarySheetName, "A1", attendanceDiarySheetName)
 
-	f.SetCellValue(attendanceDiarySheetName, "A4", fmt.Sprintf("%d년 %d월 %d일", date.Year(), int(date.Month()), date.Day()))
+	f.SetCellValue(attendanceDiarySheetName, "A4", fmt.Sprintf("열람 날짜: %d년 %d월 %d일", now.Year(), int(now.Month()), now.Day()))
 
 	f.SetCellValue(attendanceDiarySheetName, "A5", "출석통계")
 	f.SetCellValue(attendanceDiarySheetName, "A6", "작성자: "+strings.Join(createdBys, ", "))
@@ -147,12 +153,16 @@ func SaveAttendaceViewExcel(date time.Time) {
 		lastColumn = lastDepartmetTwoColumn
 	}
 
-	f.SetCellValue(attendanceDiarySheetName, fmt.Sprintf("A%d", lastColumn+10), "1부 소계: ")
+	f.SetCellValue(attendanceDiarySheetName, fmt.Sprintf("A%d", lastColumn+10), "1부 총 출석: ")
 	f.SetCellValue(attendanceDiarySheetName, fmt.Sprintf("B%d", lastColumn+10), fmt.Sprintf("%d 명", totalDepartmentOneAttendance))
 
-	f.SetCellValue(attendanceDiarySheetName, fmt.Sprintf("H%d", lastColumn+10), "2부 소계: ")
+	f.SetCellValue(attendanceDiarySheetName, fmt.Sprintf("H%d", lastColumn+10), "2부 총 출석: ")
 	f.SetCellValue(attendanceDiarySheetName, fmt.Sprintf("I%d", lastColumn+10), fmt.Sprintf("%d 명", totalDepartmentTwoAttendance))
 	/* #endregion */
+
+	// excel design
+	f.SetColWidth(attendanceDiarySheetName, "A", "A", 20)
+	f.SetColWidth(attendanceDiarySheetName, "H", "H", 20)
 
 	if err := f.SaveAs("data/attendanceDiary/excel/" + date.Format("2006-01-02") + ".xlsx"); err != nil {
 		fmt.Println("error in saving excel: ", err)
