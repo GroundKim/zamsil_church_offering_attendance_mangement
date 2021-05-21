@@ -39,6 +39,6 @@
 
 <style scoped>
 .v-footer {
-  border-top: 1px solid #f5f5f5;
+  border-top: 1px solid #f5f5f5
 }
 </style>

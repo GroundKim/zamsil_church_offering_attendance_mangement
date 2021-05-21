@@ -110,8 +110,8 @@
 </template>
 
 <script>
-import axios from "axios";
-import moment from "moment";
+import axios from "axios"
+import moment from "moment"
 
 export default {
   data() {
@@ -129,23 +129,23 @@ export default {
       absentStudents: [],
 
       test: process.env.VUE_APP_SERVERADDRESS,
-    };
+    }
   },
   methods: {
     sendPost() {
-      let payload = [];
-      this.date += moment().format().substr(10);
+      let payload = []
+      this.date += moment().format().substr(10)
       this.attendedStudents.forEach((element) => {
         let data = {
           studentId: element,
           attendedAt: this.date,
           createdBy: this.createdBy,
-        };
-        payload.push(data);
-      });
+        }
+        payload.push(data)
+      })
       const headers = {
         "Content-Type": "application/json",
-      };
+      }
 
       axios
         .post(
@@ -154,48 +154,33 @@ export default {
           { withCredentials: true, headers: headers }
         )
         .then(() => {
-          alert("등록 완료!");
-          location.reload();
+          alert("등록 완료!")
+          location.reload()
         })
         .catch((err) => {
-          alert(err.message + " 등록중 오류 발생 관리자에게 문의하십시오");
-        });
+          this.alertError(err)
+        })
     },
   },
 
   watch: {
     department: function () {
-      let getURL = `${this.$serverAddress}/Youth/attendances?department_id=${this.department}`;
+      let getURL = `${this.$serverAddress}/Youth/attendances?department_id=${this.department}`
       axios
         .get(getURL, { withCredentials: true })
         .then((response) => {
-          this.attendanceData = response.data;
+          this.attendanceData = response.data
         })
         .catch((err) => {
-          let errStatusCode = err.response.status;
-          if (errStatusCode === 404) {
-            alert(
-              err.message +
-                ": 출석부를 불러오는 도중 오류가 발생했습니다 관리자에게 문의하십시오"
-            );
-          }
-
-          if (errStatusCode === 403) {
-            alert("로그인을 해주세요");
-            this.$router.push("/login");
-          }
-        });
-    },
-
-    attendedStudents: function () {
-
+          this.alertError(err)
+        })
     },
   },
 
   created() {
-    this.$store.commit("changeHeaderName", "출석부 기입");
-    this.absentStudents = this.attendedStudents;
-    this.department = "1";
+    this.$store.commit("changeHeaderName", "출석부 기입")
+    this.absentStudents = this.attendedStudents
+    this.department = "1"
   },
-};
+}
 </script>

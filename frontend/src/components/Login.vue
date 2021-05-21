@@ -56,10 +56,7 @@ export default {
           }
         )
         .catch(err => {
-          if (err.response.status === 401) {
-            this.password = null
-            this.errorMessage = "잘못된 ID와 PASSWORD를 입력하였습니다"
-          }
+          this.alertError(err)
         })
     }
   },

@@ -81,15 +81,7 @@ export default {
         this.offeredAts = res.data.offeredAts
       })
       .catch(err => {
-        let errStatusCode = err.response.status
-        if (errStatusCode === 404) {
-          alert(err.message + ": 오류 발생 관리자에게 문의하십시오")
-        }
-
-        if (errStatusCode === 403) {
-          alert('로그인을 해주세요')
-          this.$router.push('/login')
-        }
+        this.alertError(err)
       })
     },
 
@@ -118,15 +110,7 @@ export default {
         link.click()
       })
       .catch(err => {
-        let errStatusCode = err.response.status
-        if (errStatusCode === 404) {
-          alert(err.message + ": 오류 발생 관리자에게 문의하십시오")
-        }
-
-        if (errStatusCode === 403) {
-          alert('로그인을 해주세요')
-          this.$router.push('/login')
-        }
+        this.alertError(err)
       })
     }
   },
