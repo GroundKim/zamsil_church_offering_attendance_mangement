@@ -21,7 +21,7 @@ func Login(conf *config.Config) gin.HandlerFunc {
 
 		if user.ValidateUser() {
 			token, _ := models.GenerateToken(conf)
-			c.SetCookie("auth_token", token, 60*60*24*31*3, "/", "localhost", false, false)
+			c.SetCookie("auth_token", token, 60*60*24*31*3, "/", "groundkim.com", false, false)
 
 			c.JSON(http.StatusOK, gin.H{
 				"token": token,
