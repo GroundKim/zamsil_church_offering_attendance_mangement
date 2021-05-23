@@ -82,7 +82,7 @@ func SaveTeachers(teachers []Teacher) (err error) {
 }
 
 func GetTeacherByClassNameAndDepartment(teachers *[]Teacher, departmentID int, className string) (err error) {
-	if err = DB.Joins("Class").Where("department_id = ?", departmentID).Find(teachers, "class.name="+"'"+className+"'").Error; err != nil {
+	if err = DB.Joins("Class").Where("department_id = ? AND Class.name = ?", departmentID, className).Find(teachers).Error; err != nil {
 		fmt.Println("Error in GetTeacherByClassName")
 		return err
 	}
@@ -90,7 +90,7 @@ func GetTeacherByClassNameAndDepartment(teachers *[]Teacher, departmentID int, c
 }
 
 func GetStudentByClassNameAndDepartment(students *[]Student, departmentID int, className string) (err error) {
-	if err = DB.Joins("Class").Where("department_id = ?", departmentID).Find(students, "class.name="+"'"+className+"'").Error; err != nil {
+	if err = DB.Joins("Class").Where("department_id = ? AND Class.name = ?", departmentID, className).Find(students).Error; err != nil {
 		fmt.Println("Error in GetStudentByClassName")
 		return err
 	}
