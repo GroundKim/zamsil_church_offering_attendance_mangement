@@ -57,7 +57,7 @@ export default {
     offeringTypeValue: null,
     offerorId: null,
     offeringCost: null,
-    students: null,
+    students: [],
     departmentId: null,
     offeringPayload: {
       offeringId: null,
@@ -72,7 +72,7 @@ export default {
 
     rules: {
       offering: value => {
-        const pattern = /^[0-9]+$/
+        const pattern = /^(\d+|\d{1,3}(,\d{3})*)(\.\d+)?$/
         return pattern.test(value)
       }  
     }
@@ -143,10 +143,14 @@ export default {
     this.offeringType = this.$store.getters.getOfferingType
     this.departmentId = this.getDepartmentId
     
+    this.students.push({
+      'studentId': null,
+      'name': '무명'
+    })
 
     // it doesn't look so good
-    if (this.departmentId == 1) this.students = this.$store.getters.getDepartmentOneStudents
-    if (this.departmentId == 2) this.students = this.$store.getters.getDepartmentTwoStudents
+    if (this.departmentId == 1) this.students = this.students.concat(this.$store.getters.getDepartmentOneStudents)
+    if (this.departmentId == 2) this.students = this.students.concat(this.$store.getters.getDepartmentTwoStudents)
 
     this.offeringPayload.offeringId = this.offeringId
     this.offeringPayload.departmentId = parseInt(this.$store.getters.getDepartmentId)

@@ -128,7 +128,7 @@ export default {
     rules: {
       required: (value) => !!value || "Required.",
       offering: (value) => {
-        const pattern = /^[0-9]+$/
+        const pattern = /^(\d+|\d{1,3}(,\d{3})*)(\.\d+)?$/
         return pattern.test(value)
       },
     },
