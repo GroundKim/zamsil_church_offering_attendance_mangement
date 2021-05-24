@@ -22,7 +22,17 @@ type Config struct {
 	CORS struct {
 		ALLOWORIGINS                  string `yaml:"ALLOWORIGINS"`
 		ACCESSCONTROLALLOWCREDENTIALS bool   `yaml:"ACCESSCONTROLALLOWCREDENTIALS"`
-	}
+	} `yaml:"CORS"`
+
+	COOKIE struct {
+		DOMAIN   string `yaml:"DOMAIN"`
+		SECURE   bool   `yaml:"SECURE"`
+		HTTPONLY bool   `yaml:"HTTPONLY"`
+	} `yaml:"COOKIE"`
+
+	GIN struct {
+		PORT string `yaml:"PORT"`
+	} `yaml:"GIN"`
 }
 
 // Read the config file from the current directory and marshal
