@@ -7,10 +7,10 @@ import (
 
 type Department struct {
 	ID             int
-	DepartmentName int       `gorm:"not null;"`
-	CreatedAt      time.Time `gorm:"not null;"`
+	DepartmentName int       `gorm:"not null;" json:"departmentName"`
+	CreatedAt      time.Time `gorm:"not null;" json:"createdAt"`
 
-	Classes []Class `gorm:"foreignKeys:DepartmentID"`
+	//Classes []Class `gorm:"foreignKeys:DepartmentID"`
 }
 
 type Class struct {
@@ -19,10 +19,12 @@ type Class struct {
 	DepartmentID int       `gorm:"not null;" json:"departmentId"`
 	CreatedAt    time.Time `gorm:"not null;" json:"createdAt"`
 	UpdatedAt    time.Time `gorm:"not null;" json:"updatedAt"`
+
+	Department Department `gorm:"references:ID"`
 }
 
 func GetClasses(classes *[]Class) (err error) {
-	if err = DB.Find(classes).Error; err != nil {
+	if err = DB.Preload("Department").Find(classes).Error; err != nil {
 		fmt.Println("Error in GetClasses")
 		return err
 	}
