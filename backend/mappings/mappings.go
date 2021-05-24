@@ -31,8 +31,12 @@ func CreateUrlMappings(conf *config.Config) {
 	Youth.GET("/attendance/view", controllers.GetAttendanceView)
 	Youth.GET("/attendance/view/excel", controllers.GetAttendanceExcel)
 
+	Youth.GET("/members", controllers.GetMembers)
+
 	Youth.GET("/students", controllers.GetStudents)
 	Youth.POST("/students", controllers.SaveStudents)
+
+	Youth.POST("/teachers", controllers.SaveTeachers)
 
 	Youth.GET("/offering/type", controllers.GetOfferingType)
 	Youth.POST("/offering", controllers.PostOffering)
