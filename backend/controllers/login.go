@@ -21,7 +21,8 @@ func Login(conf *config.Config) gin.HandlerFunc {
 
 		if user.ValidateUser() {
 			token, _ := models.GenerateToken(conf)
-			c.SetCookie("auth_token", token, 60*60*24*31*3, "/", "localhost", false, false)
+			domain := conf.COOKIE.DOMAIN
+			c.SetCookie("auth_token", token, 60*60*24*31*3, "/", domain, conf.COOKIE.SECURE, conf.COOKIE.HTTPONLY)
 
 			c.JSON(http.StatusOK, gin.H{
 				"token": token,
