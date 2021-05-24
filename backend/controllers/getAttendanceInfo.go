@@ -10,8 +10,8 @@ import (
 type attendanceInfo struct {
 	DepartmentID      int                `json:"departmentId"`
 	ClassName         string             `json:"className"`
-	TeachersName      []string           `json:"teacherName"`
-	StudentsIdAndName []studentIDAndName `json:"studentsIdandName"`
+	TeacherNames      []string           `json:"teacherName"`
+	StudentsIDAndName []studentIDAndName `json:"studentsIdandName"`
 }
 
 type studentIDAndName struct {
@@ -38,14 +38,14 @@ func GetAttendanceInfoByDepartment(c *gin.Context) {
 		attendance := &attendanceInfo{DepartmentID: departmentID, ClassName: class.Name}
 		for _, teacher := range teachers {
 			if class.ID == teacher.ClassID {
-				attendance.TeachersName = append(attendance.TeachersName, teacher.Name)
+				attendance.TeacherNames = append(attendance.TeacherNames, teacher.Name)
 			}
 		}
 
 		for _, student := range students {
 			if class.ID == student.ClassID {
 				idAndName := &studentIDAndName{student.ID, student.Name}
-				attendance.StudentsIdAndName = append(attendance.StudentsIdAndName, *idAndName)
+				attendance.StudentsIDAndName = append(attendance.StudentsIDAndName, *idAndName)
 			}
 		}
 
