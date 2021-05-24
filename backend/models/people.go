@@ -8,25 +8,27 @@ import (
 )
 
 type Student struct {
-	ID                int       `json:"studentId"`
-	Name              string    `gorm:"not null;" json:"name"`
-	ClassID           int       `gorm:"not null;" json:"classId"`
-	CreatedAt         time.Time `gorm:"not null;" json:"createdAt"`
-	DayOfBirth        time.Time `gorm:"type:date;" json:"dayOfBirth"`
-	PhoneNumber       string    `json:"phoneNumber"`
-	ParentPhoneNumber string    `json:"parentPhoneNumber"`
-	SchoolName        string    `json:"schoolName"`
+	ID                int        `json:"studentId"`
+	Name              string     `gorm:"not null;" json:"name"`
+	ClassID           int        `gorm:"not null;" json:"classId"`
+	CreatedAt         time.Time  `gorm:"not null;" json:"createdAt"`
+	DayOfBirth        *time.Time `gorm:"type:date; null;" json:"dayOfBirth"`
+	Address           *string    `json:"address"`
+	PhoneNumber       *string    `json:"phoneNumber"`
+	ParentPhoneNumber *string    `json:"parentPhoneNumber"`
+	SchoolName        *string    `json:"schoolName"`
 
 	Class Class `gorm:"references:ID" json:"-"`
 }
 
 type Teacher struct {
-	ID        int
-	Name      string    `gorm:"not null;"`
-	ClassID   int       `gorm:"not null;"`
-	CreatedAt time.Time `gorm:"not null;"`
+	ID          int       `json:"teacherId"`
+	Name        string    `gorm:"not null;" json:"name"`
+	ClassID     int       `gorm:"not null;" json:"classId"`
+	CreatedAt   time.Time `gorm:"not null;" json:"createdAt"`
+	PhoneNumber *string   `gorm:"null" json:"phoneNumber"`
 
-	Class Class `gorm:"references:ID"`
+	Class Class `gorm:"references:ID" json:"-"`
 }
 
 type StudentsWithDepartment struct {
@@ -82,7 +84,7 @@ func SaveTeachers(teachers []Teacher) (err error) {
 }
 
 func GetTeacherByClassNameAndDepartment(teachers *[]Teacher, departmentID int, className string) (err error) {
-	if err = DB.Joins("Class").Where("department_id = ?", departmentID).Find(teachers, "class.name="+"'"+className+"'").Error; err != nil {
+	if err = DB.Joins("Class").Where("department_id = ? AND Class.name = ?", departmentID, className).Find(teachers).Error; err != nil {
 		fmt.Println("Error in GetTeacherByClassName")
 		return err
 	}
@@ -90,7 +92,7 @@ func GetTeacherByClassNameAndDepartment(teachers *[]Teacher, departmentID int, c
 }
 
 func GetStudentByClassNameAndDepartment(students *[]Student, departmentID int, className string) (err error) {
-	if err = DB.Joins("Class").Where("department_id = ?", departmentID).Find(students, "class.name="+"'"+className+"'").Error; err != nil {
+	if err = DB.Joins("Class").Where("department_id = ? AND Class.name = ?", departmentID, className).Find(students).Error; err != nil {
 		fmt.Println("Error in GetStudentByClassName")
 		return err
 	}
