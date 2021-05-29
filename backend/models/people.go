@@ -11,7 +11,8 @@ type Student struct {
 	ID                int        `json:"studentId"`
 	Name              string     `gorm:"not null;" json:"name"`
 	ClassID           int        `gorm:"not null;" json:"classId"`
-	CreatedAt         time.Time  `gorm:"not null;" json:"createdAt"`
+	CreatedAt         *time.Time `gorm:"not null;" sql:"DEFAULT:current_timestamp" json:"createdAt"`
+	UpdatedAt         *time.Time `gorm:"null" json:"updatedAt"`
 	DayOfBirth        *time.Time `gorm:"type:date; null;" json:"dayOfBirth"`
 	Address           *string    `json:"address"`
 	PhoneNumber       *string    `json:"phoneNumber"`
@@ -47,13 +48,29 @@ func GetStudents(students *[]Student) (err error) {
 	return nil
 }
 
-func SaveStudents(students []Student) (err error) {
-	for _, student := range students {
-		if err = DB.Create(&student).Error; err != nil {
-			fmt.Println("Error in SaveStudent")
+func SaveStudents(students *[]Student) (err error) {
+	if err = DB.Create(&students).Error; err != nil {
+		fmt.Println("Error in SaveStudent")
+		return err
+	}
+
+	return nil
+}
+
+func PutStudent(student Student) (err error) {
+	if err = DB.Save(&student).Error; err != nil {
+		return err
+	}
+	return nil
+}
+
+func DeleteStudents(students *[]Student) (err error) {
+	for _, student := range *students {
+		if err = DB.Delete(&student).Error; err != nil {
 			return err
 		}
 	}
+
 	return nil
 }
 

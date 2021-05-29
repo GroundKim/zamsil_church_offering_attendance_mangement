@@ -18,6 +18,7 @@ func CreateUrlMappings(conf *config.Config) {
 		AllowOrigins:     []string{conf.CORS.ALLOWORIGINS},
 		AllowCredentials: conf.CORS.ACCESSCONTROLALLOWCREDENTIALS,
 		AllowHeaders:     []string{"content-type"},
+		AllowMethods:     []string{"PUT", "PATCH", "DELETE"},
 	}))
 
 	Router.POST("/Youth/login", controllers.Login(conf))
@@ -35,6 +36,8 @@ func CreateUrlMappings(conf *config.Config) {
 
 	Youth.GET("/students", controllers.GetStudents)
 	Youth.POST("/students", controllers.SaveStudents)
+	Youth.DELETE("/students", controllers.DeleteStudents)
+	Youth.PUT("/students", controllers.PutStudent)
 
 	Youth.POST("/teachers", controllers.SaveTeachers)
 

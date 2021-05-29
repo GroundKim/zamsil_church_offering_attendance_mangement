@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"fmt"
 	"net/http"
 	"zamsil_church_offering_attendance_mangement/models"
 
@@ -38,13 +39,14 @@ func GetMembers(c *gin.Context) {
 func SaveStudents(c *gin.Context) {
 	var NewStudents []models.Student
 	var err error
-	if err = c.Bind(&NewStudents); err != nil {
+	if err = c.BindJSON(&NewStudents); err != nil {
 		c.JSON((http.StatusBadRequest), gin.H{
 			"error": "Error in JSON Binding",
 		})
+		fmt.Println(err)
 		return
 	}
-	if err = models.SaveStudents(NewStudents); err != nil {
+	if err = models.SaveStudents(&NewStudents); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"error": "Error ins saving students",
 		})
@@ -52,9 +54,30 @@ func SaveStudents(c *gin.Context) {
 	}
 
 	if err == nil {
-		c.JSON(http.StatusOK, gin.H{
-			"message": "save completely",
+		c.JSON(http.StatusOK, NewStudents)
+		return
+	}
+}
+
+func DeleteStudents(c *gin.Context) {
+	var students []models.Student
+	var err error
+	if err = c.BindJSON(&students); err != nil {
+		c.JSON((http.StatusBadRequest), gin.H{
+			"error": "Error in JSON Binding",
 		})
+		return
+	}
+
+	if err = models.DeleteStudents(&students); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": "Error in delete students",
+		})
+		return
+	}
+
+	if err == nil {
+		c.JSON(http.StatusOK, students)
 		return
 	}
 }
@@ -80,4 +103,30 @@ func SaveTeachers(c *gin.Context) {
 			"message": "save completely",
 		})
 	}
+}
+
+func PutStudent(c *gin.Context) {
+	var student models.Student
+	var err error
+	if err = c.BindJSON(&student); err != nil {
+		c.JSON((http.StatusBadRequest), gin.H{
+			"error": "Error in JSON Binding",
+		})
+		fmt.Println(err)
+		return
+	}
+
+	if err = models.PutStudent(student); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": "error in SaveTeacher()",
+		})
+		return
+	}
+
+	if err == nil {
+		c.JSON(http.StatusOK, gin.H{
+			"message": "put completely",
+		})
+	}
+
 }
