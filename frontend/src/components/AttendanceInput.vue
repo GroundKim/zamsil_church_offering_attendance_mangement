@@ -74,8 +74,6 @@
       -->
     </v-container>
 
-    <v-divider v-if="attendanceData"></v-divider>
-
     <v-container>
       <v-row>
         <v-col

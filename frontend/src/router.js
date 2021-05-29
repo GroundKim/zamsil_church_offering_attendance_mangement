@@ -45,8 +45,7 @@ const router = new VueRouter({
         path:'/member/management',
         name:'memberManagement',
         component: MemberManagement
-    }
-
+    },
 ]
 })
 

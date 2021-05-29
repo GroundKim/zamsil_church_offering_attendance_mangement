@@ -4,10 +4,9 @@ import axios from 'axios'
 import router from './router'
 import vuetify from './plugins/vuetify'
 import store from './store'
-import VueCookies from 'vue-cookies'
 import alertError from './assets/common.js'
-
-Vue.use(VueCookies)
+import VueTheMask from 'vue-the-mask'
+import Vuelidate from 'vuelidate'
 
 Vue.config.productionTip = false
 Vue.prototype.$http = axios
@@ -17,6 +16,9 @@ const port = process.env.VUE_APP_PORT
 
 Vue.prototype.$serverAddress = `${protocol}://${address}:${port}`
 Vue.prototype.$address = `${address}`
+
+Vue.use(VueTheMask)
+Vue.use(Vuelidate)
 
 Vue.mixin({
   methods: {

@@ -22,9 +22,15 @@ export default {
 </script>
 
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@200;300;600&display=swap');
+/* @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@200;300;600&display=swap');
 
 html, body, #app, .v-application {
   font-family: 'Noto Sans KR', sans-serif;
+} */
+
+@import url('https://fonts.googleapis.com/css2?family=Nanum+Gothic&display=swap');
+html, body, #app, .v-application {
+  font-family: 'Nanum Gothic', sans-serif;
 }
+
 </style>
