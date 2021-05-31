@@ -9,11 +9,14 @@ import (
 )
 
 type AuthToken struct {
-	ID    int
-	Token string
+	ID     int
+	UserID int
+	Token  string
+
+	User User `gorm:"references:ID"`
 }
 
-func GenerateToken(conf *config.Config) (signedToken string, err error) {
+func GenerateToken(conf *config.Config, user User) (signedToken string, err error) {
 	jwtClaim := &jwt.StandardClaims{
 		ExpiresAt: time.Now().Local().AddDate(0, 3, 0).Unix(),
 		Issuer:    "groundKim",
@@ -24,8 +27,9 @@ func GenerateToken(conf *config.Config) (signedToken string, err error) {
 	if signedToken, err = token.SignedString([]byte(conf.AUTH.SECRETKEY)); err != nil {
 		return
 	}
-	authToken := &AuthToken{Token: signedToken}
-	// save the token in mariadb
+	authToken := &AuthToken{UserID: user.ID, Token: signedToken}
+
+	// save the token with UserID in mariadb
 	DB.Create(&authToken)
 	return
 }

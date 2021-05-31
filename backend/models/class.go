@@ -18,7 +18,7 @@ type Class struct {
 	Name         string    `gorm:"not null;" json:"name"`
 	DepartmentID int       `gorm:"not null;" json:"departmentId"`
 	CreatedAt    time.Time `gorm:"not null;" json:"createdAt"`
-	UpdatedAt    time.Time `gorm:"not null;" json:"updatedAt"`
+	UpdatedAt    time.Time `gorm:"null;" json:"updatedAt"`
 
 	Department Department `gorm:"references:ID"`
 }

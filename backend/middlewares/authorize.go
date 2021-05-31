@@ -11,7 +11,6 @@ import (
 
 func Authorize(conf *config.Config) gin.HandlerFunc {
 	return func(c *gin.Context) {
-
 		clientToken, err := c.Request.Cookie("auth_token")
 		if err != nil {
 			c.JSON(http.StatusForbidden, "No Authorization token")
@@ -27,6 +26,13 @@ func Authorize(conf *config.Config) gin.HandlerFunc {
 			fmt.Println(err)
 			return
 		}
+
+		// write down log
+		user := models.GetUserByToken(token)
+		action := c.Request.Method
+		clientIP := c.ClientIP()
+		URL := c.Request.URL.String()
+		user.ActiveStamp(clientIP, action, URL)
 
 		c.Next()
 	}

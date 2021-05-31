@@ -1,13 +1,26 @@
 package models
 
 import (
+	"time"
+
 	"golang.org/x/crypto/bcrypt"
 )
 
 type User struct {
 	ID       int
-	ClientID string `json:"clientId"`
-	Password string `json:"password"`
+	ClientID string `gorm:"not null" json:"clientId"`
+	Password string `gorm:"not null" json:"password"`
+}
+
+type Log struct {
+	ID     int
+	UserID int       `gorm:"not null"`
+	IP     string    `gorm:"not null"`
+	Date   time.Time `gorm:"not null"`
+	Action string    `gorm:"not null"`
+	Note   string    `gorm:"default: null"`
+
+	User User `gorm:"references:ID"`
 }
 
 func (user *User) SaveUser() {
@@ -17,17 +30,46 @@ func (user *User) SaveUser() {
 	DB.Create(&user)
 }
 
-func (user *User) ValidateUser() bool {
-	var hashPassword string
-	DB.Table("user").Select("password").Where("client_id = ?", user.ClientID).Scan(&hashPassword)
-
-	if err := bcrypt.CompareHashAndPassword([]byte(hashPassword), []byte(user.Password)); err != nil {
-		return false
-	} else {
-		return true
+func (user *User) ValidateUser() error {
+	type Result struct {
+		HashPassword string
+		ID           int
 	}
+
+	var result Result
+	if err := DB.Table("user").Select("password", "id").Where("client_id = ?", user.ClientID).Scan(&result).Error; err != nil {
+		return err
+	}
+	user.ID = result.ID
+
+	if err := bcrypt.CompareHashAndPassword([]byte(result.HashPassword), []byte(user.Password)); err != nil {
+		return err
+	} else {
+		return nil
+	}
+}
+
+func (user *User) LoginStamp(IP string) {
+	log := &Log{UserID: user.ID, IP: IP, Date: time.Now(), Action: "login"}
+	DB.Create(&log)
+
+}
+
+func (user *User) ActiveStamp(IP string, active string, note string) {
+	log := &Log{UserID: user.ID, IP: IP, Date: time.Now(), Action: active, Note: note}
+	DB.Create(&log)
+}
+
+func GetUserByToken(token string) User {
+	var user User
+	DB.Raw("SELECT user.* FROM user INNER JOIN auth_token ON user.id = auth_token.user_id WHERE auth_token.token = ?", token).Find(&user)
+	return user
 }
 
 func (User) TableName() string {
 	return "user"
+}
+
+func (Log) TableName() string {
+	return "log"
 }

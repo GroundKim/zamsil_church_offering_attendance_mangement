@@ -13,6 +13,7 @@
               ></v-text-field>
               <v-text-field
                 v-model="password"
+                type="password"
                 @keyup.enter="sendPost"
                 label="비밀번호"
               ></v-text-field>

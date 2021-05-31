@@ -14,15 +14,18 @@ func Login(conf *config.Config) gin.HandlerFunc {
 
 		var user models.User
 		if err := c.ShouldBindJSON(&user); err != nil {
-			c.JSON(http.StatusUnprocessableEntity, "Invalid json provided")
+			c.JSON(http.StatusBadRequest, "Invalid json provided")
 			fmt.Println("Error in login user binding:", err)
 			return
 		}
 
-		if user.ValidateUser() {
-			token, _ := models.GenerateToken(conf)
+		if err := user.ValidateUser(); err != nil {
+			token, _ := models.GenerateToken(conf, user)
 			domain := conf.COOKIE.DOMAIN
 			c.SetCookie("auth_token", token, 60*60*24*31*3, "/", domain, conf.COOKIE.SECURE, conf.COOKIE.HTTPONLY)
+
+			// log user
+			user.LoginStamp(c.ClientIP())
 
 			c.JSON(http.StatusOK, gin.H{
 				"token": token,

@@ -177,7 +177,7 @@
                 rounded
                 outlined
                 x-large
-                @click="saveNewStudent()"
+                @click="isAdd ? saveNewStudent() : putStudent()"
                 >
                   저장
               </v-btn>
@@ -213,17 +213,9 @@ export default {
       currentClasses: [],
       dialogClass: null,
       isAdd: false,
-      editDialogStudent: {
-        class: null,
-        name: '',
-        dayOfBirth: null,
-        address: null,
-        phoneNumber: null,
-        parentPhoneNumber: null,
-        schoolName: null,
-      },
 
       dialogStudent: {
+        studentId: null,
         departmentName: null,
         classId: null,
         className: null,
@@ -352,19 +344,35 @@ export default {
     },
 
     putStudent () {
+      const headers = {
+        headers: 'application/json'
+      }
       axios
-        .put(`${this.$serverAddress}/Youth/students`)
+        .put(`${this.$serverAddress}/Youth/students/${this.dialogStudent.studentId}`, JSON.stringify(this.dialogStudent), { withCredentials: true, Headers: headers})
+        .then((res) => {
+          let student = res.data
+          let classIndex = this.currentClasses.findIndex(c => c.Class.classId == this.dialogStudent.classId)
+          console.log(JSON.stringify(this.currentClasses[classIndex]))
+          let studentIndex = this.currentClasses[classIndex].Students.findIndex(s => s.studentId == student.studentId)
+          Object.assign(this.currentClasses[classIndex].Students[studentIndex], student)
+          
+          this.closeDialog()
+
+        })
+        .catch((err) => {
+          this.alertError(err)
+        })
     },
 
     editStudent (studentInfo, classInfo) {
       this.isAdd = false
       this.dialog = true
-      console.log(JSON.stringify(classInfo))
       
-      // change 없음 to null
+      // change '없음' to null
       for (const key in studentInfo) {
         if (studentInfo[key] === '없음') studentInfo[key] = null
       }
+      this.dialogStudent.studentId = studentInfo.studentId
       this.dialogStudent.name = studentInfo.name
       this.dialogStudent.dayOfBirth = studentInfo.dayOfBirth
       this.dialogStudent.address = studentInfo.address
@@ -373,6 +381,7 @@ export default {
       this.dialogStudent.schoolName = studentInfo.schoolName
       this.dialogStudent.departmentName = classInfo.Department.departmentName
       this.dialogStudent.className = classInfo.name
+      this.dialogStudent.classId = classInfo.classId
     }, 
 
     closeDialog () {

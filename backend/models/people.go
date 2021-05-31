@@ -4,6 +4,7 @@ package models
 
 import (
 	"fmt"
+	"reflect"
 	"time"
 )
 
@@ -11,8 +12,8 @@ type Student struct {
 	ID                int        `json:"studentId"`
 	Name              string     `gorm:"not null;" json:"name"`
 	ClassID           int        `gorm:"not null;" json:"classId"`
-	CreatedAt         *time.Time `gorm:"not null;" sql:"DEFAULT:current_timestamp" json:"createdAt"`
-	UpdatedAt         *time.Time `gorm:"null" json:"updatedAt"`
+	CreatedAt         *time.Time `gorm:"not null; default:current_timestamp(3);"  json:"createdAt"`
+	UpdatedAt         *time.Time `gorm:"null; default:null" json:"updatedAt"`
 	DayOfBirth        *time.Time `gorm:"type:date; null;" json:"dayOfBirth"`
 	Address           *string    `json:"address"`
 	PhoneNumber       *string    `json:"phoneNumber"`
@@ -53,12 +54,32 @@ func SaveStudents(students *[]Student) (err error) {
 		fmt.Println("Error in SaveStudent")
 		return err
 	}
+	fmt.Println(students)
 
 	return nil
 }
 
+// need maintenance when add field in student
 func PutStudent(student Student) (err error) {
-	if err = DB.Save(&student).Error; err != nil {
+	// avoid to get nil pointer
+	fieldNames := []string{"DayOfBirth", "Address", "PhoneNumber", "ParentPhoneNumber", "SchoolName"}
+	values := []string{}
+	v := reflect.ValueOf(student)
+	for _, fieldName := range fieldNames {
+		if v.FieldByName(fieldName).IsNil() {
+			values = append(values, "null")
+		} else {
+			add := v.FieldByName(fieldName).Interface()
+			value := reflect.Indirect(reflect.ValueOf(add)).String()
+			values = append(values, "\""+value+"\"")
+		}
+	}
+
+	updateQuery := fmt.Sprintf("UPDATE student SET updated_at = '%s', name = '%s', class_id = '%d', day_of_birth = %s, address = %s, phone_number = %s, parent_phone_number = %s, school_name = %s WHERE id = %d",
+		// it does not look good
+		time.Now().Format("2006-01-02 15:04:05"), student.Name, student.ClassID, values[0], values[1], values[2], values[3], values[4], student.ID)
+
+	if err = DB.Exec(updateQuery).Error; err != nil {
 		return err
 	}
 	return nil

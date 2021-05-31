@@ -3,6 +3,7 @@ package controllers
 import (
 	"fmt"
 	"net/http"
+	"strconv"
 	"zamsil_church_offering_attendance_mangement/models"
 
 	"github.com/gin-gonic/gin"
@@ -48,7 +49,7 @@ func SaveStudents(c *gin.Context) {
 	}
 	if err = models.SaveStudents(&NewStudents); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": "Error ins saving students",
+			"error": "Error in saving students",
 		})
 		return
 	}
@@ -107,6 +108,7 @@ func SaveTeachers(c *gin.Context) {
 
 func PutStudent(c *gin.Context) {
 	var student models.Student
+	studentID := c.Param("id")
 	var err error
 	if err = c.BindJSON(&student); err != nil {
 		c.JSON((http.StatusBadRequest), gin.H{
@@ -116,17 +118,16 @@ func PutStudent(c *gin.Context) {
 		return
 	}
 
+	student.ID, _ = strconv.Atoi(studentID)
 	if err = models.PutStudent(student); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": "error in SaveTeacher()",
+			"error": "error in PutStudent()",
 		})
 		return
 	}
 
 	if err == nil {
-		c.JSON(http.StatusOK, gin.H{
-			"message": "put completely",
-		})
+		c.JSON(http.StatusOK, student)
 	}
 
 }
