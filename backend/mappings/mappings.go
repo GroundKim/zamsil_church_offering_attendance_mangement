@@ -36,8 +36,8 @@ func CreateUrlMappings(conf *config.Config) {
 
 	Youth.GET("/students", controllers.GetStudents)
 	Youth.POST("/students", controllers.SaveStudents)
-	Youth.DELETE("/students", controllers.DeleteStudents)
 	Youth.PUT("/students/:id", controllers.PutStudent)
+	Youth.DELETE("/students/:id", controllers.DeleteStudent)
 
 	Youth.POST("/teachers", controllers.SaveTeachers)
 

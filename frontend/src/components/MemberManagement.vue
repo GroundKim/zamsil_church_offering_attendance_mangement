@@ -305,13 +305,10 @@ export default {
         return
       }
 
-      let payload = []
-      payload.push({studentId: item.studentId})
       axios
-        .delete(`${this.$serverAddress}/Youth/students`, {
-          data: payload,
-          withCredentials: true,
-        })
+        .delete(`${this.$serverAddress}/Youth/students/${item.studentId}`,  
+         { withCredentials: true }
+        )
         .then(() => {
           let index = this.currentClasses[classIndex].Students.findIndex(s => s.studentId == item.studentId)
           this.currentClasses[classIndex].Students.splice(index, 1)

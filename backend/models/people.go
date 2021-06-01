@@ -3,6 +3,7 @@ package models
 // member
 
 import (
+	"encoding/json"
 	"fmt"
 	"reflect"
 	"time"
@@ -54,13 +55,19 @@ func SaveStudents(students *[]Student) (err error) {
 		fmt.Println("Error in SaveStudent")
 		return err
 	}
-	fmt.Println(students)
-
+	// log
+	for _, student := range *students {
+		savedStudent, _ := json.Marshal(student)
+		AuthToken.User.ActiveStamp("save student", string(savedStudent))
+	}
 	return nil
 }
 
 // need maintenance when add field in student
 func PutStudent(student Student) (err error) {
+	var oldStudent Student
+	DB.First(&oldStudent, student.ID)
+
 	// avoid to get nil pointer
 	fieldNames := []string{"DayOfBirth", "Address", "PhoneNumber", "ParentPhoneNumber", "SchoolName"}
 	values := []string{}
@@ -82,16 +89,25 @@ func PutStudent(student Student) (err error) {
 	if err = DB.Exec(updateQuery).Error; err != nil {
 		return err
 	}
+	// user log
+	putStudent, _ := json.Marshal(student)
+	oldStudentJSON, _ := json.Marshal(oldStudent)
+	AuthToken.User.ActiveStamp("PUT", string(oldStudentJSON)+"->"+string(putStudent))
 	return nil
 }
 
-func DeleteStudents(students *[]Student) (err error) {
-	for _, student := range *students {
-		if err = DB.Delete(&student).Error; err != nil {
-			return err
-		}
+func DeleteStudent(student *Student) (err error) {
+	if err = DB.Find(&student).Error; err != nil {
+		return err
 	}
 
+	if err = DB.Delete(&student).Error; err != nil {
+		return err
+	}
+
+	// user log
+	deleteStudent, _ := json.Marshal(student)
+	AuthToken.User.ActiveStamp("DELETE", string(deleteStudent))
 	return nil
 }
 
@@ -100,6 +116,7 @@ func GetStudentsWithDepartment(students *[]StudentsWithDepartment) (err error) {
 		fmt.Println("Error in GetStudentsWithDepartment")
 		return err
 	}
+
 	return nil
 }
 
@@ -134,6 +151,7 @@ func GetStudentByClassNameAndDepartment(students *[]Student, departmentID int, c
 		fmt.Println("Error in GetStudentByClassName")
 		return err
 	}
+
 	return nil
 }
 
@@ -151,6 +169,7 @@ func GetStudentsByDepartment(students *[]Student, departmentID int) (err error) 
 		return err
 	}
 	return nil
+
 }
 
 func (Student) TableName() string {

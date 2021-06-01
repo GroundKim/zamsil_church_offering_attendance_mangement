@@ -40,7 +40,7 @@ func Migrate(db *gorm.DB) {
 		OfferingDiary{},
 		AttendanceDiary{},
 		User{},
-		AuthToken{},
+		authToken{},
 		AbsenceDiary{},
 		Log{},
 	)

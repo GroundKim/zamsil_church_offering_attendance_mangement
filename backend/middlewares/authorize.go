@@ -26,14 +26,7 @@ func Authorize(conf *config.Config) gin.HandlerFunc {
 			fmt.Println(err)
 			return
 		}
-
-		// write down log
-		user := models.GetUserByToken(token)
-		action := c.Request.Method
-		clientIP := c.ClientIP()
-		URL := c.Request.URL.String()
-		user.ActiveStamp(clientIP, action, URL)
-
+		models.ClientIP = c.ClientIP()
 		c.Next()
 	}
 

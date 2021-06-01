@@ -8,13 +8,15 @@ import (
 	"github.com/dgrijalva/jwt-go"
 )
 
-type AuthToken struct {
+type authToken struct {
 	ID     int
 	UserID int
 	Token  string
 
 	User User `gorm:"references:ID"`
 }
+
+var AuthToken *authToken
 
 func GenerateToken(conf *config.Config, user User) (signedToken string, err error) {
 	jwtClaim := &jwt.StandardClaims{
@@ -27,9 +29,9 @@ func GenerateToken(conf *config.Config, user User) (signedToken string, err erro
 	if signedToken, err = token.SignedString([]byte(conf.AUTH.SECRETKEY)); err != nil {
 		return
 	}
-	authToken := &AuthToken{UserID: user.ID, Token: signedToken}
+	authToken := &authToken{UserID: user.ID, Token: signedToken}
 
-	// save the token with UserID in mariadb
+	// save the token with UserID in db
 	DB.Create(&authToken)
 	return
 }
@@ -53,9 +55,11 @@ func ValidateToken(signedToken string, conf *config.Config) (claims *jwt.Standar
 		return
 	}
 
-	var authToken *AuthToken
-	DB.Table("auth_token").Where("token = ?", signedToken).Find(&authToken)
-	if authToken == nil {
+	// it reqires two select queries, which doesn't look so good.
+	DB.Preload("User").Where("token = ?", signedToken).Find(&AuthToken)
+	// Tried to join raw query in order to query once, but it doesn't save well.
+	// DB.Raw("SELECT auth_token.* FROM auth_token INNER JOIN user on auth_token.user_id = user.id WHERE token = ?", signedToken).Find(&authToken)
+	if AuthToken == nil {
 		err = errors.New("token is not in DB")
 		return
 	}
@@ -63,6 +67,6 @@ func ValidateToken(signedToken string, conf *config.Config) (claims *jwt.Standar
 	return
 }
 
-func (AuthToken) TableName() string {
+func (authToken) TableName() string {
 	return "auth_token"
 }

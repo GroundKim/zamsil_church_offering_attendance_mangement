@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"time"
 	"zamsil_church_offering_attendance_mangement/controllers/makeExcel"
+	"zamsil_church_offering_attendance_mangement/models"
 
 	"github.com/gin-gonic/gin"
 )
@@ -16,6 +17,8 @@ func GetOfferingExcel(c *gin.Context) {
 		c.Writer.Header().Add("Content-type", "application/octet-stream")
 		date := c.Query("date")
 		c.FileAttachment(fmt.Sprintf("./data/offeringDiary/excel/%s.xlsx", date), fmt.Sprintf("헌금통계표_%s.xlsx", date))
+		models.AuthToken.User.ActiveStamp("Download", fmt.Sprintf("./data/offeringDiary/excel/%s.xlsx", date))
+
 		return
 	}
 

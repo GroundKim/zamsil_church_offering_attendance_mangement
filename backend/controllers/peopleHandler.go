@@ -60,17 +60,12 @@ func SaveStudents(c *gin.Context) {
 	}
 }
 
-func DeleteStudents(c *gin.Context) {
-	var students []models.Student
+func DeleteStudent(c *gin.Context) {
 	var err error
-	if err = c.BindJSON(&students); err != nil {
-		c.JSON((http.StatusBadRequest), gin.H{
-			"error": "Error in JSON Binding",
-		})
-		return
-	}
-
-	if err = models.DeleteStudents(&students); err != nil {
+	var student models.Student
+	studentId := c.Param("id")
+	student.ID, _ = strconv.Atoi(studentId)
+	if err = models.DeleteStudent(&student); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"error": "Error in delete students",
 		})
@@ -78,7 +73,7 @@ func DeleteStudents(c *gin.Context) {
 	}
 
 	if err == nil {
-		c.JSON(http.StatusOK, students)
+		c.JSON(http.StatusOK, student)
 		return
 	}
 }
@@ -128,6 +123,8 @@ func PutStudent(c *gin.Context) {
 
 	if err == nil {
 		c.JSON(http.StatusOK, student)
+		// log
+
 	}
 
 }

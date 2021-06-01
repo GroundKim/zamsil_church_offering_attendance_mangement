@@ -18,10 +18,12 @@ type Log struct {
 	IP     string    `gorm:"not null"`
 	Date   time.Time `gorm:"not null"`
 	Action string    `gorm:"not null"`
-	Note   string    `gorm:"default: null"`
+	Note   string    `gorm:"type:longtext; default: null"`
 
 	User User `gorm:"references:ID"`
 }
+
+var ClientIP string
 
 func (user *User) SaveUser() {
 	// after hashing password, then create
@@ -55,8 +57,8 @@ func (user *User) LoginStamp(IP string) {
 
 }
 
-func (user *User) ActiveStamp(IP string, active string, note string) {
-	log := &Log{UserID: user.ID, IP: IP, Date: time.Now(), Action: active, Note: note}
+func (user *User) ActiveStamp(active string, note string) {
+	log := &Log{UserID: user.ID, IP: ClientIP, Date: time.Now(), Action: active, Note: note}
 	DB.Create(&log)
 }
 
