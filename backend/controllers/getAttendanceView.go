@@ -8,6 +8,7 @@ import (
 )
 
 func GetAttendanceView(c *gin.Context) {
+	// get by Year
 	if len(c.Query("year")) != 0 {
 		year := c.Query("year")
 		parsedYear, _ := time.Parse("2006", year)
@@ -31,5 +32,13 @@ func GetAttendanceView(c *gin.Context) {
 
 		payload := map[string][]time.Time{"attendedAts": attendedAts}
 		c.JSON(200, payload)
+	}
+	// get by date
+	if len(c.Query("date")) != 0 {
+		date, _ := time.Parse("2006-01-02", c.Query("date"))
+
+		var attendanceDiaries []models.AttendanceDiary
+		models.GetAttendanceViewByDate(&attendanceDiaries, date)
+		c.JSON(200, attendanceDiaries)
 	}
 }

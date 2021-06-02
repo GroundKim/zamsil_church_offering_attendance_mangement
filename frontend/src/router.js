@@ -6,6 +6,7 @@ import OfferingView from './components/OfferingView'
 import AttendanceView from './components/AttendanceView'
 import MemberManagement from './components/MemberManagement'
 import Login from './components/Login'
+import AttendanceViewDetail from './components/AttendanceViewDetail'
 
 Vue.use(VueRouter)
 
@@ -46,6 +47,12 @@ const router = new VueRouter({
         name:'memberManagement',
         component: MemberManagement
     },
+
+    {
+        path:'/attendance/view/detail',
+        name: 'attendanceViewDetail',
+        component: AttendanceViewDetail
+    }
 ]
 })
 

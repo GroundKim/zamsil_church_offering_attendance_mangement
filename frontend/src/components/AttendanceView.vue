@@ -52,6 +52,20 @@
               <v-icon>
                 mdi-download
               </v-icon>
+              <h2>엑셀</h2>
+            </v-btn>
+
+            <v-btn
+              @click="showAttendanceDetail(attendedAt)"
+              fab
+              outlined
+              x-small
+              color="indigo"
+              class="ml-3"
+            >
+              <v-icon>
+                mdi-clipboard-list-outline
+              </v-icon>
             </v-btn>
           </h3>
         </v-sheet>
@@ -84,6 +98,10 @@ export default {
       .catch(err => {
         this.alertError(err)
       })
+    },
+
+    showAttendanceDetail(attendedAt) {
+      this.$router.push(`/attendance/view/detail?date=${attendedAt.substring(0,10)}`)
     },
 
     plusYear () {

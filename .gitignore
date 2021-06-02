@@ -148,3 +148,4 @@ dist
 # Config files
 config*.yaml
 *.yaml
+backend/backup.sh
