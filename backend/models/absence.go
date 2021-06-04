@@ -1,15 +1,17 @@
 package models
 
-import "time"
+import (
+	"time"
+)
 
 type AbsenceDiary struct {
 	ID            int       `json:"absenceDiaryId"`
 	StudentID     int       `gorm:"not null" json:"studentId"`
 	AbsentAt      time.Time `gorm:"not null; type:date" json:"absentAt"`
-	AbsenceTypeID int       `gorm:"not null;" json:"absenceTypeId"`
+	AbsenceTypeID int       `gorm:"not null;" json:"-"`
 	Reason        string    `json:"reason"`
-	CreatedAt     time.Time `gorm:"not null" sql:"DEFAULT:current_timestamp" json:"createdAt"`
-	CreatedBy     string    `gorm:"not null" json:"createdBy"`
+	CreatedAt     time.Time `gorm:"not null; default:current_timestamp(3)" json:"createdAt"`
+	CreatedBy     string    `gorm:"null" json:"createdBy"`
 
 	Student     Student     `gorm:"references:ID" json:"-"`
 	AbsenceType AbsenceType `gorm:"references:ID" json:"absenceType"`

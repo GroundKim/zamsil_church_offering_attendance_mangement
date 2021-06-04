@@ -28,8 +28,7 @@ func GetAttendanceView(c *gin.Context) {
 		models.GetStudents(&students)
 
 		// 1 means general absence
-		var generalAbsence models.AbsenceDiary = models.AbsenceDiary{AbsenceTypeID: 1, AbsentAt: parsedDate}
-
+		var generalAbsence models.AbsenceDiary = models.AbsenceDiary{AbsenceType: models.AbsenceType{ID: 1, Name: "일반결석"}, AbsentAt: parsedDate}
 		for _, student := range students {
 			var studentWithAttendance studentWithAttendance = studentWithAttendance{Student: student, Absence: &generalAbsence}
 			for _, absenceDiary := range absenceDiaries {

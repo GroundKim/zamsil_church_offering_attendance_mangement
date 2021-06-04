@@ -320,7 +320,7 @@ export default {
     },
 
     saveNewStudent () {
-      if (this.dialogStudent.dayOfBirth !== null)  this.dialogStudent.dayOfBirth += moment().format().substr(10) 
+      if (this.dialogStudent.dayOfBirth !== null)  this.dialogStudent.dayOfBirth += moment().format().substr(10)
       let payload = []
       payload.push(this.dialogStudent)
       
