@@ -43,7 +43,7 @@ type StudentsWithDepartment struct {
 }
 
 func GetStudents(students *[]Student) (err error) {
-	if err = DB.Find(students).Error; err != nil {
+	if err = DB.Preload("Class").Find(&students).Error; err != nil {
 		fmt.Println("Error in GetStudent")
 		return err
 	}

@@ -12,32 +12,14 @@ type AttendanceDiary struct {
 	CreatedAt  time.Time `gorm:"not null" sql:"DEFAULT:current_timestamp"`
 	CreatedBy  string    `gorm:"not null" json:"createdBy" binding:"required"`
 
-	Student Student `gorm:"references:ID"`
-}
-
-type AbsenceDiary struct {
-	ID            int
-	StudentID     int       `gorm:"not null" json:"studentId"`
-	AbsentAt      time.Time `gorm:"not null; type:date" json:"absentAt"`
-	AbsenceTypeID int       `gorm:"not null;" json:"absenceTypeId"`
-	Reason        string    `json:"reason"`
-	CreatedAt     time.Time `gorm:"not null" sql:"DEFAULT:current_timestamp" json:"createdAt"`
-	CreatedBy     string    `gorm:"not null" json:"createdBy"`
-
-	Student     Student     `gorm:"references:ID"`
-	AbsenceType AbsenceType `gorm:"references:ID"`
-}
-
-type AbsenceType struct {
-	ID   int
-	Name string
+	Student Student `gorm:"references:ID" json:"student"`
 }
 
 func (attendanceDiary *AttendanceDiary) SaveAttendanceDiary() {
 	DB.Create(&attendanceDiary)
 }
 
-func GetAttendanceViewByDate(attendanceDiaries *[]AttendanceDiary, date time.Time) (err error) {
+func GetAttendanceDiariesByDate(attendanceDiaries *[]AttendanceDiary, date time.Time) (err error) {
 	parsedDate := date.Format("2006-01-02 ") + "00:00:00"
 	parsedDateRange := parsedDate[0:10] + " 23:59:59"
 	if err = DB.Preload("Student").Where("attended_at BETWEEN ? AND ?", parsedDate, parsedDateRange).Find(&attendanceDiaries).Error; err != nil {
@@ -81,8 +63,4 @@ func GetAttendanceViewByYear(AttendanceDiaries *[]AttendanceDiary, date time.Tim
 
 func (AttendanceDiary) TableName() string {
 	return "attendance_diary"
-}
-
-func (AbsenceDiary) TableName() string {
-	return "absence_diary"
 }

@@ -19,11 +19,11 @@
                 class="mt-10"
               >
                 <v-container>
-                  <h2>반: {{ classInfo.Class.name }}</h2>
-                  <h3>선생님: {{ getTeacherNames(classInfo.Teachers) }}</h3>
+                  <h2>반: {{ classInfo.class.name }}</h2>
+                  <h3>선생님: {{ getTeacherNames(classInfo.teachers) }}</h3>
                       <v-data-table
                         :headers="studentHeaders"
-                        :items="formatStudent(classInfo.Students, '없음')"
+                        :items="formatStudent(classInfo.students, '없음')"
                         hide-default-footer
                         class="elevation-1"
                       >
@@ -44,7 +44,7 @@
                         </template>
                         <template v-slot:[`item.actions`]="{ item }">
                           <v-icon
-                            @click="editStudent(item, classInfo.Class)"
+                            @click="editStudent(item, classInfo.class)"
                           >
                             mdi-pencil
                           </v-icon>
@@ -310,8 +310,8 @@ export default {
          { withCredentials: true }
         )
         .then(() => {
-          let index = this.currentClasses[classIndex].Students.findIndex(s => s.studentId == item.studentId)
-          this.currentClasses[classIndex].Students.splice(index, 1)
+          let index = this.currentClasses[classIndex].students.findIndex(s => s.studentId == item.studentId)
+          this.currentClasses[classIndex].students.splice(index, 1)
           alert(`${item.name}(이)가 삭제되었습니다`)
         })
         .catch((err)=> {
@@ -332,7 +332,7 @@ export default {
         .then((res) => {
           let student = res.data
           let index = this.currentClasses.findIndex(c => c.Class.classId == this.dialogStudent.classId)
-          this.currentClasses[index].Students = this.currentClasses[index].Students.concat(student)
+          this.currentClasses[index].students = this.currentClasses[index].students.concat(student)
           this.closeDialog()
         })
         .catch((err) => {
@@ -348,10 +348,10 @@ export default {
         .put(`${this.$serverAddress}/Youth/students/${this.dialogStudent.studentId}`, JSON.stringify(this.dialogStudent), { withCredentials: true, Headers: headers})
         .then((res) => {
           let student = res.data
-          let classIndex = this.currentClasses.findIndex(c => c.Class.classId == this.dialogStudent.classId)
+          let classIndex = this.currentClasses.findIndex(c => c.class.classId == this.dialogStudent.classId)
           console.log(JSON.stringify(this.currentClasses[classIndex]))
-          let studentIndex = this.currentClasses[classIndex].Students.findIndex(s => s.studentId == student.studentId)
-          Object.assign(this.currentClasses[classIndex].Students[studentIndex], student)
+          let studentIndex = this.currentClasses[classIndex].students.findIndex(s => s.studentId == student.studentId)
+          Object.assign(this.currentClasses[classIndex].students[studentIndex], student)
           
           this.closeDialog()
 
@@ -376,7 +376,7 @@ export default {
       this.dialogStudent.phoneNumber = studentInfo.phoneNumber
       this.dialogStudent.parentPhoneNumber = studentInfo.parentPhoneNumber
       this.dialogStudent.schoolName = studentInfo.schoolName
-      this.dialogStudent.departmentName = classInfo.Department.departmentName
+      this.dialogStudent.departmentName = classInfo.department.name
       this.dialogStudent.className = classInfo.name
       this.dialogStudent.classId = classInfo.classId
     }, 
@@ -392,9 +392,9 @@ export default {
     },
 
     showNewStudentDialog (classInfo) {
-      this.dialogStudent.classId = classInfo.Class.classId
-      this.dialogStudent.className = classInfo.Class.name
-      this.dialogStudent.departmentName = classInfo.Class.Department.departmentName
+      this.dialogStudent.classId = classInfo.class.classId
+      this.dialogStudent.className = classInfo.class.name
+      this.dialogStudent.departmentName = classInfo.class.department.name
       this.isAdd = true
       this.dialog = true
     }
@@ -425,11 +425,11 @@ export default {
 
     // split up the members with department name. Department ID 와 Deparmartment name을 분간 할것 attendance Info 컴포넌트와 서버에서도 
     await this.classes.forEach(classInfo => {
-      if (classInfo.Class.departmentId === 1) {
+      if (classInfo.class.departmentId === 1) {
         this.departmentOneMembers.push(classInfo)
       }
       
-      if (classInfo.Class.departmentId === 2) {
+      if (classInfo.class.departmentId === 2) {
         this.departmentTwoMembers.push(classInfo)
       }
     })

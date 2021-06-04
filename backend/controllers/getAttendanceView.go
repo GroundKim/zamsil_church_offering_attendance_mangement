@@ -7,8 +7,54 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+type studentWithAttendance struct {
+	Student models.Student       `json:"student"`
+	Absence *models.AbsenceDiary `json:"absence"`
+}
+
 func GetAttendanceView(c *gin.Context) {
-	// get by Year
+	date := c.Query("date")
+	var studentsWithAttendance []studentWithAttendance
+	if len(date) > 0 {
+		parsedDate, _ := time.Parse("2006-01-02", date)
+
+		var absenceDiaries []models.AbsenceDiary
+		models.GetAbsenceDiariesByDate(&absenceDiaries, parsedDate)
+
+		var attendanceDiaries []models.AttendanceDiary
+		models.GetAttendanceDiariesByDate(&attendanceDiaries, parsedDate)
+
+		var students []models.Student
+		models.GetStudents(&students)
+
+		// 1 means general absence
+		var generalAbsence models.AbsenceDiary = models.AbsenceDiary{AbsenceTypeID: 1, AbsentAt: parsedDate}
+
+		for _, student := range students {
+			var studentWithAttendance studentWithAttendance = studentWithAttendance{Student: student, Absence: &generalAbsence}
+			for _, absenceDiary := range absenceDiaries {
+				// handling absent student
+				if absenceDiary.StudentID == student.ID {
+					studentWithAttendance.Absence = &absenceDiary
+					continue
+				}
+			}
+
+			for _, attendanceDiary := range attendanceDiaries {
+				// handing absence student
+				if attendanceDiary.StudentID == student.ID {
+					studentWithAttendance.Absence = nil
+				}
+			}
+			studentsWithAttendance = append(studentsWithAttendance, studentWithAttendance)
+		}
+	}
+
+	c.JSON(200, studentsWithAttendance)
+}
+
+func GetAttendanceViewList(c *gin.Context) {
+	// get list by Year
 	if len(c.Query("year")) != 0 {
 		year := c.Query("year")
 		parsedYear, _ := time.Parse("2006", year)
@@ -38,7 +84,7 @@ func GetAttendanceView(c *gin.Context) {
 		date, _ := time.Parse("2006-01-02", c.Query("date"))
 
 		var attendanceDiaries []models.AttendanceDiary
-		models.GetAttendanceViewByDate(&attendanceDiaries, date)
+		models.GetAttendanceDiariesByDate(&attendanceDiaries, date)
 		c.JSON(200, attendanceDiaries)
 	}
 }

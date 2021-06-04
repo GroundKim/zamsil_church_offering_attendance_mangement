@@ -91,7 +91,7 @@ export default {
   methods: {
     getAttendedAtsByYear (year) {
       axios
-      .get(`${this.$serverAddress}/Youth/attendance/view?year=${year}`, {withCredentials: true})
+      .get(`${this.$serverAddress}/Youth/attendance/view/list?year=${year}`, {withCredentials: true})
       .then(res => {
         this.attendedAts = res.data.attendedAts
       })

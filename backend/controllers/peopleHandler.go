@@ -10,9 +10,9 @@ import (
 )
 
 type classInfo struct {
-	Class    models.Class
-	Students []models.Student // `json:"name"`
-	Teachers []models.Teacher
+	Class    models.Class     `json:"class"`
+	Students []models.Student `json:"students"`
+	Teachers []models.Teacher `json:"teachers"`
 }
 
 func GetMembers(c *gin.Context) {
