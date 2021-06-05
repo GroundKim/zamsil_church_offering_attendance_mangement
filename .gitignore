@@ -85,6 +85,7 @@ out
 # Nuxt.js build / generate output
 .nuxt
 dist
+dist/index.html
 
 # Gatsby files
 .cache/
@@ -148,4 +149,7 @@ dist
 # Config files
 config*.yaml
 *.yaml
+backend/backup.sh
+
+# Backup shell
 backend/backup.sh

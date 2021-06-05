@@ -8,7 +8,7 @@
       <v-container>
         <h2>{{ classInfo.class.department.name }}부 {{ classInfo.class.name }}반</h2>
         <v-col>
-          {{ getAttendanceDiaryTableItems(classInfo)}}
+          <!-- {{ getAttendanceDiaryTableItems(classInfo)}} -->
           <v-data-table
             :headers="studentHeaders()"
             :items="getAttendanceDiaryTableItems(classInfo)"
@@ -21,7 +21,7 @@
                   large
                   @save="changeAttendance(classIndex, index, item.attendanceType)"
                 >
-                  <div>{{ item.attendanceType }} {{ classIndex }}{{ index }}</div>
+                  <div>{{ item.attendanceType }}</div>
                   <template v-slot:input>
                     <v-list-item-group
                       v-model="item.attendanceType"
@@ -101,7 +101,7 @@ export default {
         },
 
         {
-          text: '결석 이유',
+          text: '결석 사유',
           value: 'absence.reason'
         }
       ]
@@ -110,6 +110,8 @@ export default {
     changeAttendance(classIndex, studentIndex, value) {
       if (value === '참석') {
         axios.post()
+        classIndex
+        studentIndex
       } 
       
       if (value === '결석'){
@@ -119,9 +121,7 @@ export default {
   },
 
   watch: {
-    data(newValue, oldValue) {
-      
-    }
+
   },
 
 	created: async function () {

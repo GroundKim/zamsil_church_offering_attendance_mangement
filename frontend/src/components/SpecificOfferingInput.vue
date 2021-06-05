@@ -42,7 +42,6 @@
         <v-icon dark> mdi-trash-can-outline </v-icon>
       </v-btn>
     </div>
-    {{offeringId}}
   </v-row>
 </template>
 

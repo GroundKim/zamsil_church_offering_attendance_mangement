@@ -19,6 +19,38 @@ type studentIDAndName struct {
 	StudentName string `json:"studentName"`
 }
 
+func GetAttendanceInfo(c *gin.Context) {
+	var classes []models.Class
+	var teachers []models.Teacher
+	var students []models.Student
+
+	var attendanceInfos []attendanceInfo
+
+	models.GetClasses(&classes)
+	models.GetTeachers(&teachers)
+	models.GetStudents(&students)
+
+	for _, class := range classes {
+		attendance := &attendanceInfo{ClassName: class.Name}
+		for _, teacher := range teachers {
+			if class.ID == teacher.ClassID {
+				attendance.TeacherNames = append(attendance.TeacherNames, teacher.Name)
+			}
+		}
+
+		for _, student := range students {
+			if class.ID == student.ClassID {
+				idAndName := &studentIDAndName{student.ID, student.Name}
+				attendance.StudentsIDAndName = append(attendance.StudentsIDAndName, *idAndName)
+			}
+		}
+
+		attendanceInfos = append(attendanceInfos, *attendance)
+	}
+
+	c.JSON(200, attendanceInfos)
+}
+
 // response with teacher, student , the number of classes
 func GetAttendanceInfoByDepartment(c *gin.Context) {
 
