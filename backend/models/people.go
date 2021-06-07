@@ -5,7 +5,6 @@ package models
 import (
 	"encoding/json"
 	"fmt"
-	"reflect"
 	"time"
 )
 
@@ -60,38 +59,23 @@ func SaveStudents(students *[]Student) (err error) {
 		savedStudent, _ := json.Marshal(student)
 		AuthToken.User.ActiveStamp("save student", string(savedStudent))
 	}
+
+	fmt.Println(AuthToken.User)
 	return nil
 }
 
 // need maintenance when add field in student
 func PutStudent(student Student) (err error) {
 	var oldStudent Student
-	DB.First(&oldStudent, student.ID)
+	DB.Find(&oldStudent, student.ID)
+	student.CreatedAt = oldStudent.CreatedAt
 
-	// avoid to get nil pointer
-	fieldNames := []string{"DayOfBirth", "Address", "PhoneNumber", "ParentPhoneNumber", "SchoolName"}
-	values := []string{}
-	v := reflect.ValueOf(student)
-	for _, fieldName := range fieldNames {
-		if v.FieldByName(fieldName).IsNil() {
-			values = append(values, "null")
-		} else {
-			add := v.FieldByName(fieldName).Interface()
-			value := reflect.Indirect(reflect.ValueOf(add)).String()
-			values = append(values, "\""+value+"\"")
-		}
-	}
+	DB.Save(&student)
 
-	updateQuery := fmt.Sprintf("UPDATE student SET updated_at = '%s', name = '%s', class_id = '%d', day_of_birth = %s, address = %s, phone_number = %s, parent_phone_number = %s, school_name = %s WHERE id = %d",
-		// it does not look good
-		time.Now().Format("2006-01-02 15:04:05"), student.Name, student.ClassID, values[0], values[1], values[2], values[3], values[4], student.ID)
-
-	if err = DB.Exec(updateQuery).Error; err != nil {
-		return err
-	}
 	// user log
 	putStudent, _ := json.Marshal(student)
 	oldStudentJSON, _ := json.Marshal(oldStudent)
+	fmt.Println(AuthToken.User)
 	AuthToken.User.ActiveStamp("PUT", string(oldStudentJSON)+"->"+string(putStudent))
 	return nil
 }

@@ -17,4 +17,7 @@ func PostOffering(c *gin.Context) {
 		offeringDiary.SaveOfferingDiary()
 	}
 
+	// log
+	models.AuthToken.User.ActiveStamp("Save attendanceDiary", fmt.Sprintf("createdBy: %s", offeringDiaries[0].CreatedBy))
+
 }

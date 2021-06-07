@@ -47,6 +47,7 @@ func SaveStudents(c *gin.Context) {
 		fmt.Println(err)
 		return
 	}
+	fmt.Println(NewStudents)
 	if err = models.SaveStudents(&NewStudents); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"error": "Error in saving students",

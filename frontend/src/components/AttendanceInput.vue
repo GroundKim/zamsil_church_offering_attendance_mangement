@@ -122,17 +122,49 @@
         >
           <v-card>
             <v-card-title primary-title>
-              {{ absentStudent.class.name }} 반
+              <h3>{{ absentStudent.class.name }} 반</h3>
             </v-card-title>
-            <div
-              v-for="(student) in absentStudent.students"
-              :key=student.studentId
-              class="pa-1 ma-5"
-            >
-  
-            {{ student.name }}
-            
-            </div>
+              <v-row class="ma-5">
+                <v-col><h4>이름</h4></v-col>
+                <v-col><h4>결석종류</h4></v-col>
+                <v-col><h4>결석사유</h4></v-col>
+              </v-row>
+              <v-row
+                v-for="(student) in absentStudent.students"
+                :key=student.studentId
+                class="pa-0 ma-5"
+              >
+                <v-col>
+                  {{student.name}}
+                </v-col>
+
+                <v-col>
+                  <v-list-item-group
+                    :mandatory=true
+                    v-model="student.absenceTypeId"
+                    color="primary"
+                  >
+                    <v-list-item
+                      v-for="type in absenceTypes"
+                      :key=type.absenceTypeId
+                      :value="type.absenceTypeId"
+                    >
+                      {{type.name}}
+                    </v-list-item>
+                  </v-list-item-group>
+                </v-col>
+
+                <v-col>
+                  <div
+                    v-show="student.absenceTypeId !== 1"
+                  >
+                    <v-text-field
+                      v-model="student.absenceReason"
+                      label="사유"
+                    ></v-text-field>
+                  </div>
+                </v-col>
+              </v-row>
           </v-card>
         </v-card-text>
         
@@ -170,11 +202,7 @@ export default {
       departmentsLabel: ["1부", "2부"],
       menu: false,
       date: moment().format("yyyy-MM-DD"),
-      value: null,
-      selectAbsentReason: "일반결석",
-      absentReason: ["일반결석", "특별결석"],
 
-      classes: [],
       absentDialog: false,
       attendedStudents: [],
       members: [],
@@ -182,6 +210,8 @@ export default {
       departmentTwoStudents: [],
       currentStudents: [],
       absentStudents: [],
+      absenceTypes: [],
+      absentStudentDetails: [],
     }
   },
   methods: {
@@ -195,18 +225,23 @@ export default {
 
     getAbsentStudents () {
       let currentStudents = JSON.parse(JSON.stringify(this.currentStudents))
-
       currentStudents.forEach(cs => {
-        this.attendedStudents.forEach(attendedStudentId => {
-          for (let i = 0; i < cs.students.length; i++) {
-            const student = cs.students[i]
-            if (student.studentId === attendedStudentId) {
+        for (let i = 0; i < cs.students.length; i++) {
+          const student = cs.students[i];
+          student.absenceTypeId = 1
+          student.absenceReason = null
+          
+          for (let j = 0; j < this.attendedStudents.length; j++) {
+            const as = this.attendedStudents[j];
+            if (as.studentId === cs.studentId) {
               cs.students.splice(i, 1)
               break
             }
           }
-        })
+        }
       })
+
+
       this.absentStudents = currentStudents
     },
 
@@ -215,38 +250,63 @@ export default {
       this.absentStudentsByClasses = []
     },
 
-    sendPost() {
+    sendPost: async function() {
       let payload = []
+      let absentStudentspayload = []
+      let postError = false
 
       // handling attended students
-      this.date += moment().format().substr(10)
+      let date = this.date + moment().format().substr(10)
       this.attendedStudents.forEach((element) => {
         let data = {
           studentId: element,
-          attendedAt: this.date,
+          attendedAt: date,
           createdBy: this.createdBy,
         }
         payload.push(data)
       })
 
       // handling absent students
+      this.absentStudents.forEach((absentStudent) => {
+        absentStudent.students.forEach(student => {
+          if (student.absenceTypeId !== 1) {
+            student.absentAt = date
+            student.createdBy = this.createdBy
+            absentStudentspayload.push(student)
+          }
+        })
+      })
+
+      // post 
       const headers = {
         "Content-Type": "application/json",
       }
 
-      axios
+      await axios
         .post(
           `${this.$serverAddress}/Youth/attendances`,
           JSON.stringify(payload),
           { withCredentials: true, headers: headers }
         )
-        .then(() => {
-          alert("등록 완료!")
-          location.reload()
-        })
+        .then(() => {})
         .catch((err) => {
+          postError = true
           this.alertError(err)
         })
+      
+      await axios
+        .post(`${this.$serverAddress}/Youth/absence`, JSON.stringify(absentStudentspayload), { withCredentials: true, headers: headers})
+        .then(() => {})
+        .catch((err) => {
+          postError = true
+          this.alertError(err)
+        })
+
+      if (!postError) {
+        alert('등록완료!') 
+        location.reload()
+      }
+
     },
   },
 
@@ -259,6 +319,8 @@ export default {
         this.currentStudents = this.departmentTwoStudents
       }
     },
+
+    
   },
 
   created: async function() {
@@ -282,9 +344,16 @@ export default {
       }
     })
 
-    this.members.forEach(member => {
-      this.classes.push(member.class)
-    })
+    await axios
+      .get(`${this.$serverAddress}/Youth/absence/types`, { withCredentials: true })
+      .then((res) => {
+        this.absenceTypes = res.data
+      })
+      .catch((err) => {
+        this.alertError(err)
+      })
+
+
     this.$store.commit("changeHeaderName", "출석부 기입")
     this.department = '1'
   },

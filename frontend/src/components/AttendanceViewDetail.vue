@@ -21,20 +21,22 @@
                   large
                   @save="changeAttendance(classIndex, index, item.attendanceType)"
                 >
-                  <div>{{ item.attendanceType }}</div>
+                  <div>{{ item.attendanceType }} {{classIndex }} {{index}}</div>
                   <template v-slot:input>
                     <v-list-item-group
                       v-model="item.attendanceType"
                       :mandatory=true
                     >
-                      <v-list-item value="참석">참석</v-list-item>
-                      <v-list-item value="결석">결석</v-list-item>
+                      <v-list-item value="출석" color="primary">출석</v-list-item>
+                      <v-list-item value="결석" color="red">결석</v-list-item>
                     </v-list-item-group>
                   </template>
                 </v-edit-dialog>
                 
             </template>
-            
+            <template v-slot:[`item.absenceTypeName`]>
+              {{}}
+            </template>
           </v-data-table>
           </v-col>
         </v-container>
@@ -46,6 +48,7 @@
 
 <script>
 import axios from 'axios'
+import moment from 'moment'
 
 export default {
 	data() {
@@ -58,7 +61,7 @@ export default {
         students: null,
       },
 
-
+      absenceTypes: null,
       attendanceClasses: [],
 
       absenceDiary: {
@@ -102,20 +105,44 @@ export default {
 
         {
           text: '결석 사유',
-          value: 'absence.reason'
+          value: 'absence.absenceReason'
         }
       ]
     },
 
     changeAttendance(classIndex, studentIndex, value) {
-      if (value === '참석') {
-        axios.post()
-        classIndex
-        studentIndex
+      let student = this.classesWithStudents[classIndex].studentAttendances[studentIndex]
+      student.attendedAt = this.date + moment().format().substr(10)
+      student.createdBy = 'user'
+      console.log(JSON.stringify(student))
+      if (value === '출석') {
+        let payload = []
+        payload.push(student)
+
+        const headers = {
+          "Content-Type": "application/json"
+        }
+        axios
+          .post(`${this.$serverAddress}/Youth/attendances`, JSON.stringify(payload), { withCredentials: true, headers: headers })
+          .then(()=> {
+            alert(student.name+'이 출석 처리 되었습니다')
+            })
+          .catch((err) => {
+            this.alertError(err)
+          })
+        
       } 
       
       if (value === '결석'){
-        axios.delete()
+        // delete attendance diary
+        axios
+          .delete(`${this.$serverAddress}/Youth/attendance/${this.date}?student_id=${student.studentId}`, { withCredentials:true })
+          .then(() => {
+            alert(student.name+'이 결석처리 되었습니다!')
+          })
+          .catch((err) => {
+            this.alertError(err)
+          })
       }
     }
   },
@@ -126,6 +153,15 @@ export default {
 
 	created: async function () {
 		this.date = this.$route.query.date
+    await axios
+      .get(`${this.$serverAddress}/Youth/absence/types`, { withCredentials: true })
+      .then((res) => {
+        this.absenceTypes = res.data
+      })
+      .catch((err) => {
+        this.alertError(err)
+      })
+
     // get all classes
     await axios
       .get(`${this.$serverAddress}/Youth/classes`, { withCredentials: true })
@@ -160,7 +196,7 @@ export default {
           isAbsent: false,
           absenceTypeId: null,
           absenceTypeName: null,
-          reason:null,
+          absenceReason:null,
         }
       }
       
@@ -169,7 +205,7 @@ export default {
         studentAttendance.absence.isAbsent = true
         studentAttendance.absence.absenceTypeId = s.absence.absenceType.absenceTypeId
         studentAttendance.absence.absenceTypeName = s.absence.absenceType.name
-        studentAttendance.absence.reason = s.absence.reason
+        studentAttendance.absence.absenceReason = s.absence.absenceReason
       } 
       else {
         studentAttendance.attendanceType = '출석'

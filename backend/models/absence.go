@@ -8,8 +8,8 @@ type AbsenceDiary struct {
 	ID            int       `json:"absenceDiaryId"`
 	StudentID     int       `gorm:"not null" json:"studentId"`
 	AbsentAt      time.Time `gorm:"not null; type:date" json:"absentAt"`
-	AbsenceTypeID int       `gorm:"not null;" json:"-"`
-	Reason        string    `json:"reason"`
+	AbsenceTypeID int       `gorm:"not null;" json:"absenceTypeId"`
+	Reason        string    `json:"absenceReason"`
 	CreatedAt     time.Time `gorm:"not null; default:current_timestamp(3)" json:"createdAt"`
 	CreatedBy     string    `gorm:"null" json:"createdBy"`
 
@@ -24,6 +24,20 @@ type AbsenceType struct {
 
 func GetAbsenceDiariesByDate(absences *[]AbsenceDiary, date time.Time) (err error) {
 	if err = DB.Preload("AbsenceType").Where("absent_at = ?", date.Format("2006-01-02")).Find(absences).Error; err != nil {
+		return err
+	}
+	return nil
+}
+
+func GetAbsenceTypes(absenceTypes *[]AbsenceType) (err error) {
+	if err = DB.Find(&absenceTypes).Error; err != nil {
+		return err
+	}
+	return nil
+}
+
+func (absenceDiary *AbsenceDiary) SaveAbsentDiary() (err error) {
+	if err = DB.Create(&absenceDiary).Error; err != nil {
 		return err
 	}
 	return nil

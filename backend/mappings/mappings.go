@@ -27,9 +27,12 @@ func CreateUrlMappings(conf *config.Config) {
 	Youth := Router.Group("Youth").Use(middlewares.Authorize(conf))
 
 	Youth.GET("/attendances", controllers.GetAttendanceInfoByDepartment)
-	Youth.POST("/attendances", controllers.PostAttendanceInfo)
+	Youth.POST("/attendances", controllers.PostAttendanceDiary)
+	Youth.DELETE("/attendance/:date", controllers.DeleteAttendanceDiary)
 
 	Youth.GET("/absence", controllers.GetAbsenceDiaries)
+	Youth.POST("/absence", controllers.PostAbsentStudents)
+	Youth.GET("/absence/types", controllers.GetAbsenceType)
 
 	Youth.GET("/attendance/view/list", controllers.GetAttendanceViewList)
 	Youth.GET("/attendance/view/excel", controllers.GetAttendanceExcel)

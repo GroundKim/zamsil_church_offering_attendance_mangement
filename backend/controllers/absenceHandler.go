@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"net/http"
 	"time"
 	"zamsil_church_offering_attendance_mangement/models"
 
@@ -16,4 +17,38 @@ func GetAbsenceDiaries(c *gin.Context) {
 		models.GetAbsenceDiariesByDate(&absenceDiaries, parsedDate)
 	}
 	c.JSON(200, absenceDiaries)
+}
+
+func GetAbsenceType(c *gin.Context) {
+	var absenceTypes []models.AbsenceType
+
+	if err := models.GetAbsenceTypes(&absenceTypes); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"err": "fail in getAbsenceTypes",
+		})
+	}
+
+	c.JSON(200, absenceTypes)
+}
+
+func PostAbsentStudents(c *gin.Context) {
+	var absentStudents []models.AbsenceDiary
+
+	if err := c.BindJSON(&absentStudents); err != nil {
+		c.JSON(http.StatusBadGateway, gin.H{
+			"err": "binding error",
+		})
+		return
+	}
+
+	for _, absentStudent := range absentStudents {
+		if err := absentStudent.SaveAbsentDiary(); err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"err": "fail in saveAbsenceDiary",
+			})
+			return
+		}
+	}
+
+	c.JSON(200, absentStudents)
 }

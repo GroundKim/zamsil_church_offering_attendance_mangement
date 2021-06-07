@@ -138,12 +138,13 @@ export default {
     // sendPost
     sendPost: async function() {
       let offeringPayload = []
+      let date = this.date + moment().format().substr(10)
       let weekOfferingPayload = {
         studentId: null,
         offeringTypeId: 1,
         offeringCost: parseInt(this.weekOfferingCost.replace(',','')),
         departmentId: parseInt(this.departmentId),
-        offeredAt: this.date + moment().format().substr(10),
+        offeredAt: date,
         createdAt: moment().format(),
         createdBy: this.createdBy,
       }

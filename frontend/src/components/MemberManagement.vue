@@ -320,18 +320,19 @@ export default {
     },
 
     saveNewStudent () {
-      if (this.dialogStudent.dayOfBirth !== null)  this.dialogStudent.dayOfBirth += moment().format().substr(10)
+      let dialogStudent = JSON.parse(JSON.stringify(this.dialogStudent))
+      if (dialogStudent.dayOfBirth !== null)  dialogStudent.dayOfBirth += moment().format().substr(10)
       let payload = []
-      payload.push(this.dialogStudent)
+      payload.push(dialogStudent)
       
       const headers = {
-        headers: "application/json"
+        'Content-type': "application/json"
       }
       axios
         .post(`${this.$serverAddress}/Youth/students`, JSON.stringify(payload), { withCredentials: true, Headers: headers })
         .then((res) => {
           let student = res.data
-          let index = this.currentClasses.findIndex(c => c.Class.classId == this.dialogStudent.classId)
+          let index = this.currentClasses.findIndex(c => c.class.classId == this.dialogStudent.classId)
           this.currentClasses[index].students = this.currentClasses[index].students.concat(student)
           this.closeDialog()
         })
@@ -341,14 +342,16 @@ export default {
     },
 
     putStudent () {
+      let dialogStudent = JSON.parse(JSON.stringify(this.dialogStudent))
+      if (dialogStudent.dayOfBirth !== null)  dialogStudent.dayOfBirth += moment().format().substr(10)
       const headers = {
-        headers: 'application/json'
+        'Content-type': 'application/json'
       }
       axios
-        .put(`${this.$serverAddress}/Youth/students/${this.dialogStudent.studentId}`, JSON.stringify(this.dialogStudent), { withCredentials: true, Headers: headers})
+        .put(`${this.$serverAddress}/Youth/students/${dialogStudent.studentId}`, JSON.stringify(dialogStudent), { withCredentials: true, Headers: headers})
         .then((res) => {
           let student = res.data
-          let classIndex = this.currentClasses.findIndex(c => c.class.classId == this.dialogStudent.classId)
+          let classIndex = this.currentClasses.findIndex(c => c.class.classId == dialogStudent.classId)
           console.log(JSON.stringify(this.currentClasses[classIndex]))
           let studentIndex = this.currentClasses[classIndex].students.findIndex(s => s.studentId == student.studentId)
           Object.assign(this.currentClasses[classIndex].students[studentIndex], student)
