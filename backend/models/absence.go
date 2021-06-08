@@ -5,7 +5,7 @@ import (
 )
 
 type AbsenceDiary struct {
-	ID            int       `json:"absenceDiaryId"`
+	ID            *int      `json:"absenceDiaryId"`
 	StudentID     int       `gorm:"not null" json:"studentId"`
 	AbsentAt      time.Time `gorm:"not null; type:date" json:"absentAt"`
 	AbsenceTypeID int       `gorm:"not null;" json:"absenceTypeId"`
@@ -38,6 +38,13 @@ func GetAbsenceTypes(absenceTypes *[]AbsenceType) (err error) {
 
 func (absenceDiary *AbsenceDiary) SaveAbsentDiary() (err error) {
 	if err = DB.Create(&absenceDiary).Error; err != nil {
+		return err
+	}
+	return nil
+}
+
+func (absenceDiary *AbsenceDiary) DeleteAbsenceDiaryByID() (err error) {
+	if err = DB.Delete(&absenceDiary).Error; err != nil {
 		return err
 	}
 	return nil

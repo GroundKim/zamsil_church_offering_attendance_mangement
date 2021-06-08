@@ -16,6 +16,7 @@
             loading="true"
             hide-default-footer
           >
+            <!-- 출석 여부 in data table -->
             <template v-slot:[`item.attendanceType`]="{ item, index }">
                 <v-edit-dialog
                   large
@@ -32,14 +33,39 @@
                     </v-list-item-group>
                   </template>
                 </v-edit-dialog>
-                
             </template>
-            <template v-slot:[`item.absenceTypeName`]>
-              {{}}
+
+            <!-- 결석 종류 in data table -->
+            <template v-slot:[`item.absence.absenceTypeName`] = "{ item }" >
+              <v-edit-dialog
+                large
+              >
+                <div>{{ item.absence.absenceTypeName }}</div>
+                <template v-slot:input>
+                  <v-list-item-group
+                    v-model="item.absence.absenceTypeId"
+                    :mandatory="true"
+                  >
+                    <v-list-item
+                      v-for="absenceType in absenceTypes"
+                      :key=absenceType.id
+                      :value="absenceType.absenceTypeId"
+                      @click="changeAbsenceTypeName(absenceType, item)"
+                    >{{ absenceType.name }}</v-list-item>
+                  </v-list-item-group>
+                </template>
+              </v-edit-dialog>
             </template>
+            
+            <!-- 결석 사유 in data table -->
+            <!-- <template v-slot:[`item.absence.absenceReason`] = "{ item }">
+              <v-edit-dialog>
+                <div>{{}}</div>
+              </v-edit-dialog>
+            </template> -->
           </v-data-table>
           </v-col>
-        </v-container>
+      </v-container>
       </v-row>
       <!-- edit dialog -->
 
@@ -110,40 +136,115 @@ export default {
       ]
     },
 
-    changeAttendance(classIndex, studentIndex, value) {
-      let student = this.classesWithStudents[classIndex].studentAttendances[studentIndex]
-      student.attendedAt = this.date + moment().format().substr(10)
-      student.createdBy = 'user'
-      console.log(JSON.stringify(student))
-      if (value === '출석') {
-        let payload = []
-        payload.push(student)
+    changeAbsenceTypeName (absenceType, item) {
+      // firstly, do delete attendance method when the student is attended
+      if (!item.absence.isAbsent) {
+        this.deleteAttendance(item)
+      }
 
+      if (absenceType.absenceTypeId === 1) {
+        // if type id 1, which means '일반 참석': 다른 타입 -> 일반
+        // delete not 일반 absence diary
+        this.deleteAbsenceDiary(item.absence.absenceDiaryId)
+
+      } else {
+        let payload = []
+        item.absentAt = this.date + moment().format().substr(10)
+        item.absenceTypeId = absenceType.absenceTypeId
+        payload.push(item)
         const headers = {
-          "Content-Type": "application/json"
+          "content-type": "application/json"
         }
+        // 일반 - > 다른 타입
         axios
-          .post(`${this.$serverAddress}/Youth/attendances`, JSON.stringify(payload), { withCredentials: true, headers: headers })
-          .then(()=> {
-            alert(student.name+'이 출석 처리 되었습니다')
-            })
-          .catch((err) => {
-            this.alertError(err)
-          })
-        
-      } 
-      
-      if (value === '결석'){
-        // delete attendance diary
-        axios
-          .delete(`${this.$serverAddress}/Youth/attendance/${this.date}?student_id=${student.studentId}`, { withCredentials:true })
-          .then(() => {
-            alert(student.name+'이 결석처리 되었습니다!')
+          .post(`${this.$serverAddress}/Youth/absence`, JSON.stringify(payload), {withCredentials: true, headers: headers})
+          .then((res) => {
+            console.log(JSON.stringify(res.data))
           })
           .catch((err) => {
             this.alertError(err)
           })
       }
+
+
+      // axios
+      //   .patch(`${this.$serverAddress}/Youth/absence/type`, , {})
+
+      // axios then
+      item.absence.absenceTypeId = absenceType.absenceTypeId
+      item.absence.absenceTypeName = absenceType.name
+
+    },
+
+    changeAttendance: async function (classIndex, studentIndex, value) {
+      let student = this.classesWithStudents[classIndex].studentAttendances[studentIndex]
+      let absenceDiaryId = student.absence.absenceDiaryId
+      student.attendedAt = this.date + moment().format().substr(10)
+      student.createdBy = 'user'
+      if (value === '출석') {
+        let payload = []
+        let error = false
+        payload.push(student)
+
+        const headers = {
+          "Content-Type": "application/json"
+        }
+        await axios
+          .post(`${this.$serverAddress}/Youth/attendances`, JSON.stringify(payload), { withCredentials: true, headers: headers })
+          .then(()=> {
+            for(const key in student.absence) {
+              student.absence[key] = null
+            }
+          })
+          .catch((err) => {
+            error = true
+            this.alertError(err)
+          })
+        
+        if (absenceDiaryId !== null) {
+          error = this.deleteAbsenceDiary(absenceDiaryId)
+
+        }
+        
+        if (!error) {
+          alert(student.name+'이 출석 처리 되었습니다')
+        }
+      } 
+      
+      if (value === '결석'){
+        // delete attendance diary
+        this.deleteAttendance(student)
+
+      }
+    },
+
+    deleteAttendance (student) {
+      axios
+        .delete(`${this.$serverAddress}/Youth/attendance/${this.date}?student_id=${student.studentId}`, { withCredentials:true })
+        .then(() => {
+          alert(student.name+'이 결석처리 되었습니다!')
+          student.attendanceType = '결석'
+          if (student.absence.absenceTypeName == null){
+            student.absence.absenceTypeName = '일반결석'
+            student.absence.absenceTypeId = 1
+          }
+          student.absence.isAbsent = true
+        })
+        .catch((err) => {
+          this.alertError(err)
+        })
+      },
+    
+    deleteAbsenceDiary: async function (absenceDiaryId) {
+      let error = false
+      await axios
+      .delete(`${this.$serverAddress}/Youth/absence/${absenceDiaryId}`, {withCredentials: true})
+      .then(() => {})
+      .catch((err) => {
+        error = true
+        this.alertError(err)
+      })
+      return error 
     }
   },
 
@@ -175,13 +276,17 @@ export default {
         this.classesWithStudents.push(classWithAttendanceDiaries) 
         })
       })
+      .catch((err) => {
+        this.alertError(err)
+      })
 
     await axios
       .get(`${this.$serverAddress}/Youth/attendance/view?date=${this.date}`, { withCredentials: true })
       .then((res) => {
         this.studentsWithAttendance = res.data
       })
-      .catch(() => {
+      .catch((err) => {
+        this.alertError(err)
       })
 
     // split up the students with divided by class
@@ -193,6 +298,7 @@ export default {
         name: s.student.name,
         attendanceType: null,
         absence: {
+          absenceDiaryId: null,
           isAbsent: false,
           absenceTypeId: null,
           absenceTypeName: null,
@@ -202,6 +308,7 @@ export default {
       
       if (s.absence !== null) {
         studentAttendance.attendanceType = '결석'
+        studentAttendance.absence.absenceDiaryId = s.absence.absenceDiaryId
         studentAttendance.absence.isAbsent = true
         studentAttendance.absence.absenceTypeId = s.absence.absenceType.absenceTypeId
         studentAttendance.absence.absenceTypeName = s.absence.absenceType.name
@@ -214,47 +321,7 @@ export default {
     })
 
 
-    // // handling members
-		// await axios
-		// 	.get(`${this.$serverAddress}/Youth/members`, { withCredentials: true })
-		// 	.then((res) => {
-		// 		this.classes = res.data
-		// 	})
-
-    // await this.classes.forEach(c => {
-    //   let attendanceClass = {
-    //     attendanceDiaries: [],
-    //   }
-    //   c.students.forEach(student => {
-    //     let attendanceDiary = {
-    //       studentId: student.studentId,
-    //       name: student.name,
-    //       isAttended: '결석',
-    //       absenceType: '일반결석',
-    //       absenceReason: null
-    //     }
-    //     attendanceClass.attendanceDiaries.push(attendanceDiary)
-    //   })    
-    
-    //   this.attendanceClasses.push(attendanceClass)
-    // })
-
-    // // handing attendance
-		// await axios
-		// 	.get(`${this.$serverAddress}/Youth/attendance/view?date=${this.date}`, { withCredentials: true })
-		// 	.then((res) => {
-    //     let attendedDiaries = res.data
-    //     attendedDiaries.forEach(diary => {
-    //     let classId = diary.student.classId
-    //     let studentId = diary.studentId  
-        
-    //     let classIndex = this.classes.findIndex(c => c.class.classId == classId)
-    //     let studentIndex = this.attendanceClasses[classIndex].attendanceDiaries.findIndex(a => a.studentId == studentId)
-    //     this.attendanceClasses[classIndex].attendanceDiaries[studentIndex].isAttended = '출석'
-    //     this.attendanceClasses[classIndex].attendanceDiaries[studentIndex].absenceType = null
-    //     this.attendanceClasses[classIndex].attendanceDiaries[studentIndex].absenceReason = null          
-    //     })
-		// 	})
+  
 
     // // handling absence
     

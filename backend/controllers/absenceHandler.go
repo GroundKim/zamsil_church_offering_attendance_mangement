@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"net/http"
+	"strconv"
 	"time"
 	"zamsil_church_offering_attendance_mangement/models"
 
@@ -51,4 +52,18 @@ func PostAbsentStudents(c *gin.Context) {
 	}
 
 	c.JSON(200, absentStudents)
+}
+
+func DeleteAbsenceDiary(c *gin.Context) {
+	absenceDiaryID := c.Param("id")
+	parsedID, _ := strconv.Atoi(absenceDiaryID)
+	absenceDiary := &models.AbsenceDiary{ID: &parsedID}
+
+	if err := absenceDiary.DeleteAbsenceDiaryByID(); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"err": "fail in DeleteAbsenceDiary",
+		})
+		return
+	}
+	c.JSON(http.StatusOK, absenceDiary)
 }
