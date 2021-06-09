@@ -53,6 +53,19 @@
                 mdi-download
               </v-icon>
             </v-btn>
+
+            <v-btn
+              @click="showOfferingDiaryDetail(offeredAt)"
+              fab
+              outlined
+              x-small
+              color="indigo"
+              class="ml-3"
+            >
+              <v-icon>
+                mdi-clipboard-list-outline
+              </v-icon>
+            </v-btn>
           </h3>
         </v-sheet>
       </v-col>
@@ -76,13 +89,17 @@ export default {
   methods: {
     getOfferedAtsByYear (year) {
       axios
-      .get(`${this.$serverAddress}/Youth/offering/view?year=${year}`, {withCredentials: true})
+      .get(`${this.$serverAddress}/Youth/offering/view/list?year=${year}`, {withCredentials: true})
       .then(res => {
         this.offeredAts = res.data.offeredAts
       })
       .catch(err => {
         this.alertError(err)
       })
+    },
+
+    showOfferingDiaryDetail (offeredAt) {
+      this.$router.push(`/offering/view/detail?date=${offeredAt.substring(0,10)}`)
     },
 
     plusYear () {

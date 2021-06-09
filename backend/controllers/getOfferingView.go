@@ -7,8 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func GetOfferingView(c *gin.Context) {
-
+func GetOfferingViewList(c *gin.Context) {
 	if len(c.Query("year")) != 0 {
 		year := c.Query("year")
 		parsedYear, _ := time.Parse("2006", year)
@@ -33,5 +32,13 @@ func GetOfferingView(c *gin.Context) {
 		payload := map[string][]time.Time{"offeredAts": offeringAts}
 		c.JSON(200, payload)
 	}
+}
 
+func GetOfferingView(c *gin.Context) {
+	date := c.Query("date")
+	parsedDate, _ := time.Parse("2006-01-02", date)
+	var offeringDiaries []models.OfferingDiary
+
+	models.GetOfferingDiaryByDate(&offeringDiaries, parsedDate)
+	c.JSON(200, offeringDiaries)
 }

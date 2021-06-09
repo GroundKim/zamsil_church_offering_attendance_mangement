@@ -20,7 +20,7 @@ type Student struct {
 	ParentPhoneNumber *string    `json:"parentPhoneNumber"`
 	SchoolName        *string    `json:"schoolName"`
 
-	Class Class `gorm:"references:ID" json:"-"`
+	Class Class `gorm:"references:ID" json:"class"`
 }
 
 type Teacher struct {
@@ -73,10 +73,9 @@ func PutStudent(student Student) (err error) {
 	DB.Save(&student)
 
 	// user log
-	putStudent, _ := json.Marshal(student)
-	oldStudentJSON, _ := json.Marshal(oldStudent)
-	fmt.Println(AuthToken.User)
-	AuthToken.User.ActiveStamp("PUT", string(oldStudentJSON)+"->"+string(putStudent))
+	marshaledNewStudent, _ := json.Marshal(student)
+	marshaledOldStudent, _ := json.Marshal(oldStudent)
+	AuthToken.User.ActiveStamp("PUT STUDENT", string(marshaledOldStudent)+"->"+string(marshaledNewStudent))
 	return nil
 }
 
@@ -90,8 +89,8 @@ func DeleteStudent(student *Student) (err error) {
 	}
 
 	// user log
-	deleteStudent, _ := json.Marshal(student)
-	AuthToken.User.ActiveStamp("DELETE", string(deleteStudent))
+	deletedStudent, _ := json.Marshal(student)
+	AuthToken.User.ActiveStamp("DELETE STUDENT", string(deletedStudent))
 	return nil
 }
 

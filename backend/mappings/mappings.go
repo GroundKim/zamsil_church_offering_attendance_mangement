@@ -50,11 +50,13 @@ func CreateUrlMappings(conf *config.Config) {
 
 	Youth.POST("/teachers", controllers.SaveTeachers)
 
-	Youth.GET("/offering/type", controllers.GetOfferingType)
 	Youth.POST("/offering", controllers.PostOffering)
-
+	Youth.GET("/offering/types", controllers.GetOfferingType)
 	Youth.GET("/offering/view", controllers.GetOfferingView)
+	Youth.GET("/offering/view/list", controllers.GetOfferingViewList)
 	Youth.GET("/offering/view/excel", controllers.GetOfferingExcel)
+	Youth.PUT("/offering", controllers.PutOfferingDiary)
+	Youth.DELETE("/offering/:id", controllers.DeleteOfferingDiary)
 
 	Youth.GET("/classes", controllers.GetClasses)
 

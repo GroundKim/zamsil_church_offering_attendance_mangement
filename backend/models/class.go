@@ -6,7 +6,7 @@ import (
 )
 
 type Department struct {
-	ID             int
+	ID             int       `json:"deparmtentId"`
 	DepartmentName int       `gorm:"not null;" json:"name"`
 	CreatedAt      time.Time `gorm:"not null;" json:"createdAt"`
 
