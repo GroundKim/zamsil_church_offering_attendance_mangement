@@ -18,18 +18,15 @@
           >
             <!-- 출석 여부 in data table -->
             <template v-slot:[`item.attendanceType`]="{ item, index }">
-                <v-edit-dialog
-                  large
-                  @save="changeAttendance(classIndex, index, item.attendanceType)"
-                >
-                  <div>{{ item.attendanceType }} {{classIndex }} {{index}}</div>
+                <v-edit-dialog>
+                  <div>{{ item.attendanceType }}</div>
                   <template v-slot:input>
                     <v-list-item-group
                       v-model="item.attendanceType"
                       :mandatory=true
                     >
-                      <v-list-item value="출석" color="primary">출석</v-list-item>
-                      <v-list-item value="결석" color="red">결석</v-list-item>
+                      <v-list-item color="primary" @click="changeAttendance(classIndex, index, true)">출석</v-list-item>
+                      <v-list-item color="red" @click="changeAttendance(classIndex, index, false)">결석</v-list-item>
                     </v-list-item-group>
                   </template>
                 </v-edit-dialog>
@@ -37,9 +34,7 @@
 
             <!-- 결석 종류 in data table -->
             <template v-slot:[`item.absence.absenceTypeName`] = "{ item }" >
-              <v-edit-dialog
-                large
-              >
+              <v-edit-dialog>
                 <div>{{ item.absence.absenceTypeName }}</div>
                 <template v-slot:input>
                   <v-list-item-group
@@ -58,12 +53,25 @@
             </template>
             
             <!-- 결석 사유 in data table -->
-            <!-- <template v-slot:[`item.absence.absenceReason`] = "{ item }">
-              <v-edit-dialog>
-                <div>{{}}</div>
+            <template v-slot:[`item.absence.absenceReason`] = "{ item }">
+              <v-edit-dialog
+                @close="changeAbsenceReason(item)"
+              >
+                <div v-if="item.absence.absenceTypeId != 1">{{ item.absence.absenceReason }}</div>
+                <template v-slot:input v-if="item.absence.absenceTypeId != 1">
+                  <v-text-field
+                    v-model="item.absence.absenceReason"
+                    label="사유"
+                  ></v-text-field>
+                </template>
+                <template v-slot:input v-else>
+                  <div>
+                    일반 결석은 결석 사유를 적을 수 없습니다. 다른 결석으로 바꿔주세요.
+                  </div>
+                </template>
               </v-edit-dialog>
-            </template> -->
-          </v-data-table>
+            </template>
+          </v-data-table> 
           </v-col>
       </v-container>
       </v-row>
@@ -108,6 +116,17 @@ export default {
     getAttendanceDiaryTableItems(classInfo) {
       let index = this.classesWithStudents.findIndex(c => c.class.classId == classInfo.class.classId)
       return this.classesWithStudents[index].studentAttendances
+    },
+
+    changeAbsenceReason (student) {
+      if (student.absence.absenceTypeId !== 1) {
+        axios
+          .patch(`${this.$serverAddress}/Youth/absence/${student.absence.absenceDiaryId}?reason=${student.absence.absenceReason}`, null, { withCredentials: true })
+          .then(() => {})
+          .catch((err) => {
+            this.alertError(err)
+          })
+      }
     },
 
     studentHeaders () {
@@ -176,12 +195,12 @@ export default {
 
     },
 
-    changeAttendance: async function (classIndex, studentIndex, value) {
+    changeAttendance: async function (classIndex, studentIndex, isAttended) {
       let student = this.classesWithStudents[classIndex].studentAttendances[studentIndex]
       let absenceDiaryId = student.absence.absenceDiaryId
       student.attendedAt = this.date + moment().format().substr(10)
       student.createdBy = 'user'
-      if (value === '출석') {
+      if (isAttended) {
         let payload = []
         let error = false
         payload.push(student)
@@ -211,7 +230,7 @@ export default {
         }
       } 
       
-      if (value === '결석'){
+      if (isAttended){
         // delete attendance diary
         this.deleteAttendance(student)
 

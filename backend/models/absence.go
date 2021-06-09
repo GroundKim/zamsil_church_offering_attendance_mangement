@@ -50,6 +50,20 @@ func (absenceDiary *AbsenceDiary) DeleteAbsenceDiaryByID() (err error) {
 	return nil
 }
 
+func (absenceDiary *AbsenceDiary) UpdateAbsenceDiaryByID() (err error) {
+	if err = DB.Save(&absenceDiary).Error; err != nil {
+		return err
+	}
+	return nil
+}
+
+func (absenceDiary *AbsenceDiary) UpdateAbsenceDiaryReason() (err error) {
+	if err = DB.Model(&absenceDiary).Update("reason", absenceDiary.Reason).Error; err != nil {
+		return err
+	}
+	return nil
+}
+
 func (AbsenceDiary) TableName() string {
 	return "absence_diary"
 }

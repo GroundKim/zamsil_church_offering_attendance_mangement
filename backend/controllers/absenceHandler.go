@@ -67,3 +67,32 @@ func DeleteAbsenceDiary(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, absenceDiary)
 }
+
+func PutAbsenceDiary(c *gin.Context) {
+	absenceDiaryID := c.Param("id")
+	parsedID, _ := strconv.Atoi(absenceDiaryID)
+	absenceDiary := &models.AbsenceDiary{ID: &parsedID}
+
+	if err := absenceDiary.UpdateAbsenceDiaryByID(); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"err": "fail in PutAbsenceDiary",
+		})
+		return
+	}
+	c.JSON(http.StatusOK, absenceDiary)
+}
+
+func PatchAbsenceDiary(c *gin.Context) {
+	absenceDiaryID := c.Param("id")
+	absenceDiaryReason := c.Query("reason")
+	parsedID, _ := strconv.Atoi(absenceDiaryID)
+	absenceDiary := &models.AbsenceDiary{ID: &parsedID, Reason: absenceDiaryReason}
+
+	if err := absenceDiary.UpdateAbsenceDiaryReason(); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"err": "fail in PatchAbsenceDiaryReason",
+		})
+		return
+	}
+	c.JSON(http.StatusOK, absenceDiary)
+}
