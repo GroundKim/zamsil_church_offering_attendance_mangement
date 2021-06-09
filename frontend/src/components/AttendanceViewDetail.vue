@@ -22,11 +22,11 @@
                   <div>{{ item.attendanceType }}</div>
                   <template v-slot:input>
                     <v-list-item-group
-                      v-model="item.attendanceType"
+                      v-model=item.attendanceType
                       :mandatory=true
                     >
-                      <v-list-item color="primary" @click="changeAttendance(classIndex, index, true)">출석</v-list-item>
-                      <v-list-item color="red" @click="changeAttendance(classIndex, index, false)">결석</v-list-item>
+                      <v-list-item value="참석" color="primary" @click="changeAttendance(classIndex, index, true)">출석</v-list-item>
+                      <v-list-item value="결석" color="red" @click="changeAttendance(classIndex, index, false)">결석</v-list-item>
                     </v-list-item-group>
                   </template>
                 </v-edit-dialog>
@@ -177,8 +177,7 @@ export default {
         // 일반 - > 다른 타입
         axios
           .post(`${this.$serverAddress}/Youth/absence`, JSON.stringify(payload), {withCredentials: true, headers: headers})
-          .then((res) => {
-            console.log(JSON.stringify(res.data))
+          .then(() => {
           })
           .catch((err) => {
             this.alertError(err)
@@ -201,8 +200,8 @@ export default {
       student.attendedAt = this.date + moment().format().substr(10)
       student.createdBy = 'user'
       if (isAttended) {
+        student.attendanceType = "참석"
         let payload = []
-        let error = false
         payload.push(student)
 
         const headers = {
@@ -216,21 +215,16 @@ export default {
             }
           })
           .catch((err) => {
-            error = true
             this.alertError(err)
           })
         
         if (absenceDiaryId !== null) {
-          error = this.deleteAbsenceDiary(absenceDiaryId)
-
-        }
-        
-        if (!error) {
-          alert(student.name+'이 출석 처리 되었습니다')
+          this.deleteAbsenceDiary(absenceDiaryId)
         }
       } 
       
-      if (isAttended){
+      if (!isAttended){
+        student.attendanceType = "결석"
         // delete attendance diary
         this.deleteAttendance(student)
 
@@ -241,7 +235,6 @@ export default {
       axios
         .delete(`${this.$serverAddress}/Youth/attendance/${this.date}?student_id=${student.studentId}`, { withCredentials:true })
         .then(() => {
-          alert(student.name+'이 결석처리 되었습니다!')
           student.attendanceType = '결석'
           if (student.absence.absenceTypeName == null){
             student.absence.absenceTypeName = '일반결석'
