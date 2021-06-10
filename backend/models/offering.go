@@ -63,7 +63,7 @@ func GetOfferingType(OfferingTypes *[]OfferingType) (err error) {
 	return nil
 }
 
-func PutOfferingDiary(offeringDiary *OfferingDiary) (err error) {
+func ChangeOfferingDiaryTypeAndCost(offeringDiary *OfferingDiary) (err error) {
 	var oldOfferingDiary OfferingDiary
 	DB.Find(&oldOfferingDiary, offeringDiary.ID)
 	offeringDiary.CreatedAt = oldOfferingDiary.CreatedAt
@@ -96,6 +96,97 @@ func DeleteOfferingDiary(offeringDiary *OfferingDiary) (err error) {
 	AuthToken.User.ActiveStamp("DELETE OFFERING DIARY", string(deletedOfferingDiary))
 	return nil
 }
+
+// handling offering summary
+type OfferingCost struct {
+	TotalWeekOfferingCost     []int    `json:"totalWeekOfferingCost"`
+	TotalTitheOfferingCost    []int    `json:"totalTitheOfferingCost"`
+	TotalThanksOfferingCost   []int    `json:"totalThanksOfferingCost"`
+	TotalSeasonalOfferingCost []int    `json:"totalSeasonalOfferingCost"`
+	TotalEtcOfferingCost      []int    `json:"totalEtcOfferingCost"`
+	CreatedBy                 []string `json:"createdBy"`
+}
+
+type OfferingCostWrapper struct {
+	OfferingType OfferingType
+	OfferingCost []int
+}
+
+// need maintenance if offering type get to be changed
+func (offeringCosts *OfferingCost) GetSummaryOfferingCostByDate(date time.Time) {
+	var OfferingCostWrappers []OfferingCostWrapper
+
+	offeringCosts.TotalWeekOfferingCost = []int{0, 0}
+	offeringCosts.TotalTitheOfferingCost = []int{0, 0}
+	offeringCosts.TotalThanksOfferingCost = []int{0, 0}
+	offeringCosts.TotalSeasonalOfferingCost = []int{0, 0}
+	offeringCosts.TotalEtcOfferingCost = []int{0, 0}
+
+	var offeringDiaries []OfferingDiary
+	var createdBys []string
+	GetOfferingDiaryByDate(&offeringDiaries, date)
+
+	for i := 0; i < len(offeringDiaries); i++ {
+		hasSameName := false
+		for j := i + 1; j < len(offeringDiaries); j++ {
+			if offeringDiaries[i].CreatedBy == offeringDiaries[j].CreatedBy {
+				hasSameName = true
+			}
+		}
+
+		if !hasSameName {
+			createdBys = append(createdBys, offeringDiaries[i].CreatedBy)
+		}
+	}
+	offeringCosts.CreatedBy = createdBys
+
+	for _, offeringDiary := range offeringDiaries {
+		switch offeringDiary.OfferingType.OfferingTypeName {
+		case "주일헌금":
+			if offeringDiary.DepartmentID == 1 {
+				offeringCosts.TotalWeekOfferingCost[0] += offeringDiary.Cost
+			}
+			if offeringDiary.DepartmentID == 2 {
+				offeringCosts.TotalWeekOfferingCost[1] += offeringDiary.Cost
+			}
+
+		case "십일조헌금":
+			if offeringDiary.DepartmentID == 1 {
+				offeringCosts.TotalTitheOfferingCost[0] += offeringDiary.Cost
+			}
+			if offeringDiary.DepartmentID == 2 {
+				offeringCosts.TotalTitheOfferingCost[1] += offeringDiary.Cost
+			}
+
+		case "감사헌금":
+			if offeringDiary.DepartmentID == 1 {
+				offeringCosts.TotalThanksOfferingCost[0] += offeringDiary.Cost
+			}
+			if offeringDiary.DepartmentID == 2 {
+				offeringCosts.TotalThanksOfferingCost[1] += offeringDiary.Cost
+			}
+
+		case "절기헌금":
+			if offeringDiary.DepartmentID == 1 {
+				offeringCosts.TotalSeasonalOfferingCost[0] += offeringDiary.Cost
+			}
+			if offeringDiary.DepartmentID == 2 {
+				offeringCosts.TotalSeasonalOfferingCost[1] += offeringDiary.Cost
+			}
+
+		case "기타헌금":
+			if offeringDiary.DepartmentID == 1 {
+				offeringCosts.TotalEtcOfferingCost[0] += offeringDiary.Cost
+			}
+			if offeringDiary.DepartmentID == 2 {
+				offeringCosts.TotalEtcOfferingCost[1] += offeringDiary.Cost
+			}
+		}
+	}
+
+	var (
+		weekOfferingCostWrapper = &OfferingCostWrapper{OfferingType: OfferingType{}}
+	)
 
 func (OfferingDiary) TableName() string {
 	return "offering_diary"

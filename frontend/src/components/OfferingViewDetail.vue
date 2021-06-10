@@ -1,26 +1,44 @@
 <template>
 	<v-container grid-list-xs>
 		{{ offeringData }}
-		<v-data-table
-			:headers="totalOfferingTableHeaders"
-			class="elevation-1"
-			loading="true"
-			hide-default-footer
-		>
-			
-		</v-data-table>
+
+    <v-simple-table
+      fixed-header 
+    >
+      <template v-slot:top>
+        <div>작성자: {{ offeringSummary.createdBy.join(',')}}</div>
+      </template>
+      <template v-slot:default>
+        <thead>
+          <tr>
+            <th>헌금 종류</th>
+            <th>1부</th>
+            <th>2부</th>
+            <th>총합</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr
+            v-for="type in offeringTypes"
+            :key="type.offeringTypeId"
+          >
+            {{ type.offeringTypeName }}
+            <td></td>
+          </tr>
+        </tbody>
+      </template>
+
+    </v-simple-table>
 
 		<v-data-table
 			:headers="individualOfferingTableHeaders"
-			:items="offeringData"
+			:items="getOfferingData"
 			class="elevation-1"
 			hide-default-footer
-			loading="true"
 		>
 			<template v-slot:[`item.student.name`]= "{ item }">{{ item.studentId===null ? "무명" :item.student.name }}</template>
 			<template v-slot:[`item.offeringCost`]="{ item }">
-				{{item}}
-				<!-- ₩ {{changeCostWithDelimeter(item.offeringCost)}} -->
+				₩ {{changeCostWithDelimeter(item.offeringCost)}}
 			</template>
 			
 			<template v-slot:[`item.action`]="{ item }">
@@ -70,7 +88,7 @@
 				</v-card-text>
 				<v-card-actions>
 					<v-btn color="fail">취소</v-btn>
-					<v-btn color="success" @click="editOfferingDiary(item)">저장</v-btn>
+					<v-btn color="success" @click="editOfferingDiary()">저장</v-btn>
 				</v-card-actions>
 			</v-card>	
 		</v-dialog>
@@ -83,6 +101,7 @@ export default {
 	data() {
 		return {
 			date: null,
+      offeringItem: null,
 			offeringData: [],
 			offeringTypes: [],
 			dialog: false,
@@ -136,46 +155,21 @@ export default {
 				}
 			],
 
-			totalOfferingTableHeaders: [
-				{
-					text: '1부',
-					align: 'start',
-					value: 'departmentOne'
-				},
-
-				{
-					text: '2부',
-					value: ' departmentTwo'
-				}
-			],
-
 			offeringTableItems: null,
-			offerings: [
-				// departmentOne
-				{
-					totalWeekOfferingCost: 0,
-					totalTithOfferingCost: 0,
-					totalThanksOfferingCost: 0,
-					totalSeasonalOfferingCost: 0,
-					totalEtcOfferingCost: 0,
-				},
-
-				// departmentTwo
-				{
-					totalWeekOfferingCost: 0,
-					totalTithOfferingCost: 0,
-					totalThanksOfferingCost: 0,
-					totalSeasonalOfferingCost: 0,
-					totalEtcOfferingCost: 0,
-				}
-			]
+			offeringSummary: {
+        createdBy: '',
+      },
 		}
 	},
 	
 	computed: {
 		getDialogOfferingCost() {
 			return this.offeringDiaryDialog.offeringCost
-		}
+		},
+
+    getOfferingData () {
+      return this.offeringData
+    }
 	},
 
 	watch: {
@@ -192,6 +186,7 @@ export default {
 		},
 
 		showOfferingEditDialog (item) {
+      this.offeringItem = item
 			this.dialog = true
       this.offeringDiaryDialog.offeringDiaryId = item.offeringDiaryId
 			this.offeringDiaryDialog.studentId = item.studentId
@@ -214,33 +209,52 @@ export default {
 		editOfferingDiary () {
       // remove all delimeter ',' from offeringCost, and conversion string to int
       this.offeringDiaryDialog.offeringCost = Number(this.offeringDiaryDialog.offeringCost.replace(',', ''))
-      console.log(JSON.stringify(this.offeringDiaryDialog))
-
-
 			const headers = {
 				'content-type': 'application/json'
 			}
 			axios
 				.put(`${this.$serverAddress}/Youth/offering`, JSON.stringify(this.offeringDiaryDialog), { withCredentials: true, headers: headers })
 				.then((res) => {
-					let index = this.offeringdata.findIndex(o => o.offeringDiaryId === res.data.offeringDiaryId)
-					this.offeringData[index] = res.data
+          this.dialog = false
+					this.offeringItem.offeringTypeId = res.data.offeringTypeId
+          // I don't know why copy the res data whole object into the ordinary offering diary, so that I put fit in property into each variable
+          // get offering name by id
+          this.offeringTypes.forEach(type => {
+            if(type.offeringTypeId === res.data.offeringTypeId) this.offeringItem.offeringType.offeringTypeName = type.offeringTypeName
+          })
+
+          // change offering cost
+          this.offeringItem.offeringCost = res.data.offeringCost
 				})
 				.catch((err) => {
 					this.alertError(err)
 				})
 		},
 
-		deleteOfferingDiary () {
-			axios
-				.delete(`${this.$serverAddress}/Youth/offering/${this.offeringDiaryDialog.offeringDiaryId}`)
-				.then((res) => {
-					this.offeringdata.remove(o => o.offeringId === res.data.offeringId)
-				})
-				.catch((err) => {
-					this.alertError(err)
-				})
-		}
+		deleteOfferingDiary (item) {
+      if (confirm(`${item.student.name}의 헌금 기록을 삭제할까요?`)) {
+        axios 
+          .delete(`${this.$serverAddress}/Youth/offering/${item.offeringDiaryId}`, { withCredentials: true })
+          .then((res) => {
+            const index = this.offeringData.findIndex(o => o.offeringDiaryId === res.data.offeringDiaryId )
+            this.offeringData.splice(index, 1)
+          })
+          .catch((err) => {
+            this.alertError(err)
+          })
+      }
+		},
+
+    getOfferingSummary() {
+      axios
+        .get(`${this.$serverAddress}/Youth/offering/summary/${this.date}`, { withCredentials: true })
+        .then((res) => {
+          this.offeringSummary = res.data
+        })
+        .catch((err) => {
+          this.alertError(err)
+        })
+    }
 	},
 
 	created: async function () {
@@ -248,7 +262,7 @@ export default {
 		this.date = this.$route.query.date
 
 		// get offeringTypes
-		axios
+		await axios
 			.get(`${this.$serverAddress}/Youth/offering/types`, { withCredentials: true })
 			.then((res) => {
 				this.offeringTypes = res.data
@@ -267,17 +281,8 @@ export default {
 				this.alertError(err)
 			})
 
-		// split offerings into ...
-		this.offeringData.forEach(offering => {
-			//split with department 
-			if (offering.departmentId === 1) {
-				console.log(offering['offeringType'])
-			}
-
-			if (offering.departmentId === 2) {
-				console.log('123')
-			}
-		})
+    // get offering summary
+    this.getOfferingSummary()
 	},
 }
 </script>

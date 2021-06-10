@@ -4,12 +4,13 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
+	"time"
 	"zamsil_church_offering_attendance_mangement/models"
 
 	"github.com/gin-gonic/gin"
 )
 
-func PutOfferingDiary(c *gin.Context) {
+func ChangeOfferingDiaryTypeAndCost(c *gin.Context) {
 	var offeringDiary models.OfferingDiary
 	if err := c.BindJSON(&offeringDiary); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -19,7 +20,7 @@ func PutOfferingDiary(c *gin.Context) {
 		return
 	}
 
-	if err := models.PutOfferingDiary(&offeringDiary); err != nil {
+	if err := models.ChangeOfferingDiaryTypeAndCost(&offeringDiary); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"err": "fail in put offering diary",
 		})
@@ -40,4 +41,13 @@ func DeleteOfferingDiary(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, offeringDiary)
+}
+
+func GetOfferingDiarySummary(c *gin.Context) {
+	date := c.Param("date")
+	parsedDate, _ := time.Parse("2006-01-02", date)
+	var offeringCosts models.OfferingCost
+	offeringCosts.GetSummaryOfferingCostByDate(parsedDate)
+
+	c.JSON(http.StatusOK, offeringCosts)
 }

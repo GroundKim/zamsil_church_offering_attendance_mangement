@@ -28,6 +28,7 @@ func SaveOfferingViewExcel(date time.Time) {
 			createdBys = append(createdBys, offeringDiaries[i].CreatedBy)
 		}
 	}
+
 	offeringDiarySheetName := date.Format("2006-01-02") + "_헌금통계표"
 	index := f.NewSheet(offeringDiarySheetName)
 
