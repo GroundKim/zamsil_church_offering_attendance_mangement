@@ -223,7 +223,7 @@ export default {
   created: async function () {
     // get offering Type
     await axios
-      .get(`${this.$serverAddress}/Youth/offering/type`, { withCredentials: true})
+      .get(`${this.$serverAddress}/Youth/offering/types`, { withCredentials: true})
       .then((res) => {
         this.$store.commit('setOfferingType', res.data)
       })

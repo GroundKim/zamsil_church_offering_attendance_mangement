@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"fmt"
 	"net/http"
 	"strconv"
 	"zamsil_church_offering_attendance_mangement/models"
@@ -10,11 +11,11 @@ import (
 
 func PutOfferingDiary(c *gin.Context) {
 	var offeringDiary models.OfferingDiary
-
 	if err := c.BindJSON(&offeringDiary); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"err": "fail in binding offeringDiary",
 		})
+		fmt.Println(err)
 		return
 	}
 

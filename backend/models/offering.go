@@ -7,7 +7,7 @@ import (
 )
 
 type OfferingDiary struct {
-	ID             int       `json:"offeringId"`
+	ID             int       `json:"offeringDiaryId"`
 	StudentID      *int      `json:"studentId"`
 	OfferingTypeID int       `gorm:"not null;" json:"offeringTypeId"`
 	DepartmentID   int       `gorm:"not null;" json:"departmentId"`

@@ -76,7 +76,6 @@
       </v-container>
       </v-row>
       <!-- edit dialog -->
-
   </v-container>
 </template>
 

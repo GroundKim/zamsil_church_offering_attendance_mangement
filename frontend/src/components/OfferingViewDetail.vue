@@ -17,6 +17,7 @@
 			hide-default-footer
 			loading="true"
 		>
+			<template v-slot:[`item.student.name`]= "{ item }">{{ item.studentId===null ? "무명" :item.student.name }}</template>
 			<template v-slot:[`item.offeringCost`]="{ item }">
 				{{item}}
 				<!-- ₩ {{changeCostWithDelimeter(item.offeringCost)}} -->
@@ -42,7 +43,10 @@
 		>
 			<v-card>
 				<v-card-title primary-title>
-					{{ offeringDiaryDialog.departmentName }} 부 {{ offeringDiaryDialog.className }}반 {{ offeringDiaryDialog.studentName }} 수정
+					<div>
+						<h3><span>{{ offeringDiaryDialog.departmentId }} 부</span> <span v-show="offeringDiaryDialog.studentId!==null">{{offeringDiaryDialog.className }} 반</span></h3>
+						<p>{{ offeringDiaryDialog.studentName }} 수정</p>
+					</div>
 				</v-card-title>
 				<v-card-text>
 					<v-list-item-group
@@ -59,11 +63,14 @@
 					<v-text-field
 						v-model="offeringDiaryDialog.offeringCost"
 						label="헌금 액수"
+						prefix="₩"
+						:rules="[rules.offering, rules.required]"
+						required
 					></v-text-field>
 				</v-card-text>
 				<v-card-actions>
 					<v-btn color="fail">취소</v-btn>
-					<v-btn color="success">저장</v-btn>
+					<v-btn color="success" @click="editOfferingDiary(item)">저장</v-btn>
 				</v-card-actions>
 			</v-card>	
 		</v-dialog>
@@ -80,13 +87,20 @@ export default {
 			offeringTypes: [],
 			dialog: false,
 			offeringDiaryDialog: {
-				action: null,
 				offeringDiaryId: null,
 				studentName: null,
-				departmentName: null,
+				departmentId: null,
 				className: null,
 				offeringTypeId: null,
 				offeringCost: null
+			},
+
+			rules: {
+				required: (value) => !!value || "Required.",
+				offering: (value) => {
+					const pattern = /^(\d+|\d{1,3}(,\d{3})*)(\.\d+)?$/
+					return pattern.test(value)
+				}
 			},
 
 			individualOfferingTableHeaders: [
@@ -157,6 +171,18 @@ export default {
 			]
 		}
 	},
+	
+	computed: {
+		getDialogOfferingCost() {
+			return this.offeringDiaryDialog.offeringCost
+		}
+	},
+
+	watch: {
+		getDialogOfferingCost(value) {
+			this.offeringDiaryDialog.offeringCost = this.changeCostWithDelimeter(value)
+		}
+	},
 
 	methods: {
 		changeCostWithDelimeter (value) {
@@ -167,17 +193,37 @@ export default {
 
 		showOfferingEditDialog (item) {
 			this.dialog = true
+      this.offeringDiaryDialog.offeringDiaryId = item.offeringDiaryId
+			this.offeringDiaryDialog.studentId = item.studentId
+			this.offeringDiaryDialog.departmentId = item.departmentId
 			this.offeringDiaryDialog.offeringDiaryId = item.offeringDiaryId
-			this.offeringDiaryDialog.studentName = item.student.name
-			this.offeringDiaryDialog.departmentName = item.departmentId
-			this.offeringDiaryDialog.className = item.student.class.name
+			this.offeringDiaryDialog.offeringTypeId = item.offeringTypeId
+			this.offeringDiaryDialog.offeringCost = item.offeringCost
+			// handling no name offering
+			if (item.studentId === null) {
+				this.offeringDiaryDialog.studentName = "무명"
+				
+			} else {
+				this.offeringDiaryDialog.studentName = item.student.name
+				this.offeringDiaryDialog.className = item.student.class.name
+
+			}
 		},
 
-		editOfferingDiary (item) {
+
+		editOfferingDiary () {
+      // remove all delimeter ',' from offeringCost, and conversion string to int
+      this.offeringDiaryDialog.offeringCost = Number(this.offeringDiaryDialog.offeringCost.replace(',', ''))
+      console.log(JSON.stringify(this.offeringDiaryDialog))
+
+
+			const headers = {
+				'content-type': 'application/json'
+			}
 			axios
-				.put(`${this.$serverAddress}/Youth/offering/${item.offeringId}`)
+				.put(`${this.$serverAddress}/Youth/offering`, JSON.stringify(this.offeringDiaryDialog), { withCredentials: true, headers: headers })
 				.then((res) => {
-					let index = this.offeringdata.findIndex(o => o.offeringId === res.data.offeringId)
+					let index = this.offeringdata.findIndex(o => o.offeringDiaryId === res.data.offeringDiaryId)
 					this.offeringData[index] = res.data
 				})
 				.catch((err) => {
@@ -185,9 +231,9 @@ export default {
 				})
 		},
 
-		delteOfferingDiary (item) {
+		deleteOfferingDiary () {
 			axios
-				.delete(`${this.$serverAddress}/Youth/offering/${item.offeringId}`)
+				.delete(`${this.$serverAddress}/Youth/offering/${this.offeringDiaryDialog.offeringDiaryId}`)
 				.then((res) => {
 					this.offeringdata.remove(o => o.offeringId === res.data.offeringId)
 				})
