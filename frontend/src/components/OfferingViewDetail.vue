@@ -14,13 +14,13 @@
         </thead>
         <tbody>
           <tr
-            v-for="type in offeringSummary"
-            :key="type.offeringType.offeringTypeId"
+            v-for="offering, index in offeringSummary"
+            :key="index"
           >
-            <td>{{ type.offeringType.offeringTypeName }}</td>
-            <td>₩ {{ changeCostWithDelimeter(type.offeringCost[0]) }}</td>
-            <td>₩ {{ changeCostWithDelimeter(type.offeringCost[1]) }}</td>
-            <td>₩ {{ changeCostWithDelimeter(type.offeringCost[0] + type.offeringCost[1]) }}</td>
+            <td>{{ offering.offeringType.offeringTypeName }}</td>
+            <td>₩ {{ changeCostWithDelimeter(offering.offeringCost[0]) }}</td>
+            <td>₩ {{ changeCostWithDelimeter(offering.offeringCost[1]) }}</td>
+            <td>₩ {{ changeCostWithDelimeter(offering.offeringCost[0] + offering.offeringCost[1]) }}</td>
           </tr>
 
           <tr>
@@ -108,6 +108,7 @@ export default {
       offeringItem: null,
 			offeringData: [],
 			offeringTypes: [],
+      offeringSummary: [],
 			dialog: false,
 			offeringDiaryDialog: {
 				offeringDiaryId: null,
@@ -160,9 +161,6 @@ export default {
 			],
 
 			offeringTableItems: null,
-			offeringSummary: {
-        createdBy: '',
-      },
 		}
 	},
 	
@@ -179,7 +177,15 @@ export default {
 	watch: {
 		getDialogOfferingCost(value) {
 			this.offeringDiaryDialog.offeringCost = this.changeCostWithDelimeter(value)
-		}
+		},
+
+    // if client try to fix or delete offering Diary, client needs to update offering summary
+    offeringData: {
+      deep: true,
+      handler() {
+        this.getOfferingSummary()
+      }
+    }
 	},
 
 	methods: {
@@ -257,11 +263,11 @@ export default {
       }
 		},
 
-    getOfferingSummary() {
+    getOfferingSummary: function() {
       axios
         .get(`${this.$serverAddress}/Youth/offering/summary/${this.date}`, { withCredentials: true })
         .then((res) => {
-          this.offeringSummary = res.data
+          this.$nextTick(() => this.offeringSummary = res.data)
         })
         .catch((err) => {
           this.alertError(err)
@@ -272,6 +278,9 @@ export default {
 	created: async function () {
 		// get date from URL query
 		this.date = this.$route.query.date
+    
+    // get offering summary
+    await this.getOfferingSummary()
 
 		// get offeringTypes
 		await axios
@@ -293,8 +302,6 @@ export default {
 				this.alertError(err)
 			})
 
-    // get offering summary
-    this.getOfferingSummary()
 	},
 }
 </script>
