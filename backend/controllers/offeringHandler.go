@@ -46,8 +46,7 @@ func DeleteOfferingDiary(c *gin.Context) {
 func GetOfferingDiarySummary(c *gin.Context) {
 	date := c.Param("date")
 	parsedDate, _ := time.Parse("2006-01-02", date)
-	var offeringCosts models.OfferingCost
-	offeringCosts.GetSummaryOfferingCostByDate(parsedDate)
+	offeringCostWrappers := models.GetSummaryOfferingCostByDate(parsedDate)
 
-	c.JSON(http.StatusOK, offeringCosts)
+	c.JSON(http.StatusOK, offeringCostWrappers)
 }

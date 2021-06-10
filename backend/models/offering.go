@@ -108,13 +108,13 @@ type OfferingCost struct {
 }
 
 type OfferingCostWrapper struct {
-	OfferingType OfferingType
-	OfferingCost []int
+	OfferingType OfferingType `json:"offeringType"`
+	OfferingCost []int        `json:"offeringCost"`
 }
 
 // need maintenance if offering type get to be changed
-func (offeringCosts *OfferingCost) GetSummaryOfferingCostByDate(date time.Time) {
-	var OfferingCostWrappers []OfferingCostWrapper
+func GetSummaryOfferingCostByDate(date time.Time) (offeringCostWrappers []OfferingCostWrapper) {
+	offeringCosts := &OfferingCost{}
 
 	offeringCosts.TotalWeekOfferingCost = []int{0, 0}
 	offeringCosts.TotalTitheOfferingCost = []int{0, 0}
@@ -184,10 +184,15 @@ func (offeringCosts *OfferingCost) GetSummaryOfferingCostByDate(date time.Time) 
 		}
 	}
 
-	var (
-		weekOfferingCostWrapper = &OfferingCostWrapper{OfferingType: OfferingType{}}
-	)
+	weekOfferingCostWrapper := &OfferingCostWrapper{OfferingType: OfferingType{ID: 1, OfferingTypeName: "주일헌금"}, OfferingCost: offeringCosts.TotalWeekOfferingCost}
+	titheOfferingCostWrapper := &OfferingCostWrapper{OfferingType: OfferingType{ID: 2, OfferingTypeName: "십일조헌금"}, OfferingCost: offeringCosts.TotalTitheOfferingCost}
+	thanksOfferingCostWrapper := &OfferingCostWrapper{OfferingType: OfferingType{ID: 3, OfferingTypeName: "감사헌금"}, OfferingCost: offeringCosts.TotalThanksOfferingCost}
+	seasonalOfferingCostWrapper := &OfferingCostWrapper{OfferingType: OfferingType{ID: 4, OfferingTypeName: "절기헌금"}, OfferingCost: offeringCosts.TotalSeasonalOfferingCost}
+	etcOfferingCostWrapper := &OfferingCostWrapper{OfferingType: OfferingType{ID: 5, OfferingTypeName: "기타헌금"}, OfferingCost: offeringCosts.TotalEtcOfferingCost}
 
+	offeringCostWrappers = append(offeringCostWrappers, *weekOfferingCostWrapper, *titheOfferingCostWrapper, *thanksOfferingCostWrapper, *seasonalOfferingCostWrapper, *etcOfferingCostWrapper)
+	return offeringCostWrappers
+}
 func (OfferingDiary) TableName() string {
 	return "offering_diary"
 }

@@ -1,13 +1,8 @@
 <template>
 	<v-container grid-list-xs>
-		{{ offeringData }}
-
     <v-simple-table
       fixed-header 
     >
-      <template v-slot:top>
-        <div>작성자: {{ offeringSummary.createdBy.join(',')}}</div>
-      </template>
       <template v-slot:default>
         <thead>
           <tr>
@@ -19,11 +14,20 @@
         </thead>
         <tbody>
           <tr
-            v-for="type in offeringTypes"
-            :key="type.offeringTypeId"
+            v-for="type in offeringSummary"
+            :key="type.offeringType.offeringTypeId"
           >
-            {{ type.offeringTypeName }}
-            <td></td>
+            <td>{{ type.offeringType.offeringTypeName }}</td>
+            <td>₩ {{ changeCostWithDelimeter(type.offeringCost[0]) }}</td>
+            <td>₩ {{ changeCostWithDelimeter(type.offeringCost[1]) }}</td>
+            <td>₩ {{ changeCostWithDelimeter(type.offeringCost[0] + type.offeringCost[1]) }}</td>
+          </tr>
+
+          <tr>
+            <td>총합</td>
+            <td>₩ {{ changeCostWithDelimeter(getTotalCostByDepartmentId(1)) }}</td>
+            <td>₩ {{ changeCostWithDelimeter(getTotalCostByDepartmentId(2)) }}</td>
+            <td>₩ {{ changeCostWithDelimeter(getTotalCostByDepartmentId(1) + getTotalCostByDepartmentId(2)) }}</td>
           </tr>
         </tbody>
       </template>
@@ -184,6 +188,14 @@ export default {
       const result = value.replace(/\D/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ",")
 			return result
 		},
+
+    getTotalCostByDepartmentId(deparmtentId) {
+      let totalCost = 0
+      this.offeringSummary.forEach(o => {
+        totalCost += o.offeringCost[deparmtentId - 1]
+      }) 
+      return totalCost
+    },
 
 		showOfferingEditDialog (item) {
       this.offeringItem = item
