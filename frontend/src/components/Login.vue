@@ -63,6 +63,15 @@ export default {
   },
 
 	created() {
+    // check the client auth token is valid
+    axios
+      .get(`${this.$serverAddress}/Youth/login`, { withCredentials: true })
+      .then(() => {
+        alert('이미 로그인 되어있습니다')
+        this.$router.push({ path: "attendance/input"})
+      })
+      .catch(() => {})
+
 	}
 }
 </script>

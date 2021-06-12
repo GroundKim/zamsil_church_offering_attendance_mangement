@@ -22,6 +22,7 @@ func CreateUrlMappings(conf *config.Config) {
 	}))
 
 	Router.POST("/Youth/login", controllers.Login(conf))
+	Router.GET("/Youth/login", controllers.ValidateUser(conf))
 
 	// Router Get with middlewares AUthorize
 	Youth := Router.Group("Youth").Use(middlewares.Authorize(conf))

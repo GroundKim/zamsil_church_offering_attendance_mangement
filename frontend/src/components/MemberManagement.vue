@@ -1,192 +1,196 @@
 <template>
-  <v-container fill-height>         
-    <v-layout align-center justify-center>
-      <v-flex>
-        <v-icon large color="blue darken-2">mdi-call-split</v-icon>
-        <v-radio-group v-model="department" row>
+  <v-container fill-height>   
+
+    <v-row class="d-flex mt-10">
+      <div class="ml-5">
+        <h1>재적관리</h1>
+      </div>
+      <div class="ml-auto">
+        <v-radio-group row v-model="department">
           <v-radio label="1부" value="1"></v-radio>
           <v-radio label="2부" value="2"></v-radio>
-        </v-radio-group> 
-            <v-row
-              v-for="(classInfo, index) in currentClasses"
-              :key="index"
-            >  
-              <v-sheet
-                color="white"
-                elevation="5"
-                outlined
-                rounded
-                class="mt-10"
-              >
-                <v-container>
-                  <h2>반: {{ classInfo.class.name }}</h2>
-                  <h3>선생님: {{ getTeacherNames(classInfo.teachers) }}</h3>
-                      <v-data-table
-                        :headers="studentHeaders"
-                        :items="formatStudent(classInfo.students, '없음')"
-                        hide-default-footer
-                        class="elevation-1"
-                      >
-                        <template v-slot:top>
-                          <v-container class="text-right">
-                            <v-btn
-                              fab
-                              outlined
-                              small
-                              color="primary"
-                              @click="showNewStudentDialog(classInfo)"
-                            >
-                              <v-icon>
-                                mdi-plus
-                              </v-icon>
-                            </v-btn>
-                          </v-container>
-                        </template>
-                        <template v-slot:[`item.actions`]="{ item }">
-                          <v-icon
-                            @click="editStudent(item, classInfo.class)"
-                          >
-                            mdi-pencil
-                          </v-icon>
+        </v-radio-group>
+      </div>
+    </v-row>
 
-                          <v-icon
-                            color="red lighten-2"
-                            @click="deleteStudent(item, index)"
-                          >mdi-delete</v-icon>
-                        </template>
-                      </v-data-table>
-                </v-container>
-              </v-sheet>
-            </v-row>
-        <v-dialog
-          v-model="dialog"
-          max-width="500px"
-          persistent
+    <v-row
+      v-for="(classInfo, index) in currentClasses"
+      :key="index"
+    >
+      <v-col xs12 sm8 md4>
+        <v-card
+          elevation="0" outlined
+          class="mt-10"
         >
-        <form @submit.prevent="saveNewStudent">
-          <v-card>
-            <v-card-title primary-title>
-              <div v-if="isAdd">
-                <h3>{{ dialogStudent.departmentName }} 부 {{ dialogStudent.className }} 반</h3>
-                <p>학생 추가</p>
-              </div>
+          <div class="d-flex pa-5">
+            <div>
+              <h2>반: {{ classInfo.class.name }}</h2>
+              <h3>선생님: {{ getTeacherNames(classInfo.teachers) }}</h3>
+            </div>
+            
+            <div class="ml-auto">
+              <v-btn
+                fab
+                outlined
+                small
+                color="primary"
+                @click="showNewStudentDialog(classInfo)"
+              >
+                <v-icon>
+                  mdi-plus
+                </v-icon>
+              </v-btn>
+            </div>
+          </div>
 
-              <div v-else>
-                <h3>{{ dialogStudent.departmentName }} 부 {{ dialogStudent.className }} 반</h3>
-                <p>{{ dialogStudent.name }} 수정</p>
-              </div>
+          <v-data-table
+            :headers="studentHeaders"
+            :items="formatStudent(classInfo.students, '없음')"
+            hide-default-footer
+            class="elevation-1"
+          >
+            <template v-slot:[`item.actions`]="{ item }">
+              <v-icon
+                @click="editStudent(item, classInfo.class)"
+              >
+                mdi-pencil
+              </v-icon>
 
-            </v-card-title>
-            <v-card-text>
-              <v-row>
-                <v-col
-                  cols="12"
-                  sm="6"
-                  md="4"
-                >
-                  <v-text-field
-                    label="이름"
-                    v-model="dialogStudent.name"
-                    prepend-icon="mdi-account"
-                    :rules="[() => !!dialogStudent.name || '이름을 반드시 입력해주세요']"
-                    required
-                    @input="$v.name.$touch()"
-                    @blur="$v.name.$touch()"
-                  ></v-text-field>
-                </v-col>
+              <v-icon
+                color="red lighten-2"
+                @click="deleteStudent(item, index)"
+              >mdi-delete</v-icon>
+            </template>
+          </v-data-table>
+        </v-card>
+      </v-col>
+    </v-row>
 
-                <v-col
-                  cols="12"
-                  sm="6"
-                  md="4"
-                >
-                  <v-text-field
-                    v-model="dialogStudent.dayOfBirth"
-                    prepend-icon="mdi-cake"
-                    label="생일"
-                    v-mask="'####-##-##'"
-                    :rules="[rules.date]"
-                  >
-                  </v-text-field>  
-                </v-col>
+    <v-dialog
+      v-model="dialog"
+      max-width="500px"
+      persistent
+    >
+      <form @submit.prevent="saveNewStudent">
+        <v-card>
+          <v-card-title primary-title>
+            <div v-if="isAdd">
+              <h3>{{ dialogStudent.departmentName }} 부 {{ dialogStudent.className }} 반</h3>
+              <p>학생 추가</p>
+            </div>
 
-                <v-col
-                  cols="12"
-                  sm="6"
-                  md="4"
-                >
-                  <v-text-field
-                    prepend-icon="mdi-home"
-                    v-model="dialogStudent.address"
-                    label="주소"
-                  ></v-text-field>
-                </v-col>
+            <div v-else>
+              <h3>{{ dialogStudent.departmentName }} 부 {{ dialogStudent.className }} 반</h3>
+              <p>{{ dialogStudent.name }} 수정</p>
+            </div>
 
-                <v-col
-                  cols="12"
-                  sm="6"
-                  md="4"
-                >
-                  <v-text-field
-                    prepend-icon="mdi-cellphone"
-                    v-model="dialogStudent.phoneNumber"
-                    label="학생 번호"
-                    v-mask="'###-####-####'"
-                  ></v-text-field>
-                </v-col>
-
-                <v-col
-                  cols="12"
-                  sm="6"
-                  md="4"
-                >
-                  <v-text-field
-                    prepend-icon="mdi-human-female-boy"
-                    v-model="dialogStudent.parentPhoneNumber"
-                    label="부모님 번호"
-                    v-mask="'###-####-####'"
-                  ></v-text-field>
-                  </v-col>
-
-                <v-col
-                  cols="12"
-                  sm="6"
-                  md="4"
-                >
+          </v-card-title>
+          <v-card-text>
+            <v-row>
+              <v-col
+                cols="12"
+                sm="6"
+                md="4"
+              >
                 <v-text-field
-                  prepend-icon="mdi-school"
-                  v-model="dialogStudent.schoolName"
-                  label="학교 이름"
+                  label="이름"
+                  v-model="dialogStudent.name"
+                  prepend-icon="mdi-account"
+                  :rules="[() => !!dialogStudent.name || '이름을 반드시 입력해주세요']"
+                  required
+                  @input="$v.name.$touch()"
+                  @blur="$v.name.$touch()"
+                ></v-text-field>
+              </v-col>
+
+              <v-col
+                cols="12"
+                sm="6"
+                md="4"
+              >
+                <v-text-field
+                  v-model="dialogStudent.dayOfBirth"
+                  prepend-icon="mdi-cake"
+                  label="생일"
+                  v-mask="'####-##-##'"
+                  :rules="[rules.date]"
+                >
+                </v-text-field>  
+              </v-col>
+
+              <v-col
+                cols="12"
+                sm="6"
+                md="4"
+              >
+                <v-text-field
+                  prepend-icon="mdi-home"
+                  v-model="dialogStudent.address"
+                  label="주소"
+                ></v-text-field>
+              </v-col>
+
+              <v-col
+                cols="12"
+                sm="6"
+                md="4"
+              >
+                <v-text-field
+                  prepend-icon="mdi-cellphone"
+                  v-model="dialogStudent.phoneNumber"
+                  label="학생 번호"
+                  v-mask="'###-####-####'"
+                ></v-text-field>
+              </v-col>
+
+              <v-col
+                cols="12"
+                sm="6"
+                md="4"
+              >
+                <v-text-field
+                  prepend-icon="mdi-human-female-boy"
+                  v-model="dialogStudent.parentPhoneNumber"
+                  label="부모님 번호"
+                  v-mask="'###-####-####'"
                 ></v-text-field>
                 </v-col>
-              </v-row>
-            </v-card-text>
-            <v-card-actions>
-              <v-spacer></v-spacer>
-              <v-btn
-                color="primary"
-                rounded
-                outlined
-                x-large
-                @click="closeDialog()"  
+
+              <v-col
+                cols="12"
+                sm="6"
+                md="4"
               >
-                취소
-              </v-btn>
-              <v-btn
-                color="primary"   
-                rounded
-                outlined
-                x-large
-                @click="isAdd ? saveNewStudent() : putStudent()"
-                >
-                  저장
-              </v-btn>
-            </v-card-actions>
-          </v-card>
-        </form>
-        </v-dialog>
-      </v-flex>
-    </v-layout>
+              <v-text-field
+                prepend-icon="mdi-school"
+                v-model="dialogStudent.schoolName"
+                label="학교 이름"
+              ></v-text-field>
+              </v-col>
+            </v-row>
+          </v-card-text>
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn
+              color="black"
+              outlined
+              x-large
+              @click="closeDialog()"  
+            >
+              취소
+            </v-btn>
+            <v-btn
+              color="primary"   
+              outlined
+              x-large
+              @click="isAdd ? saveNewStudent() : putStudent()"
+              >
+                저장
+            </v-btn>
+          </v-card-actions>
+        </v-card>
+      </form>
+    </v-dialog>
   </v-container>
 </template>
 

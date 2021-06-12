@@ -11,7 +11,6 @@ import (
 
 func Login(conf *config.Config) gin.HandlerFunc {
 	return func(c *gin.Context) {
-
 		var user models.User
 		if err := c.ShouldBindJSON(&user); err != nil {
 			c.JSON(http.StatusBadRequest, "Invalid json provided")
@@ -35,5 +34,26 @@ func Login(conf *config.Config) gin.HandlerFunc {
 			c.JSON(http.StatusUnauthorized, "Enter correct ID with password")
 			return
 		}
+	}
+}
+
+func ValidateUser(conf *config.Config) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		clientToken, err := c.Request.Cookie("auth_token")
+		if err != nil {
+			c.JSON(http.StatusForbidden, gin.H{
+				"err": "client auth_token required",
+			})
+		}
+		token := clientToken.Value
+
+		// validate Token
+		_, err = models.ValidateToken(token, conf)
+		if err != nil {
+			c.JSON(http.StatusUnauthorized, gin.H{
+				"err": "client auth_token is not recorded",
+			})
+		}
+		c.Status(http.StatusOK)
 	}
 }

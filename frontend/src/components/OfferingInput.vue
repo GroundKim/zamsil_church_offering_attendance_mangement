@@ -251,13 +251,14 @@ export default {
         this.$store.commit('pushDepartmentTwoStudent', student)
       }
     })
+    
     // store offeredAt in vuex with proper date formate for server asking Len
     this.$store.commit('setOfferedAt', this.date + moment().format().substr(10))
     this.departmentId = '1'
     this.offerings.push({
       'type':SpecificOfferingInput,
       offeringId: this.offeringCount
-      })
+    })
     
   }
 }

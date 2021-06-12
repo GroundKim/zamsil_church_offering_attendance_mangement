@@ -1,12 +1,12 @@
 <template>
   <v-container>
-    <h2>{{ date }}</h2>
+    <h1 class="ml-5 mt-5">{{ date }}</h1>
     <v-row
       v-for="(classInfo, classIndex) in classesWithStudents"
       :key="classIndex"
     >
       <v-container>
-        <h2>{{ classInfo.class.department.name }}부 {{ classInfo.class.name }}반</h2>
+        <h2 class="ml-5 my-5">{{ classInfo.class.department.name }}부 {{ classInfo.class.name }}반</h2>
         <v-col>
           <!-- {{ getAttendanceDiaryTableItems(classInfo)}} -->
           <v-data-table
@@ -259,10 +259,6 @@ export default {
     }
   },
 
-  watch: {
-
-  },
-
 	created: async function () {
 		this.date = this.$route.query.date
     await axios
@@ -331,11 +327,6 @@ export default {
       this.classesWithStudents[classIndex].studentAttendances.push(studentAttendance)
     })
 
-
-  
-
-    // // handling absence
-    
 	},
 }
 </script>

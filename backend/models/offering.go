@@ -113,7 +113,7 @@ type OfferingCostWrapper struct {
 }
 
 // need maintenance if offering type get to be changed
-func GetSummaryOfferingCostByDate(date time.Time) (offeringCostWrappers []OfferingCostWrapper) {
+func GetSummaryOfferingCostByDate(date time.Time) (offeringCostWrappers []OfferingCostWrapper, err error) {
 	offeringCosts := &OfferingCost{}
 
 	offeringCosts.TotalWeekOfferingCost = []int{0, 0}
@@ -124,7 +124,7 @@ func GetSummaryOfferingCostByDate(date time.Time) (offeringCostWrappers []Offeri
 
 	var offeringDiaries []OfferingDiary
 	var createdBys []string
-	GetOfferingDiaryByDate(&offeringDiaries, date)
+	err = GetOfferingDiaryByDate(&offeringDiaries, date)
 
 	for i := 0; i < len(offeringDiaries); i++ {
 		hasSameName := false
@@ -191,7 +191,7 @@ func GetSummaryOfferingCostByDate(date time.Time) (offeringCostWrappers []Offeri
 	etcOfferingCostWrapper := &OfferingCostWrapper{OfferingType: OfferingType{ID: 5, OfferingTypeName: "기타헌금"}, OfferingCost: offeringCosts.TotalEtcOfferingCost}
 
 	offeringCostWrappers = append(offeringCostWrappers, *weekOfferingCostWrapper, *titheOfferingCostWrapper, *thanksOfferingCostWrapper, *seasonalOfferingCostWrapper, *etcOfferingCostWrapper)
-	return offeringCostWrappers
+	return offeringCostWrappers, err
 }
 func (OfferingDiary) TableName() string {
 	return "offering_diary"

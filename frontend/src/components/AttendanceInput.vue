@@ -354,7 +354,6 @@ export default {
       })
 
 
-    this.$store.commit("changeHeaderName", "출석부 기입")
     this.department = '1'
   },
 }

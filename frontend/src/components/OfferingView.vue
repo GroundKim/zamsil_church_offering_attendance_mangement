@@ -32,42 +32,63 @@
         </h1>
       </v-col>
     </v-row>
+    <v-row
+      class="d-flex ma-5"
+      v-for="o in offeredAtsByMonths"
+      :key=o.month
+    >
+      <v-col
+        
+      >
+        <div class="d-flex pa-2">
+          <h2>{{ o.month }}월</h2>
+        </div>
+        <v-simple-table>
+          <template v-slot:default>
+            <thead>
+              <tr>
+                <th>날짜</th>
+                <th>엑셀 다운로드 및 세부 보기</th>
+              </tr>
+            </thead>
+            
+            <tbody>
+              <tr
+                v-for="date, index in o.offeredAts"
+                :key=index
+              >
+                <td><h3>{{ date.substring(5, 7)}}월 {{ date.substring(8, 10) }}일</h3></td>
+                <td>
+                  <v-btn 
+                    @click="downloadExcelByDate(date)"
+                    fab
+                    outlined
+                    x-small
+                    color="indigo"
+                    class="ml-3"
+                  >
+                    <v-icon>
+                      mdi-download
+                    </v-icon>
+                  </v-btn>
 
-    <v-row>
-      <v-col>
-        <v-sheet
-          v-for="(offeredAt, i) in offeredAts" 
-          :key="i"
-          class="ma-3 pa-2"
-        >
-          <h3>{{ offeredAt.substr(0, 10) }}
-            <v-btn 
-              @click="downloadExcelByDate(offeredAt)"
-              fab
-              outlined
-              x-small
-              color="indigo"
-              class="ml-3"
-            >
-              <v-icon>
-                mdi-download
-              </v-icon>
-            </v-btn>
-
-            <v-btn
-              @click="showOfferingDiaryDetail(offeredAt)"
-              fab
-              outlined
-              x-small
-              color="indigo"
-              class="ml-3"
-            >
-              <v-icon>
-                mdi-clipboard-list-outline
-              </v-icon>
-            </v-btn>
-          </h3>
-        </v-sheet>
+                  <v-btn
+                    @click="showOfferingDiaryDetail(date)"
+                    fab
+                    outlined
+                    x-small
+                    color="indigo"
+                    class="ml-3"
+                  >
+                    <v-icon>
+                      mdi-clipboard-list-outline
+                    </v-icon>
+                  </v-btn>
+                </td>
+              </tr>
+            </tbody>
+          </template>
+        </v-simple-table>
       </v-col>
     </v-row>
   </v-container>
@@ -78,11 +99,11 @@ import axios from 'axios'
 import moment from 'moment'
 export default {
   name: 'OfferingView',
-
   data () {
     return {
       year: null,
       offeredAts: [],
+      offeredAtsByMonths: [],
     }
   },
 
@@ -92,6 +113,7 @@ export default {
       .get(`${this.$serverAddress}/Youth/offering/view/list?year=${year}`, {withCredentials: true})
       .then(res => {
         this.offeredAts = res.data.offeredAts
+        this.distingushWithMonth(this.offeredAts)
       })
       .catch(err => {
         this.alertError(err)
@@ -129,17 +151,38 @@ export default {
       .catch(err => {
         this.alertError(err)
       })
+    },
+
+    distingushWithMonth (dates) {
+      dates.forEach(date => {
+        const month = date.substring(5, 7)
+        let hasFound = false
+        this.offeredAtsByMonths.forEach(o => {
+          if (month === o.month) {
+            hasFound = true
+            o.offeredAts.push(date)
+          } 
+        })
+        
+        if (!hasFound) {
+          let offeredAtsByMonth = {
+            month: month,
+            offeredAts: [date]
+          }
+          this.offeredAtsByMonths.push(offeredAtsByMonth)
+        }
+      })
     }
   },
 
   watch: {
     year: function() {
+      this.offeredAtsByMonths = []
       this.getOfferedAtsByYear(this.year)
     }
   },
 
   created () {
-    this.$store.commit('changeHeaderName', '헌금 보기')
     this.year = moment().year()
   },
 }

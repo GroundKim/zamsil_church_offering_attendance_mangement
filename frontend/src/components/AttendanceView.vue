@@ -1,6 +1,6 @@
 <template>
   <v-container>
-    <v-row class="mt-5">
+    <v-row class="d-flex mt-5">
       <v-col>
         <h1>
           <v-btn
@@ -33,42 +33,61 @@
       </v-col>
     </v-row>
 
-    <v-row>
+    <v-row
+      class="d-flex ma-5"
+      v-for="a in attendedAtsByMonths"
+      :key=a.month
+    > 
       <v-col>
-        <v-sheet
-          v-for="(attendedAt, i) in attendedAts" 
-          :key="i"
-          class="ma-3 pa-2"
-        >
-          <h3>{{ attendedAt.substr(0, 10) }}
-            <v-btn 
-              @click="downloadAttendanceExcelByDate(attendedAt)"
-              fab
-              outlined
-              x-small
-              color="indigo"
-              class="ml-3"
-            >
-              <v-icon>
-                mdi-download
-              </v-icon>
-              <h2>엑셀</h2>
-            </v-btn>
+        <div class="d-flex pa-2">
+          <h2>{{ a.month }}월</h2>
+        </div>
+        <v-simple-table>
+          <template v-slot:default>
+            <thead>
+              <tr>
+                <th>날짜</th>
+                <th>엑셀 다운로드 및 세부 보기</th>
+              </tr>
+            </thead>
+            
+            <tbody>
+              <tr
+                v-for="date, index in a.attendedAts"
+                :key=index
+              >
+                <td><h3>{{ date.substring(5, 7)}}월 {{ date.substring(8, 10) }}일</h3></td>
+                <td>
+                  <v-btn 
+                    @click="downloadAttendanceExcelByDate(date)"
+                    fab
+                    outlined
+                    x-small
+                    color="indigo"
+                    class="ml-3"
+                  >
+                    <v-icon>
+                      mdi-download
+                    </v-icon>
+                  </v-btn>
 
-            <v-btn
-              @click="showAttendanceDetail(attendedAt)"
-              fab
-              outlined
-              x-small
-              color="indigo"
-              class="ml-3"
-            >
-              <v-icon>
-                mdi-clipboard-list-outline
-              </v-icon>
-            </v-btn>
-          </h3>
-        </v-sheet>
+                  <v-btn
+                    @click="showAttendanceDetail(date)"
+                    fab
+                    outlined
+                    x-small
+                    color="indigo"
+                    class="ml-3"
+                  >
+                    <v-icon>
+                      mdi-clipboard-list-outline
+                    </v-icon>
+                  </v-btn>
+                </td>
+              </tr>
+            </tbody>
+          </template>
+        </v-simple-table>
       </v-col>
     </v-row>
   </v-container>
@@ -85,6 +104,7 @@ export default {
     return {
       year: null,
       attendedAts: [],
+      attendedAtsByMonths: [],
     }
   },
   
@@ -94,6 +114,7 @@ export default {
       .get(`${this.$serverAddress}/Youth/attendance/view/list?year=${year}`, {withCredentials: true})
       .then(res => {
         this.attendedAts = res.data.attendedAts
+        this.distingushWithMonth(this.attendedAts)
       })
       .catch(err => {
         this.alertError(err)
@@ -129,18 +150,40 @@ export default {
       }).catch(err => {
         this.alertError(err)
       })
+    },
+
+    distingushWithMonth (dates) {
+      dates.forEach(date => {
+        const month = date.substring(5, 7)
+        let hasFound = false
+        this.attendedAtsByMonths.forEach(a => {
+          if (month === a.month) {
+            hasFound = true
+            a.attendedAts.push(date)
+          } 
+        })
+        
+        if (!hasFound) {
+          let attendedAtsByMonth = {
+            month: month,
+            attendedAts: [date]
+          }
+          this.attendedAtsByMonths.push(attendedAtsByMonth)
+        }
+      })
     }
+
   },
 
   watch: {
     year: function() {
+      this.attendedAtsByMonths = []
       this.getAttendedAtsByYear(this.year)
     }
   },
 
   created () {
     this.year = moment().year()
-    this.$store.commit('changeHeaderName', '출석부 보기')
   },
 }
 </script>

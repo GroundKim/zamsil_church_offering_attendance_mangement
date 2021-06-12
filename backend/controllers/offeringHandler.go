@@ -46,7 +46,13 @@ func DeleteOfferingDiary(c *gin.Context) {
 func GetOfferingDiarySummary(c *gin.Context) {
 	date := c.Param("date")
 	parsedDate, _ := time.Parse("2006-01-02", date)
-	offeringCostWrappers := models.GetSummaryOfferingCostByDate(parsedDate)
+	offeringCostWrappers, err := models.GetSummaryOfferingCostByDate(parsedDate)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"err": "fail in get summary offering Cost By date",
+		})
+		return
+	}
 
 	c.JSON(http.StatusOK, offeringCostWrappers)
 }

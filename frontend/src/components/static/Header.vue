@@ -27,7 +27,7 @@ export default {
       {
         icon: 'clipboard-edit',
         title: '출석부 기입',
-        target: 'attendanceInput'
+        target: 'attendanceInput',
       },
 
       {
@@ -52,9 +52,21 @@ export default {
         icon: 'domain',
         title: '재적 관리',
         target: 'memberManagement'
+      },
+
+      {
+        icon: 'login',
+        title: '로그인',
+        target: 'login'
       }
     ]
   }),
+
+  watch: {
+    $route() { 
+      this.setHeader()
+    }
+  },
 
   methods: {
       movePage(link) {
@@ -63,19 +75,17 @@ export default {
         this.$router.push({name: link.target}).catch(() => {})
       },
 
-      selectHeader(routeName) {
-        const index = this.links.findIndex(l => l.target === routeName)
+      setHeader() {
+        let componenetName = this.$router.currentRoute.name
+        if (componenetName === 'attendanceViewDetail') componenetName = 'attendanceView'
+        if (componenetName === 'offeringViewDetail') componenetName = 'offeringView'
+        const index = this.links.findIndex(l => l.target === componenetName)
         this.activeTab = index
       }
     },
 
-    mounted () {
-      this.headerName = this.$store.state.headerName
-      // avoid selecting wrong header v-tab when refreishing from client
-      this.selectHeader(this.$router.currentRoute.name)
-      document.title = '잠실교회 소년부 관리'
-    },
-
-
+  created () {
+    this.setHeader()
+  },
 }
 </script>

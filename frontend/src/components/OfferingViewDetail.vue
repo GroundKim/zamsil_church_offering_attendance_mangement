@@ -1,63 +1,73 @@
 <template>
 	<v-container grid-list-xs>
-    <v-simple-table
-      fixed-header 
-    >
-      <template v-slot:default>
-        <thead>
-          <tr>
-            <th>헌금 종류</th>
-            <th>1부</th>
-            <th>2부</th>
-            <th>총합</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr
-            v-for="offering, index in offeringSummary"
-            :key="index"
-          >
-            <td>{{ offering.offeringType.offeringTypeName }}</td>
-            <td>₩ {{ changeCostWithDelimeter(offering.offeringCost[0]) }}</td>
-            <td>₩ {{ changeCostWithDelimeter(offering.offeringCost[1]) }}</td>
-            <td>₩ {{ changeCostWithDelimeter(offering.offeringCost[0] + offering.offeringCost[1]) }}</td>
-          </tr>
-
-          <tr>
-            <td>총합</td>
-            <td>₩ {{ changeCostWithDelimeter(getTotalCostByDepartmentId(1)) }}</td>
-            <td>₩ {{ changeCostWithDelimeter(getTotalCostByDepartmentId(2)) }}</td>
-            <td>₩ {{ changeCostWithDelimeter(getTotalCostByDepartmentId(1) + getTotalCostByDepartmentId(2)) }}</td>
-          </tr>
-        </tbody>
-      </template>
-
-    </v-simple-table>
-
-		<v-data-table
-			:headers="individualOfferingTableHeaders"
-			:items="getOfferingData"
-			class="elevation-1"
-			hide-default-footer
-		>
-			<template v-slot:[`item.student.name`]= "{ item }">{{ item.studentId===null ? "무명" :item.student.name }}</template>
-			<template v-slot:[`item.offeringCost`]="{ item }">
-				₩ {{changeCostWithDelimeter(item.offeringCost)}}
-			</template>
-			
-			<template v-slot:[`item.action`]="{ item }">
-				<v-icon
-					@click="showOfferingEditDialog(item)"
+		<v-row>
+			<v-col>
+				<h2 class="ma-3">통계</h2>
+				<v-simple-table
+				fixed-header 
 				>
-					mdi-pencil
-				</v-icon>
+					<template v-slot:default>
+						<thead>
+							<tr>
+								<th>헌금 종류</th>
+								<th>1부</th>
+								<th>2부</th>
+								<th>총합</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr
+								v-for="offering, index in offeringSummary"
+								:key="index"
+							>
+								<td>{{ offering.offeringType.offeringTypeName }}</td>
+								<td>₩ {{ changeCostWithDelimeter(offering.offeringCost[0]) }}</td>
+								<td>₩ {{ changeCostWithDelimeter(offering.offeringCost[1]) }}</td>
+								<td>₩ {{ changeCostWithDelimeter(offering.offeringCost[0] + offering.offeringCost[1]) }}</td>
+							</tr>
 
-				<v-icon
-					color="red lighten-2"
-					@click="deleteOfferingDiary(item)"
-				>mdi-delete</v-icon>
-			</template>
-		</v-data-table>
+							<tr>
+								<td>총합</td>
+								<td>₩ {{ changeCostWithDelimeter(getTotalCostByDepartmentId(1)) }}</td>
+								<td>₩ {{ changeCostWithDelimeter(getTotalCostByDepartmentId(2)) }}</td>
+								<td>₩ {{ changeCostWithDelimeter(getTotalCostByDepartmentId(1) + getTotalCostByDepartmentId(2)) }}</td>
+							</tr>
+						</tbody>
+					</template>
+				</v-simple-table>
+			</v-col>
+		</v-row>
+		
+		<v-row>
+			<v-col>
+				<h2 class="ma-3">개인 헌금</h2>
+				<v-data-table
+					:headers="individualOfferingTableHeaders"
+					:items="getOfferingData"
+					class="elevation-1"
+					hide-default-footer
+				>
+					<template v-slot:[`item.student.name`]= "{ item }">{{ item.studentId===null ? "무명" :item.student.name }}</template>
+					<template v-slot:[`item.offeringCost`]="{ item }">
+						₩ {{changeCostWithDelimeter(item.offeringCost)}}
+					</template>
+					
+					<template v-slot:[`item.action`]="{ item }">
+						<v-icon
+							@click="showOfferingEditDialog(item)"
+						>
+							mdi-pencil
+						</v-icon>
+
+						<v-icon
+							color="red lighten-2"
+							@click="deleteOfferingDiary(item)"
+						>mdi-delete</v-icon>
+					</template>
+				</v-data-table>
+			</v-col>
+		</v-row>
+
 		<v-dialog
 			v-model="dialog"
 			max-width="500px"
@@ -91,7 +101,7 @@
 					></v-text-field>
 				</v-card-text>
 				<v-card-actions>
-					<v-btn color="fail">취소</v-btn>
+					<v-btn color="fail" @click="cancelOfferingDiary()">취소</v-btn>
 					<v-btn color="success" @click="editOfferingDiary()">저장</v-btn>
 				</v-card-actions>
 			</v-card>	
@@ -189,6 +199,10 @@ export default {
 	},
 
 	methods: {
+    cancelOfferingDiary () {
+      this.dialog = false
+    },
+
 		changeCostWithDelimeter (value) {
 			value = value.toString()
       const result = value.replace(/\D/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ",")
@@ -235,7 +249,7 @@ export default {
 				.then((res) => {
           this.dialog = false
 					this.offeringItem.offeringTypeId = res.data.offeringTypeId
-          // I don't know why copy the res data whole object into the ordinary offering diary, so that I put fit in property into each variable
+          // I don't know why copy that the res data whole object into the ordinary offering diary is not working, so that I put fit in property into each variable
           // get offering name by id
           this.offeringTypes.forEach(type => {
             if(type.offeringTypeId === res.data.offeringTypeId) this.offeringItem.offeringType.offeringTypeName = type.offeringTypeName
