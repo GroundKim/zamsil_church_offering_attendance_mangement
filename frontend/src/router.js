@@ -59,7 +59,39 @@ const router = new VueRouter({
         path:'/offering/view/detail',
         name: 'offeringViewDetail',
         component: OfferingViewDetail
-    }
+    },
+
+    //simple
+
+    {
+        path:'/simple/login',
+        name: 'simpleLogin',
+        component: Login
+    },
+
+    {
+        path: '/simple/offering/view',
+        name: 'simpleOfferingView',
+        component: OfferingView
+    },
+
+    {
+        path:'/simple/attendance/view',
+        name: 'simpleAttendanceView',
+        component: AttendanceView
+    },
+
+    {
+        path:'/simple/attendance/view/detail',
+        name: 'simpleAttendanceViewDetail',
+        component: AttendanceViewDetail
+    },
+
+    {
+        path:'/simple/offering/view/detail',
+        name: 'simpleOfferingViewDetail',
+        component: OfferingViewDetail
+    },
 ]
 })
 

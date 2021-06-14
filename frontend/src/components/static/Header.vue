@@ -22,7 +22,7 @@
 <script>
 export default {
   data: () => ({
-    activeTab: 1,
+    activeTab: 0,
     links: [
       {
         icon: 'clipboard-edit',
@@ -59,7 +59,29 @@ export default {
         title: '로그인',
         target: 'login'
       }
-    ]
+    ],
+
+    simpleLinks: [
+      {
+        icon: 'login',
+        title: '로그인',
+        target: 'simpleLogin'
+      },
+
+      {
+        icon: 'clipboard-outline',
+        title: '출석부 보기',
+        target: 'simpleAttendanceView'
+      },
+
+      {
+        icon: 'book-outline',
+        title: '헌금 보기',
+        target: 'simpleOfferingView'
+      },
+    ],
+
+    
   }),
 
   watch: {
@@ -77,15 +99,22 @@ export default {
 
       setHeader() {
         let componenetName = this.$router.currentRoute.name
+
         if (componenetName === 'attendanceViewDetail') componenetName = 'attendanceView'
         if (componenetName === 'offeringViewDetail') componenetName = 'offeringView'
+        if (componenetName === 'simpleAttendanceViewDetail') componenetName = 'simpleAttendanceView'
+        if (componenetName === 'simpleOfferingViewDetail') componenetName = 'simpleOfferingView'
         const index = this.links.findIndex(l => l.target === componenetName)
         this.activeTab = index
       }
     },
 
   created () {
+    if (this.$route.name.includes('simple')) {
+      this.links = this.simpleLinks
+    }
     this.setHeader()
+    document.title = "잠실교회 소년부"
   },
 }
 </script>

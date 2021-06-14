@@ -53,10 +53,10 @@
             
             <tbody>
               <tr
-                v-for="date, index in a.attendedAts"
+                v-for="(date, index) in [...a.attendedAts].sort()"
                 :key=index
               >
-                <td><h3>{{ date.substring(5, 7)}}월 {{ date.substring(8, 10) }}일</h3></td>
+                <td><h3>{{ date.substring(5, 7)}}월 {{ date.substring(8, 10) }}일 ({{ getWeekOfMonth(date) }} 주차)</h3></td>
                 <td>
                   <v-btn 
                     @click="downloadAttendanceExcelByDate(date)"
@@ -109,6 +109,11 @@ export default {
   },
   
   methods: {
+    getWeekOfMonth(date) {
+      const weekOfMonth = (m) => m.week() - moment(m).startOf('month').week() + 1
+      return weekOfMonth(moment(date))
+    },
+
     getAttendedAtsByYear (year) {
       axios
       .get(`${this.$serverAddress}/Youth/attendance/view/list?year=${year}`, {withCredentials: true})
@@ -121,8 +126,10 @@ export default {
       })
     },
 
-    showAttendanceDetail(attendedAt) {
-      this.$router.push(`/attendance/view/detail?date=${attendedAt.substring(0,10)}`)
+    showAttendanceDetail (attendedAt) {
+      if (this.$route.name.includes('simple')) this.$router.push(`/simple/attendance/view/detail?date=${attendedAt.substring(0,10)}`)
+      else this.$router.push(`/attendance/view/detail?date=${attendedAt.substring(0,10)}`)
+      
     },
 
     plusYear () {
@@ -171,8 +178,16 @@ export default {
           this.attendedAtsByMonths.push(attendedAtsByMonth)
         }
       })
-    }
 
+      // sorting ascending 
+      this.attendedAtsByMonths.sort((a, b) => {
+        return a.month < b.month ? -1 : a.month > b.month ? 1 : 0
+      })
+    },
+
+    sortAttendedAts (attendedAts) {
+      return attendedAts.sort()
+    }
   },
 
   watch: {

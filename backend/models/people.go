@@ -60,7 +60,6 @@ func SaveStudents(students *[]Student) (err error) {
 		AuthToken.User.ActiveStamp("save student", string(savedStudent))
 	}
 
-	fmt.Println(AuthToken.User)
 	return nil
 }
 

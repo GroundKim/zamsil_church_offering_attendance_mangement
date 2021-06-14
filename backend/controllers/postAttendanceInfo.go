@@ -20,6 +20,12 @@ func PostAttendanceDiary(c *gin.Context) {
 	}
 
 	for _, attendanceDiary := range attendanceDiaries {
+		// handling post attendanceDiary from attendanceViewDetail.vue
+		// and, if createdBy is null
+		if attendanceDiary.CreatedBy == "" {
+			attendanceDiary.CreatedBy = models.AuthToken.User.Name
+		}
+
 		if err := attendanceDiary.SaveAttendanceDiary(); err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{
 				"err": "fail in save attendance Diary",

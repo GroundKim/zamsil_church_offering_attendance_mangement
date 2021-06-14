@@ -99,6 +99,11 @@
 						:rules="[rules.offering, rules.required]"
 						required
 					></v-text-field>
+
+					<v-text-field
+						v-model="offeringDiaryDialog.offeringNote"
+						label="헌금 사유"
+					></v-text-field>
 				</v-card-text>
 				<v-card-actions>
 					<v-btn color="fail" @click="cancelOfferingDiary()">취소</v-btn>
@@ -126,7 +131,8 @@ export default {
 				departmentId: null,
 				className: null,
 				offeringTypeId: null,
-				offeringCost: null
+				offeringCost: null,
+				offeringNote: null,
 			},
 
 			rules: {
@@ -162,6 +168,11 @@ export default {
 				{
 					text: '헌금 액수',
 					value: 'offeringCost',
+				},
+
+				{
+					text: '헌금 사유',
+					value: 'offeringNote'
 				},
 
 				{
@@ -226,6 +237,7 @@ export default {
 			this.offeringDiaryDialog.offeringDiaryId = item.offeringDiaryId
 			this.offeringDiaryDialog.offeringTypeId = item.offeringTypeId
 			this.offeringDiaryDialog.offeringCost = item.offeringCost
+			this.offeringDiaryDialog.offeringNote = item.offeringNote
 			// handling no name offering
 			if (item.studentId === null) {
 				this.offeringDiaryDialog.studentName = "무명"
@@ -249,7 +261,8 @@ export default {
 				.then((res) => {
           this.dialog = false
 					this.offeringItem.offeringTypeId = res.data.offeringTypeId
-          // I don't know why copy that the res data whole object into the ordinary offering diary is not working, so that I put fit in property into each variable
+
+          // I don't know why copying the res data whole object into the ordinary offering diary does not work, so that I put fit in property into each variable
           // get offering name by id
           this.offeringTypes.forEach(type => {
             if(type.offeringTypeId === res.data.offeringTypeId) this.offeringItem.offeringType.offeringTypeName = type.offeringTypeName
@@ -257,6 +270,7 @@ export default {
 
           // change offering cost
           this.offeringItem.offeringCost = res.data.offeringCost
+					this.offeringItem.offeringNote = res.data.offeringNote
 				})
 				.catch((err) => {
 					this.alertError(err)

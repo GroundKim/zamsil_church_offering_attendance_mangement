@@ -6,7 +6,7 @@
         label="종류"
         :items="offeringType"
         required
-        item-text="offeringName"
+        item-text="offeringTypeName"
         item-value="offeringTypeId"
       ></v-autocomplete>
     </v-col>
@@ -31,6 +31,17 @@
         :rules="[rules.offering]"
       ></v-text-field>
     </v-col>
+
+    <v-col 
+      class="py-0"
+      cols="4"
+    >
+      <v-text-field
+        v-model="offeringNote"
+        label ="헌금 사유"
+      ></v-text-field>
+    </v-col>
+
     <div class="ma-auto">
       <v-btn
         fab
@@ -58,6 +69,9 @@ export default {
     offeringCost: null,
     students: [],
     departmentId: null,
+
+    offeringNote: null,
+
     offeringPayload: {
       offeringId: null,
       studentId: null,
@@ -67,6 +81,8 @@ export default {
       offeredAt: null,
       createdAt: null,
       createdBy: null,
+
+      offeringNote: null,
     },
 
     rules: {
@@ -134,6 +150,11 @@ export default {
       const result = newValue.replace(/\D/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ",")
       this.$nextTick(() => this.offeringCost = result)
       this.offeringPayload.offeringCost = parseInt(this.offeringCost.replace(',', ''))
+      this.$store.commit('updateOfferingPayload', this.offeringPayload)
+    },
+
+    offeringNote: function() {
+      this.offeringPayload.offeringNote = this.offeringNote
       this.$store.commit('updateOfferingPayload', this.offeringPayload)
     }
   },

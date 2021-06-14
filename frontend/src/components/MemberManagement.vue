@@ -356,7 +356,6 @@ export default {
         .then((res) => {
           let student = res.data
           let classIndex = this.currentClasses.findIndex(c => c.class.classId == dialogStudent.classId)
-          console.log(JSON.stringify(this.currentClasses[classIndex]))
           let studentIndex = this.currentClasses[classIndex].students.findIndex(s => s.studentId == student.studentId)
           Object.assign(this.currentClasses[classIndex].students[studentIndex], student)
           

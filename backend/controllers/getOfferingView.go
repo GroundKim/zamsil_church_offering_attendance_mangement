@@ -18,14 +18,13 @@ func GetOfferingViewList(c *gin.Context) {
 		for i := 0; i < len(offeringDiaries); i++ {
 			isFound := false
 			for j := 0; j < len(offeringAts); j++ {
-
 				if offeringDiaries[i].OfferedAt.Format("2006-01-02") == offeringAts[j].Format("2006-01-02") {
 					isFound = true
 				}
 			}
 
 			if !isFound {
-				offeringAts = append(offeringAts, offeringDiaries[i].CreatedAt)
+				offeringAts = append(offeringAts, offeringDiaries[i].OfferedAt)
 			}
 
 		}

@@ -1,6 +1,25 @@
 <template>
   <v-container>
     <h1 class="ml-5 mt-5">{{ date }}</h1>
+    
+    <v-simple-table>
+      <template v-slot:default>
+        <thead>
+          <tr>
+            <th>총원</th>
+            <th>1부</th>
+            <th>2부</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>{{ getNumberOfAttendedStudentsByDepartmentName(1) + getNumberOfAttendedStudentsByDepartmentName(2) }} 명</td>
+            <td>{{ getNumberOfAttendedStudentsByDepartmentName(1) }} 명</td>
+            <td>{{ getNumberOfAttendedStudentsByDepartmentName(2) }} 명</td>
+          </tr>
+        </tbody>
+      </template>
+    </v-simple-table>
     <v-row
       v-for="(classInfo, classIndex) in classesWithStudents"
       :key="classIndex"
@@ -8,7 +27,6 @@
       <v-container>
         <h2 class="ml-5 my-5">{{ classInfo.class.department.name }}부 {{ classInfo.class.name }}반</h2>
         <v-col>
-          <!-- {{ getAttendanceDiaryTableItems(classInfo)}} -->
           <v-data-table
             :headers="studentHeaders()"
             :items="getAttendanceDiaryTableItems(classInfo)"
@@ -25,7 +43,7 @@
                       v-model=item.attendanceType
                       :mandatory=true
                     >
-                      <v-list-item value="참석" color="primary" @click="changeAttendance(classIndex, index, true)">출석</v-list-item>
+                      <v-list-item value="출석" color="primary" @click="changeAttendance(classIndex, index, true)">출석</v-list-item>
                       <v-list-item value="결석" color="red" @click="changeAttendance(classIndex, index, false)">결석</v-list-item>
                     </v-list-item-group>
                   </template>
@@ -82,11 +100,12 @@
 <script>
 import axios from 'axios'
 import moment from 'moment'
-
 export default {
 	data() {
 		return {
 			date: null,
+      numberOfAttendedStudentDepartmentOne: 0,
+      numberOfAttendedStudentDepartmentTwo: 0,
       studentsWithAttendance: [],
 			classesWithStudents: [], 
       attendanceDiaries: {
@@ -96,6 +115,7 @@ export default {
 
       absenceTypes: null,
       attendanceClasses: [],
+      attendanceSummary: [],
 
       absenceDiary: {
         studentId: null,
@@ -115,6 +135,18 @@ export default {
     getAttendanceDiaryTableItems(classInfo) {
       let index = this.classesWithStudents.findIndex(c => c.class.classId == classInfo.class.classId)
       return this.classesWithStudents[index].studentAttendances
+    },
+
+    getNumberOfAttendedStudentsByDepartmentName(deparmtentName) {
+      let numberOfStudents = 0
+      this.classesWithStudents.forEach(c => {
+        let cDepartmentName = c.class.department.name
+        if (cDepartmentName === deparmtentName) c.studentAttendances.forEach(sa => {
+          if (sa.attendanceType === '출석') numberOfStudents++
+        })
+      })
+
+      return numberOfStudents
     },
 
     changeAbsenceReason (student) {
@@ -161,7 +193,7 @@ export default {
       }
 
       if (absenceType.absenceTypeId === 1) {
-        // if type id 1, which means '일반 참석': 다른 타입 -> 일반
+        // if type id 1, which means '일반 출석': 다른 타입 -> 일반
         // delete not 일반 absence diary
         this.deleteAbsenceDiary(item.absence.absenceDiaryId)
 
@@ -197,9 +229,9 @@ export default {
       let student = this.classesWithStudents[classIndex].studentAttendances[studentIndex]
       let absenceDiaryId = student.absence.absenceDiaryId
       student.attendedAt = this.date + moment().format().substr(10)
-      student.createdBy = 'user'
+      student.createdBy = null
       if (isAttended) {
-        student.attendanceType = "참석"
+        student.attendanceType = "출석"
         let payload = []
         payload.push(student)
 
@@ -296,7 +328,7 @@ export default {
         this.alertError(err)
       })
 
-    // split up the students with divided by class
+    // split up the students with class
     this.studentsWithAttendance.forEach(s => {
       let classIndex = this.classesWithStudents.findIndex(c => c.class.classId == s.student.classId)
       let studentAttendance = {
@@ -320,10 +352,13 @@ export default {
         studentAttendance.absence.absenceTypeId = s.absence.absenceType.absenceTypeId
         studentAttendance.absence.absenceTypeName = s.absence.absenceType.name
         studentAttendance.absence.absenceReason = s.absence.absenceReason
-      } 
+      }
+
       else {
         studentAttendance.attendanceType = '출석'
       }
+      
+
       this.classesWithStudents[classIndex].studentAttendances.push(studentAttendance)
     })
 

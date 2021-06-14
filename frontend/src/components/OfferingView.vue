@@ -54,10 +54,10 @@
             
             <tbody>
               <tr
-                v-for="date, index in o.offeredAts"
-                :key=index
+                v-for="date in [...o.offeredAts].sort()"
+                :key=date
               >
-                <td><h3>{{ date.substring(5, 7)}}월 {{ date.substring(8, 10) }}일</h3></td>
+                <td><h3>{{ date.substring(5, 7)}}월 {{ date.substring(8, 10) }}일 ({{ getWeekOfMonth(date) }} 주차)</h3></td>
                 <td>
                   <v-btn 
                     @click="downloadExcelByDate(date)"
@@ -108,6 +108,11 @@ export default {
   },
 
   methods: {
+    getWeekOfMonth(date) {
+      const weekOfMonth = (m) => m.week() - moment(m).startOf('month').week() + 1
+      return weekOfMonth(moment(date))
+    },
+
     getOfferedAtsByYear (year) {
       axios
       .get(`${this.$serverAddress}/Youth/offering/view/list?year=${year}`, {withCredentials: true})
@@ -121,7 +126,8 @@ export default {
     },
 
     showOfferingDiaryDetail (offeredAt) {
-      this.$router.push(`/offering/view/detail?date=${offeredAt.substring(0,10)}`)
+      if (this.$route.name.includes('simple')) this.$router.push(`/simple/offering/view/detail?date=${offeredAt.substring(0,10)}`)
+      else this.$router.push(`/offering/view/detail?date=${offeredAt.substring(0,10)}`)
     },
 
     plusYear () {
@@ -172,7 +178,12 @@ export default {
           this.offeredAtsByMonths.push(offeredAtsByMonth)
         }
       })
-    }
+
+      // sorting ascending
+      this.offeredAtsByMonths.sort((a, b) => {
+        return a.month < b.month ? -1 : a.month > b.month ? 1 : 0
+      })
+    },
   },
 
   watch: {

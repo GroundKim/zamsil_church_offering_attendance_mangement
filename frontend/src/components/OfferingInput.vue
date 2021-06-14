@@ -1,7 +1,7 @@
 <template>
   <v-container fill-height>
     <v-layout align-center justify-center>
-      <v-flex xs12 sm8 md4>
+      <v-flex xs12 sm8 md6>
         <form @submit.prevent="sendPost">
           <v-card elevation="0" shaped outlined>
             <v-card-text>
@@ -153,7 +153,6 @@ export default {
 
       // push specific offering
       offeringPayload = offeringPayload.concat(this.$store.getters.getOfferingPayloads)
-      console.log(JSON.stringify(offeringPayload))
 
       // set header for JSON post
       const headers = {
@@ -252,7 +251,7 @@ export default {
       }
     })
     
-    // store offeredAt in vuex with proper date formate for server asking Len
+    // store offeredAt in vuex with proper date formate for server
     this.$store.commit('setOfferedAt', this.date + moment().format().substr(10))
     this.departmentId = '1'
     this.offerings.push({

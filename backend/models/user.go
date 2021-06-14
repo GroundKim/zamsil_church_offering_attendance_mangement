@@ -9,7 +9,9 @@ import (
 type User struct {
 	ID       int
 	ClientID string `gorm:"not null" json:"clientId"`
-	Password string `gorm:"not null" json:"password"`
+	Password string `gorm:"not null" json:"-"`
+	Name     string `gorm:"not null" json:"userName"`
+	Role     string `gorm:"not null" json:"userStatus"`
 }
 
 type Log struct {

@@ -63,15 +63,6 @@
           </form>
         </v-flex>
       </v-layout>
-      <!--
-      <span>{{ attendedStudents }}</span>
-      <br>
-      <span>{{ department }}</span>
-      <br>
-      <span> {{ value }} </span>
-      <br>
-      <span> {{ test }} </span>
-      -->
     </v-container>
 
     <v-container>
@@ -79,25 +70,23 @@
         <v-col
           v-for="data in currentStudents"
           v-bind:key="data.class.classId"
-          cols="4"
+          cols="12"
+          sm="12" md="4"
         >
           <v-card height="100%" class="d-flex flex-column">
             <v-card-title>Class {{ data.class.name }}</v-card-title>
             <v-card-subtitle>{{ getTeacherNames(data.teachers) }}</v-card-subtitle>
             <v-card-text>
-              <v-row class="pa-2">
-                <v-col
-                  v-for="student in data.students"
-                  v-bind:key="student.studentId"
-                  cols="4"
-                >
-                  <v-checkbox
-                    v-model="attendedStudents"
-                    :value="student.studentId"
-                    :label="`${student.name}`"
-                  ></v-checkbox>
-                </v-col>
-              </v-row>
+              <div
+                v-for="student in data.students"
+                v-bind:key="student.studentId"
+              >
+                <v-checkbox
+                  v-model="attendedStudents"
+                  :value="student.studentId"
+                  :label="`${student.name}`"
+                ></v-checkbox>
+              </div>
             </v-card-text>
             <v-spacer></v-spacer>
           </v-card>

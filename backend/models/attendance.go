@@ -10,7 +10,7 @@ type AttendanceDiary struct {
 	StudentID  int       `gorm:"not null" json:"studentId" binding:"required"`
 	AttendedAt time.Time `gorm:"not null; type:date" json:"attendedAt" binding:"required"`
 	CreatedAt  time.Time `gorm:"not null default: current_timestamp(3)"`
-	CreatedBy  string    `gorm:"not null" json:"createdBy" binding:"required"`
+	CreatedBy  string    `gorm:"not null" json:"createdBy"`
 
 	Student Student `gorm:"references:ID" json:"student"`
 }
