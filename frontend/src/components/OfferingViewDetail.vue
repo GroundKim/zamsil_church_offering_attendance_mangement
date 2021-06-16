@@ -4,7 +4,7 @@
 			<v-col>
 				<h2 class="ma-3">통계</h2>
 				<v-simple-table
-				fixed-header 
+				fixed-header
 				>
 					<template v-slot:default>
 						<thead>
@@ -37,7 +37,7 @@
 				</v-simple-table>
 			</v-col>
 		</v-row>
-		
+
 		<v-row>
 			<v-col>
 				<h2 class="ma-3">개인 헌금</h2>
@@ -52,7 +52,7 @@
 					<template v-slot:[`item.offeringCost`]="{ item }">
 						₩ {{changeCostWithDelimeter(item.offeringCost)}}
 					</template>
-					
+
 					<template v-slot:[`item.action`]="{ item }">
 						<v-icon
 							@click="showOfferingEditDialog(item)"
@@ -110,7 +110,7 @@
 					<v-btn color="fail" @click="cancelOfferingDiary()">취소</v-btn>
 					<v-btn color="success" @click="editOfferingDiary()">저장</v-btn>
 				</v-card-actions>
-			</v-card>	
+			</v-card>
 		</v-dialog>
 	</v-container>
 </template>
@@ -121,10 +121,10 @@ export default {
 	data() {
 		return {
 			date: null,
-      offeringItem: null,
+			offeringItem: null,
 			offeringData: [],
 			offeringTypes: [],
-      offeringSummary: [],
+			offeringSummary: [],
 			dialog: false,
 			offeringDiaryDialog: {
 				offeringDiaryId: null,
@@ -185,49 +185,41 @@ export default {
 			offeringTableItems: null,
 		}
 	},
-	
+
 	computed: {
 		getDialogOfferingCost() {
 			return this.offeringDiaryDialog.offeringCost
 		},
 
-    getOfferingData () {
-      return this.offeringData
-    }
+		getOfferingData () {
+			return this.offeringData
+		}
 	},
 
 	watch: {
 		getDialogOfferingCost(value) {
 			this.offeringDiaryDialog.offeringCost = this.changeCostWithDelimeter(value)
 		},
-
-    // if client try to fix or delete offering Diary, client needs to update offering summary
-    offeringData: {
-      deep: true,
-      handler() {
-        this.getOfferingSummary()
-      }
-    }
 	},
 
 	methods: {
-    cancelOfferingDiary () {
-      this.dialog = false
-    },
+		cancelOfferingDiary () {
+			this.dialog = false
+		},
 
 		changeCostWithDelimeter (value) {
 			value = value.toString()
-      const result = value.replace(/\D/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+			const result = value.replace(/\D/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ",")
 			return result
 		},
 
-    getTotalCostByDepartmentId(deparmtentId) {
-      let totalCost = 0
-      this.offeringSummary.forEach(o => {
-        totalCost += o.offeringCost[deparmtentId - 1]
-      }) 
-      return totalCost
-    },
+		getTotalCostByDepartmentId(deparmtentId) {
+			let totalCost = 0
+			this.offeringSummary.forEach(o => {
+				totalCost += o.offeringCost[deparmtentId - 1]
+			})
+			return totalCost
+		},
 
 		getOfferor(item) {
 			let offeror = null
@@ -240,9 +232,9 @@ export default {
 		},
 
 		showOfferingEditDialog (item) {
-      this.offeringItem = item
+			this.offeringItem = item
 			this.dialog = true
-      this.offeringDiaryDialog.offeringDiaryId = item.offeringDiaryId
+			this.offeringDiaryDialog.offeringDiaryId = item.offeringDiaryId
 			this.offeringDiaryDialog.studentId = item.studentId
 			this.offeringDiaryDialog.departmentId = item.departmentId
 			this.offeringDiaryDialog.offeringDiaryId = item.offeringDiaryId
@@ -252,9 +244,9 @@ export default {
 			// handling no name offering
 			if (item.studentId === null && item.teacherId === null) {
 				this.offeringDiaryDialog.name = "무명"
-				
-			} 
-			
+
+			}
+
 			if (item.studentId !== null) {
 				this.offeringDiaryDialog.name = item.student.name
 				this.offeringDiaryDialog.className = item.student.class.name
@@ -268,26 +260,30 @@ export default {
 
 
 		editOfferingDiary () {
-      // remove all delimeter ',' from offeringCost, and conversion string to int
-      this.offeringDiaryDialog.offeringCost = Number(this.offeringDiaryDialog.offeringCost.replace(',', ''))
+			// remove all delimeter ',' from offeringCost, and conversion string to int
+			this.offeringDiaryDialog.offeringCost = Number(this.offeringDiaryDialog.offeringCost.replace(',', ''))
 			const headers = {
 				'content-type': 'application/json'
 			}
 			axios
 				.put(`${this.$serverAddress}/Youth/offering`, JSON.stringify(this.offeringDiaryDialog), { withCredentials: true, headers: headers })
 				.then((res) => {
-          this.dialog = false
+					this.dialog = false
 					this.offeringItem.offeringTypeId = res.data.offeringTypeId
 
-          // I don't know why copying the res data whole object into the ordinary offering diary does not work, so that I put fit in property into each variable
-          // get offering name by id
-          this.offeringTypes.forEach(type => {
-            if(type.offeringTypeId === res.data.offeringTypeId) this.offeringItem.offeringType.offeringTypeName = type.offeringTypeName
-          })
+					// I don't know why copying the res data whole object into the ordinary offering diary does not work, so that I put fit in property into each variable
+					// get offering name by id
+					this.offeringTypes.forEach(type => {
+						if(type.offeringTypeId === res.data.offeringTypeId) this.offeringItem.offeringType.offeringTypeName = type.offeringTypeName
+					})
 
-          // change offering cost
-          this.offeringItem.offeringCost = res.data.offeringCost
+					// change offering cost
+					this.offeringItem.offeringCost = res.data.offeringCost
 					this.offeringItem.offeringNote = res.data.offeringNote
+
+          // after editing, reload offering summary
+          this.getOfferingSummary()
+
 				})
 				.catch((err) => {
 					this.alertError(err)
@@ -295,35 +291,38 @@ export default {
 		},
 
 		deleteOfferingDiary (item) {
-      if (confirm(`${item.student.name}의 헌금 기록을 삭제할까요?`)) {
-        axios 
-          .delete(`${this.$serverAddress}/Youth/offering/${item.offeringDiaryId}`, { withCredentials: true })
-          .then((res) => {
-            const index = this.offeringData.findIndex(o => o.offeringDiaryId === res.data.offeringDiaryId )
-            this.offeringData.splice(index, 1)
-          })
-          .catch((err) => {
-            this.alertError(err)
-          })
-      }
+			if (confirm(`${item.student.name}의 헌금 기록을 삭제할까요?`)) {
+				axios
+					.delete(`${this.$serverAddress}/Youth/offering/${item.offeringDiaryId}`, { withCredentials: true })
+					.then((res) => {
+						const index = this.offeringData.findIndex(o => o.offeringDiaryId === res.data.offeringDiaryId )
+						this.offeringData.splice(index, 1)
+
+            // after deleting, reload offering summary
+            this.getOfferingSummary()
+					})
+					.catch((err) => {
+						this.alertError(err)
+					})
+			}
 		},
 
-    getOfferingSummary: function() {
-      axios
-        .get(`${this.$serverAddress}/Youth/offering/summary/${this.date}`, { withCredentials: true })
-        .then((res) => {
-          this.$nextTick(() => this.offeringSummary = res.data)
-        })
-        .catch((err) => {
-          this.alertError(err)
-        })
-    }
+		getOfferingSummary: function() {
+			axios
+				.get(`${this.$serverAddress}/Youth/offering/summary/${this.date}`, { withCredentials: true })
+				.then((res) => {
+					this.$nextTick(() => this.offeringSummary = res.data)
+				})
+				.catch((err) => {
+					this.alertError(err)
+				})
+		}
 	},
 
 	created: async function () {
 		// get date from URL query
 		this.date = this.$route.query.date
-    
+
 		// get offeringTypes
 		await axios
 			.get(`${this.$serverAddress}/Youth/offering/types`, { withCredentials: true })
@@ -345,7 +344,7 @@ export default {
 			})
 
 		// get offering summary
-    await this.getOfferingSummary()
+		await this.getOfferingSummary()
 
 
 	},
