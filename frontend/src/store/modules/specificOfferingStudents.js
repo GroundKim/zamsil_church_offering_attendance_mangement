@@ -1,5 +1,6 @@
 const state = {
     students: null,
+    teachers: null,
     offeringType: [],
     offeringPayloads: [],
     sendPost: false,
@@ -58,7 +59,11 @@ const mutations = {
     pushOfferingPayloads (state, offering) {
         state.offeringPayloads.push(offering)
     },
-
+    
+    setTeachers (state, teachers) {
+        state.teachers = teachers
+    },
+    
     updateOfferingPayload (state, offeringPayload) {
         // state.offeringPayloads[offering.id].studentId = offering.studentId
         // state.offeringPayloads[offering.id].offeringTypeId = offering.offeringTypeId

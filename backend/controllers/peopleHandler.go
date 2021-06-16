@@ -78,6 +78,13 @@ func DeleteStudent(c *gin.Context) {
 	}
 }
 
+func GetTeachers(c *gin.Context) {
+	var teachers []models.Teacher
+	models.GetTeachers(&teachers)
+
+	c.JSON(http.StatusOK, teachers)
+}
+
 func SaveTeachers(c *gin.Context) {
 	var NewTeacher []models.Teacher
 	var err error

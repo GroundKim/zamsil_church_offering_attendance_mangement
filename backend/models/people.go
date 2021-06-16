@@ -6,6 +6,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"time"
+
+	"gorm.io/gorm"
 )
 
 type Student struct {
@@ -20,6 +22,11 @@ type Student struct {
 	ParentPhoneNumber *string    `json:"parentPhoneNumber"`
 	SchoolName        *string    `json:"schoolName"`
 
+	EnrolledAt *time.Time `gorm:"not null" json:"enrolledAt"`
+	// class assigned at
+	ClassAssignedAt *time.Time     `gorm:"null" json:"classAssignedAt"`
+	DeletedAt       gorm.DeletedAt `json:"-"`
+
 	Class Class `gorm:"references:ID" json:"class"`
 }
 
@@ -30,7 +37,10 @@ type Teacher struct {
 	CreatedAt   time.Time `gorm:"not null;" json:"createdAt"`
 	PhoneNumber *string   `gorm:"null" json:"phoneNumber"`
 
-	Class Class `gorm:"references:ID" json:"-"`
+	ClassAssignedAt *time.Time     `gorm:"null" json:"classAssignedAt"`
+	DeletedAt       gorm.DeletedAt `json:"-"`
+
+	Class Class `gorm:"references:ID" json:"class"`
 }
 
 type StudentsWithDepartment struct {
@@ -94,7 +104,7 @@ func DeleteStudent(student *Student) (err error) {
 }
 
 func GetStudentsWithDepartment(students *[]StudentsWithDepartment) (err error) {
-	if err = DB.Raw("SELECT S.*, D.department_name FROM student AS S INNER JOIN class AS C ON S.class_id = C.id INNER JOIN department AS D ON C.department_id = D.id").Scan(students).Error; err != nil {
+	if err = DB.Raw("SELECT S.*, D.department_name FROM student AS S INNER JOIN class AS C ON S.class_id = C.id INNER JOIN department AS D ON C.department_id = D.id WHERE s.deleted_at is null").Scan(students).Error; err != nil {
 		fmt.Println("Error in GetStudentsWithDepartment")
 		return err
 	}

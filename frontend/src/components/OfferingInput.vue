@@ -1,7 +1,7 @@
 <template>
   <v-container fill-height>
     <v-layout align-center justify-center>
-      <v-flex xs12 sm8 md6>
+      <v-flex xs12 sm8 md8>
         <form @submit.prevent="sendPost">
           <v-card elevation="0" shaped outlined>
             <v-card-text>
@@ -153,6 +153,7 @@ export default {
 
       // push specific offering
       offeringPayload = offeringPayload.concat(this.$store.getters.getOfferingPayloads)
+      console.log(JSON.stringify(offeringPayload))
 
       // set header for JSON post
       const headers = {
@@ -225,6 +226,16 @@ export default {
       .get(`${this.$serverAddress}/Youth/offering/types`, { withCredentials: true})
       .then((res) => {
         this.$store.commit('setOfferingType', res.data)
+      })
+      .catch((err) => {
+        this.alertError(err)
+      })
+    
+    // get teachers
+    await axios
+      .get(`${this.$serverAddress}/Youth/teachers`, { withCredentials: true})
+      .then((res) => {
+        this.$store.commit('setTeachers', res.data)
       })
       .catch((err) => {
         this.alertError(err)

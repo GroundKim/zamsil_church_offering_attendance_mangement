@@ -44,7 +44,7 @@ func Migrate(db *gorm.DB) {
 		AbsenceDiary{},
 		Log{},
 	)
-	fmt.Println("Auto Migration has been excuted")
+	fmt.Println("Auto Migration has been executed")
 }
 
 func GetDB() *gorm.DB {

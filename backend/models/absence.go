@@ -67,3 +67,7 @@ func (absenceDiary *AbsenceDiary) UpdateAbsenceDiaryReason() (err error) {
 func (AbsenceDiary) TableName() string {
 	return "absence_diary"
 }
+
+func (AbsenceType) TableName() string {
+	return "absence_type"
+}

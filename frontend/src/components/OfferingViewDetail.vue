@@ -47,7 +47,8 @@
 					class="elevation-1"
 					hide-default-footer
 				>
-					<template v-slot:[`item.student.name`]= "{ item }">{{ item.studentId===null ? "무명" :item.student.name }}</template>
+					<template v-slot:[`item.name`]= "{ item }">{{ getOfferor(item) }}</template>
+					<template v-slot:[`item.class`]="{ item }">{{item.studentId !== null ? item.student.class.name:item.teacher.class.name}}</template>
 					<template v-slot:[`item.offeringCost`]="{ item }">
 						₩ {{changeCostWithDelimeter(item.offeringCost)}}
 					</template>
@@ -77,7 +78,7 @@
 				<v-card-title primary-title>
 					<div>
 						<h3><span>{{ offeringDiaryDialog.departmentId }} 부</span> <span v-show="offeringDiaryDialog.studentId!==null">{{offeringDiaryDialog.className }} 반</span></h3>
-						<p>{{ offeringDiaryDialog.studentName }} 수정</p>
+						<p>{{ offeringDiaryDialog.name }} 수정</p>
 					</div>
 				</v-card-title>
 				<v-card-text>
@@ -127,7 +128,7 @@ export default {
 			dialog: false,
 			offeringDiaryDialog: {
 				offeringDiaryId: null,
-				studentName: null,
+				name: null,
 				departmentId: null,
 				className: null,
 				offeringTypeId: null,
@@ -147,7 +148,7 @@ export default {
 				{
 					text: '이름',
 					align: 'start',
-					value: 'student.name',
+					value: 'name',
 				},
 
 				{
@@ -157,7 +158,7 @@ export default {
 
 				{
 					text: '반',
-					value: 'student.class.name'
+					value: 'class'
 				},
 
 				{
@@ -228,6 +229,16 @@ export default {
       return totalCost
     },
 
+		getOfferor(item) {
+			let offeror = null
+			let studentId = item.studentId
+			let teacherId = item.teacherId
+			if (studentId === null && teacherId === null) offeror = '무명'
+			if (studentId !== null) offeror = item.student.name
+			if (teacherId !== null) offeror = item.teacher.name
+			return offeror
+		},
+
 		showOfferingEditDialog (item) {
       this.offeringItem = item
 			this.dialog = true
@@ -239,13 +250,19 @@ export default {
 			this.offeringDiaryDialog.offeringCost = item.offeringCost
 			this.offeringDiaryDialog.offeringNote = item.offeringNote
 			// handling no name offering
-			if (item.studentId === null) {
-				this.offeringDiaryDialog.studentName = "무명"
+			if (item.studentId === null && item.teacherId === null) {
+				this.offeringDiaryDialog.name = "무명"
 				
-			} else {
-				this.offeringDiaryDialog.studentName = item.student.name
+			} 
+			
+			if (item.studentId !== null) {
+				this.offeringDiaryDialog.name = item.student.name
 				this.offeringDiaryDialog.className = item.student.class.name
+			}
 
+			if (item.teacherId !== null) {
+				this.offeringDiaryDialog.name = item.taecher.name
+				this.offeringDiaryDialog.className = item.teacher.class.name
 			}
 		},
 
@@ -307,9 +324,6 @@ export default {
 		// get date from URL query
 		this.date = this.$route.query.date
     
-    // get offering summary
-    await this.getOfferingSummary()
-
 		// get offeringTypes
 		await axios
 			.get(`${this.$serverAddress}/Youth/offering/types`, { withCredentials: true })
@@ -329,6 +343,10 @@ export default {
 			.catch((err) => {
 				this.alertError(err)
 			})
+
+		// get offering summary
+    await this.getOfferingSummary()
+
 
 	},
 }

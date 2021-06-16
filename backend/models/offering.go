@@ -9,6 +9,7 @@ import (
 type OfferingDiary struct {
 	ID             int       `json:"offeringDiaryId"`
 	StudentID      *int      `json:"studentId"`
+	TeacherID      *int      `json:"teacherId"`
 	OfferingTypeID int       `gorm:"not null;" json:"offeringTypeId"`
 	DepartmentID   int       `gorm:"not null;" json:"departmentId"`
 	Cost           int       `gorm:"not null;" json:"offeringCost"`
@@ -18,6 +19,7 @@ type OfferingDiary struct {
 	CreatedBy      string    `gorm:"not null;" json:"createdBy"`
 
 	Student      Student      `gorm:"references:ID" json:"student"`
+	Teacher      Teacher      `gorm:"references:ID" json:"teacher"`
 	OfferingType OfferingType `gorm:"references:ID" json:"offeringType"`
 	Department   Department   `gorm:"references:ID" json:"department"`
 }
@@ -30,7 +32,7 @@ type OfferingType struct {
 func GetOfferingDiaryByDate(offeringDiaries *[]OfferingDiary, date time.Time) (err error) {
 	theDay := date.Format("2006-01-02 ") + "00:00:00"
 	theDayRange := theDay[0:11] + "23:59:59"
-	if err = DB.Preload("OfferingType").Preload("Student").Preload("Department").Preload("Student.Class").Where("offered_at BETWEEN ? AND ?", theDay, theDayRange).Find(&offeringDiaries).Error; err != nil {
+	if err = DB.Preload("OfferingType").Preload("Student").Preload("Teacher").Preload("Department").Preload("Student.Class").Preload("Teacher.Class").Where("offered_at BETWEEN ? AND ?", theDay, theDayRange).Find(&offeringDiaries).Error; err != nil {
 		fmt.Println("Error in get Offering Diary by date")
 		return err
 	}
@@ -48,8 +50,14 @@ func GetOfferingDiaryByYear(offeringDiaries *[]OfferingDiary, date time.Time) (e
 
 }
 
-func (OfferingDiary *OfferingDiary) SaveOfferingDiary() (err error) {
-	if err = DB.Create(&OfferingDiary).Error; err != nil {
+// dose not save with cost 0
+func (offeringDiary *OfferingDiary) SaveOfferingDiary() (err error) {
+	// not to save offering Cost 0
+	if offeringDiary.Cost == 0 {
+		return
+	}
+
+	if err = DB.Create(&offeringDiary).Error; err != nil {
 		fmt.Println("Error in create Offering Diary")
 		return err
 	}

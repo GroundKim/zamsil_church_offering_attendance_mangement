@@ -13,12 +13,12 @@
 
     <v-col class="py-0">
       <v-autocomplete
-        v-model="offerorId"
+        v-model="offeror"
         label="이름"
-        :items="students"
+        :items="offerors"
         required
         item-text="name"
-        item-value="studentId"
+        return-object
       ></v-autocomplete>
     </v-col>
 
@@ -65,9 +65,11 @@ export default {
   data: () => ({
     offeringType: [],
     offeringTypeValue: null,
-    offerorId: null,
+    offeror: null,
     offeringCost: null,
     students: [],
+    teachers: [],
+    offerors: [],
     departmentId: null,
 
     offeringNote: null,
@@ -111,16 +113,17 @@ export default {
   methods: {
     deleteOffering: function (offeringId) {
       this.$emit('delete', offeringId)
-    }
+    },
   },
 
   watch: {
     getDepartmentId: function () {
       let departmentId = parseInt(this.getDepartmentId)
       // it doesn't look so good
-      if (departmentId == 1) this.students = this.$store.getters.getDepartmentOneStudents
-      if (departmentId == 2) this.students = this.$store.getters.getDepartmentTwoStudents
+      if (departmentId == 1) this.offerors = this.$store.getters.getDepartmentOneStudents
+      if (departmentId == 2) this.offerors = this.$store.getters.getDepartmentTwoStudents
       
+      this.offerors = this.offerors.concat(this.$store.state.specificOfferingStudents.teachers)
       this.offeringPayload.departmentId = departmentId
     },
 
@@ -141,9 +144,20 @@ export default {
 
     },
 
-    offerorId: function() {
-      this.offeringPayload.studentId = this.offerorId
-      this.$store.commit('updateOfferingPayload', this.offeringPayload)
+    offeror: {
+      deep: true,
+      handler() {
+        if (this.offeror.studentId !== null) {
+          this.offeringPayload.studentId = this.offeror.studentId
+          this.offeringPayload.teacherId = null
+        }
+
+        if (this.offeror.teacherId !== null) {
+          this.offeringPayload.studentId = null
+          this.offeringPayload.teacherId = this.offeror.teacherId
+        }
+        this.$store.commit('updateOfferingPayload', this.offeringPayload)
+      }
     },
 
     offeringCost: function(newValue) {
@@ -162,15 +176,20 @@ export default {
   created() {
     this.offeringType = this.$store.getters.getOfferingType
     this.departmentId = this.getDepartmentId
-    
+    this.offerors = this.offerors.concat(this.$store.state.specificOfferingStudents.teachers)
+
     this.students.push({
       'studentId': null,
       'name': '무명'
     })
 
-    // it doesn't look so good
-    if (this.departmentId == 1) this.students = this.students.concat(this.$store.getters.getDepartmentOneStudents)
-    if (this.departmentId == 2) this.students = this.students.concat(this.$store.getters.getDepartmentTwoStudents)
+    if (this.departmentId == 1) {
+      this.offerors = this.offerors.concat(this.$store.getters.getDepartmentOneStudents)
+    }
+
+    if (this.departmentId == 2) {
+      this.offerors = this.offerors.concat(this.$store.getters.getDepartmentTwoStudents)
+    }
 
     this.offeringPayload.offeringId = this.offeringId
     this.offeringPayload.departmentId = parseInt(this.$store.getters.getDepartmentId)

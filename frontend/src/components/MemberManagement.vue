@@ -49,6 +49,9 @@
             hide-default-footer
             class="elevation-1"
           >
+            <template v-slot:[`item.name`]="{ item }">
+              <v-row>{{ item.name }} <div class="blue--text">{{ validateNewStudent(item) ? "(신입)":null }}</div></v-row>
+            </template>
             <template v-slot:[`item.actions`]="{ item }">
               <v-icon
                 @click="editStudent(item, classInfo.class)"
@@ -403,6 +406,11 @@ export default {
       this.dialogStudent.departmentName = classInfo.class.department.name
       this.isAdd = true
       this.dialog = true
+    },
+
+    validateNewStudent(item) {
+      let isNewStudent = moment.duration(moment().diff(item.enrolledAt)).asDays() <= 14 ? true : false
+      return isNewStudent
     }
   },
 
