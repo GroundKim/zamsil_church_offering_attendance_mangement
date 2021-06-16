@@ -22,7 +22,7 @@ type Student struct {
 	ParentPhoneNumber *string    `json:"parentPhoneNumber"`
 	SchoolName        *string    `json:"schoolName"`
 
-	EnrolledAt *time.Time `gorm:"not null" json:"enrolledAt"`
+	EnrolledAt *time.Time `gorm:"not null; default:current_timestamp(3)" json:"enrolledAt"`
 	// class assigned at
 	ClassAssignedAt *time.Time     `gorm:"null" json:"classAssignedAt"`
 	DeletedAt       gorm.DeletedAt `json:"-"`

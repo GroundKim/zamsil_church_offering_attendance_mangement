@@ -6,7 +6,7 @@
       <template v-slot:default>
         <thead>
           <tr>
-            <th>총원</th>
+            <th width="10%">출석 총원</th>
             <th>1부</th>
             <th>2부</th>
           </tr>

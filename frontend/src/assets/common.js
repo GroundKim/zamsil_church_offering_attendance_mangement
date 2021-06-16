@@ -6,11 +6,11 @@ export default function alertError (err) {
       return
   }
 
-  if (errStatusCode === 403) {
+  if (errStatusCode === 403 || errStatusCode === 401) {
       alert("로그인을 해주세요")
       this.$router.push("/login")
       return
   }
-  
+
   alert("통신중 오류가 발생하였습니다 error: ", err)
 }

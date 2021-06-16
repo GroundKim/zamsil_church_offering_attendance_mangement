@@ -37,34 +37,35 @@ func GenerateToken(conf *config.Config, user User) (signedToken string, err erro
 }
 
 func ValidateToken(signedToken string, conf *config.Config) (claims *jwt.StandardClaims, err error) {
+	// first validate with DB
+	//make auth null
+	AuthToken = &authToken{}
+	DB.Preload("User").Where("token = ?", signedToken).Find(&AuthToken)
+	if AuthToken.Token == "" {
+		err = errors.New("token is not in DB")
+		return
+	}
+
+	// validate with SECRET KEY
 	claims = &jwt.StandardClaims{}
-	_, err = jwt.ParseWithClaims(
+	if _, err = jwt.ParseWithClaims(
 		signedToken,
 		claims,
 		func(token *jwt.Token) (interface{}, error) {
 			return []byte(conf.AUTH.SECRETKEY), nil
 		},
-	)
-
-	if err != nil {
+	); err != nil {
+		err = errors.New("incorrect secret key")
 		return
 	}
 
+	// validate with token expiration
 	if claims.ExpiresAt < time.Now().Local().Unix() {
 		err = errors.New("token is expired")
 		return
 	}
 
-	// it reqires two select queries, which doesn't look so good.
-	DB.Preload("User").Where("token = ?", signedToken).Find(&AuthToken)
-	// Tried to join raw query in order to query once, but it doesn't save well.
-	// DB.Raw("SELECT auth_token.* FROM auth_token INNER JOIN user on auth_token.user_id = user.id WHERE token = ?", signedToken).Find(&authToken)
-	if AuthToken == nil {
-		err = errors.New("token is not in DB")
-		return
-	}
-
-	return
+	return claims, err
 }
 
 func (authToken) TableName() string {

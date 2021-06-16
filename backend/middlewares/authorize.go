@@ -21,13 +21,12 @@ func Authorize(conf *config.Config) gin.HandlerFunc {
 
 		_, err = models.ValidateToken(token, conf)
 		if err != nil {
+			fmt.Println(err)
 			c.JSON(http.StatusUnauthorized, "token Unauthorized")
 			c.Abort()
-			fmt.Println(err)
 			return
 		}
 		models.ClientIP = c.ClientIP()
 		c.Next()
 	}
-
 }

@@ -45,15 +45,19 @@ func ValidateUser(conf *config.Config) gin.HandlerFunc {
 				"err": "client auth_token required",
 			})
 		}
-		token := clientToken.Value
+		if clientToken != nil {
+			token := clientToken.Value
 
-		// validate Token
-		_, err = models.ValidateToken(token, conf)
-		if err != nil {
-			c.JSON(http.StatusUnauthorized, gin.H{
-				"err": "client auth_token is not recorded",
-			})
+			// validate Token
+			_, err = models.ValidateToken(token, conf)
+			if err != nil {
+				c.JSON(http.StatusUnauthorized, gin.H{
+					"err": "client auth_token is not recorded",
+				})
+			}
+			c.Status(http.StatusOK)
 		}
-		c.Status(http.StatusOK)
+
+		c.Status(http.StatusForbidden)
 	}
 }
