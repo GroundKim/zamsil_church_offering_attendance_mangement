@@ -1,6 +1,9 @@
 package mappings
 
 import (
+	"io"
+	"os"
+	"time"
 	"zamsil_church_offering_attendance_mangement/config"
 	"zamsil_church_offering_attendance_mangement/controllers"
 	"zamsil_church_offering_attendance_mangement/middlewares"
@@ -12,7 +15,13 @@ import (
 var Router *gin.Engine
 
 func CreateUrlMappings(conf *config.Config) {
+	// gin logging
+	now := time.Now().Format("2006-01-02")
+	f, _ := os.Create("data/log/" + now + "_gin.log")
+	gin.DefaultWriter = io.MultiWriter(f, os.Stdout)
+
 	Router = gin.Default()
+
 	// middelware for cors
 	Router.Use(cors.New(cors.Config{
 		AllowOrigins:     []string{conf.CORS.ALLOWORIGINS},
@@ -21,6 +30,7 @@ func CreateUrlMappings(conf *config.Config) {
 		AllowMethods:     []string{"PUT", "PATCH", "DELETE"},
 	}))
 
+	// Router without authorization process
 	Router.POST("/Youth/login", controllers.Login(conf))
 	Router.GET("/Youth/login", controllers.ValidateUser(conf))
 
