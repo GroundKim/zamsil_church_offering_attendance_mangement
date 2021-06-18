@@ -44,7 +44,9 @@ func ValidateUser(conf *config.Config) gin.HandlerFunc {
 			c.JSON(http.StatusForbidden, gin.H{
 				"err": "client auth_token required",
 			})
+			return
 		}
+
 		if clientToken != nil {
 			token := clientToken.Value
 
@@ -54,10 +56,11 @@ func ValidateUser(conf *config.Config) gin.HandlerFunc {
 				c.JSON(http.StatusUnauthorized, gin.H{
 					"err": "client auth_token is not recorded",
 				})
+				return
+			} else {
+				c.Status(http.StatusOK)
+				return
 			}
-			c.Status(http.StatusOK)
 		}
-
-		c.Status(http.StatusForbidden)
 	}
 }
