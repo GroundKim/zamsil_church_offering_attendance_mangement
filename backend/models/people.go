@@ -104,7 +104,7 @@ func DeleteStudent(student *Student) (err error) {
 }
 
 func GetStudentsWithDepartment(students *[]StudentsWithDepartment) (err error) {
-	if err = DB.Raw("SELECT S.*, D.department_name FROM student AS S INNER JOIN class AS C ON S.class_id = C.id INNER JOIN department AS D ON C.department_id = D.id WHERE s.deleted_at is null").Scan(students).Error; err != nil {
+	if err = DB.Raw("SELECT S.*, D.department_name FROM student AS S INNER JOIN class AS C ON S.class_id = C.id INNER JOIN department AS D ON C.department_id = D.id WHERE S.deleted_at is null").Scan(students).Error; err != nil {
 		fmt.Println("Error in GetStudentsWithDepartment")
 		return err
 	}
