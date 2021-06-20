@@ -114,7 +114,6 @@ export default {
       this.links = this.simpleLinks
     }
     this.setHeader()
-    document.title = "잠실교회 소년부"
   },
 }
 </script>
