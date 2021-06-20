@@ -148,12 +148,12 @@ export default {
         createdAt: moment().format(),
         createdBy: this.createdBy,
       }
+      
       // push week offering
       offeringPayload.push(weekOfferingPayload)
 
-      // push specific offering
+      // push specific offerings
       offeringPayload = offeringPayload.concat(this.$store.getters.getOfferingPayloads)
-      console.log(JSON.stringify(offeringPayload))
 
       // set header for JSON post
       const headers = {
@@ -169,7 +169,7 @@ export default {
         )
         .then(() => {
           alert('등록완료')
-          location.reload()
+          location.reload()   
         })
         .catch((err) => {
           this.alertError(err)
@@ -263,7 +263,7 @@ export default {
     })
     
     // store offeredAt in vuex with proper date formate for server
-    this.$store.commit('setOfferedAt', this.date + moment().format().substr(10))
+    this.$store.commit('setOfferedAt', this.date)
     this.departmentId = '1'
     this.offerings.push({
       'type':SpecificOfferingInput,

@@ -33,6 +33,9 @@
             class="elevation-1"
             loading="true"
             hide-default-footer
+            :footer-props="{
+						itemsPerPageOptions: [-1]
+					}"
           >
             <!-- 출석 여부 in data table -->
             <template v-slot:[`item.attendanceType`]="{ item, index }">

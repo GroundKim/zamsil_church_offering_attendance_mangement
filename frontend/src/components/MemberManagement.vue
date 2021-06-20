@@ -47,6 +47,9 @@
             :headers="studentHeaders"
             :items="formatStudent(classInfo.students, '없음')"
             hide-default-footer
+            :footer-props="{
+              itemsPerPageOptions: [-1]
+            }"
             class="elevation-1"
           >
             <template v-slot:[`item.name`]="{ item }">

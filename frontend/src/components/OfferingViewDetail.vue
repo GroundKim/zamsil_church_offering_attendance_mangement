@@ -46,6 +46,9 @@
 					:items="getOfferingData"
 					class="elevation-1"
 					hide-default-footer
+					:footer-props="{
+						itemsPerPageOptions: [-1]
+					}"
 				>
 					<template v-slot:[`item.name`]= "{ item }">{{ getOfferor(item) }}</template>
 					<template v-slot:[`item.class`]="{ item }">{{item.studentId !== null ? item.student.class.name:item.teacher.class.name}}</template>
