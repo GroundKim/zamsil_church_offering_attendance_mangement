@@ -77,13 +77,13 @@ export default {
     offeringPayload: {
       offeringId: null,
       studentId: null,
+      teacherId: null,
       offeringTypeId: null,
       offeringCost: null,
       departmentId: null,
       offeredAt: null,
       createdAt: null,
       createdBy: null,
-
       offeringNote: null,
     },
 
@@ -134,7 +134,8 @@ export default {
     },
 
     getOfferedAt: function () {
-      this.offeringPayload.offeredAt = this.getOfferedAt
+      let date = this.getOfferedAt + moment().format().substr(10)
+      this.offeringPayload.offeredAt = date
       this.$store.commit('updateOfferingPayload', this.offeringPayload)
     },
 
@@ -147,12 +148,12 @@ export default {
     offeror: {
       deep: true,
       handler() {
-        if (this.offeror.studentId !== null) {
+        if (this.offeror.studentId != null) {
           this.offeringPayload.studentId = this.offeror.studentId
           this.offeringPayload.teacherId = null
         }
 
-        if (this.offeror.teacherId !== null) {
+        if (this.offeror.teacherId != null) {
           this.offeringPayload.studentId = null
           this.offeringPayload.teacherId = this.offeror.teacherId
         }
@@ -193,7 +194,7 @@ export default {
 
     this.offeringPayload.offeringId = this.offeringId
     this.offeringPayload.departmentId = parseInt(this.$store.getters.getDepartmentId)
-    this.offeringPayload.offeredAt = this.$store.getters.getOfferedAt
+    this.offeringPayload.offeredAt = this.$store.getters.getOfferedAt + moment().format().substring(10)
     this.offeringPayload.createdAt = moment().format()
     this.offeringPayload.createdBy = this.$store.getters.getCreatedBy
 
