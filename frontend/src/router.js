@@ -14,83 +14,87 @@ Vue.use(VueRouter)
 const router = new VueRouter({
     mode: 'history',
     routes: [{
-        path: '/attendance/input',
-        name: 'attendanceInput',
-        component: AttendanceInput
+      path: '/attendance/input',
+      name: 'attendanceInput',
+      component: AttendanceInput
     },
 
     {
-        path: '/offering/input',
-        name: 'offeringInput',
-        component: OfferingInput
+      path: '/offering/input',
+      name: 'offeringInput',
+      component: OfferingInput
     },
 
     {
-        path: '/offering/view',
-        name: 'offeringView',
-        component: OfferingView
+      path: '/offering/view',
+      name: 'offeringView',
+      component: OfferingView
     },
 
     {
-        path:'/attendance/view',
-        name: 'attendanceView',
-        component: AttendanceView
+      path:'/attendance/view',
+      name: 'attendanceView',
+      component: AttendanceView
     },
 
     {
-        path:'/login',
-        name: 'login',
-        component: Login
+      path:'/login',
+      name: 'login',
+      component: Login
     },
 
     {
-        path:'/member/management',
-        name:'memberManagement',
-        component: MemberManagement
+      path:'/member/management',
+      name:'memberManagement',
+      component: MemberManagement
     },
 
     {
-        path:'/attendance/view/detail',
-        name: 'attendanceViewDetail',
-        component: AttendanceViewDetail
+      path:'/attendance/view/detail',
+      name: 'attendanceViewDetail',
+      component: AttendanceViewDetail
     },
 
     {
-        path:'/offering/view/detail',
-        name: 'offeringViewDetail',
-        component: OfferingViewDetail
+      path:'/offering/view/detail',
+      name: 'offeringViewDetail',
+      component: OfferingViewDetail
+    },
+    
+    // redirect "/" to "/login"
+    {
+      path: '/', redirect: { name: 'login' }
     },
 
-    //simple
-
+    // simple
     {
-        path:'/simple/login',
-        name: 'simpleLogin',
-        component: Login
-    },
-
-    {
-        path: '/simple/offering/view',
-        name: 'simpleOfferingView',
-        component: OfferingView
-    },
-
-    {
-        path:'/simple/attendance/view',
-        name: 'simpleAttendanceView',
-        component: AttendanceView
+      path:'/simple/login',
+      name: 'simpleLogin',
+      component: Login
     },
 
     {
-        path:'/simple/attendance/view/detail',
-        name: 'simpleAttendanceViewDetail',
-        component: AttendanceViewDetail
+      path: '/simple/offering/view',
+      name: 'simpleOfferingView',
+      component: OfferingView
     },
 
     {
-        path:'/simple/offering/view/detail',
-        name: 'simpleOfferingViewDetail',
-        component: OfferingViewDetail
+      path:'/simple/attendance/view',
+      name: 'simpleAttendanceView',
+      component: AttendanceView
+    },
+
+    {
+      path:'/simple/attendance/view/detail',
+      name: 'simpleAttendanceViewDetail',
+      component: AttendanceViewDetail
+    },
+
+    {
+      path:'/simple/offering/view/detail',
+      name: 'simpleOfferingViewDetail',
+      component: OfferingViewDetail
     },
 ]
 })
