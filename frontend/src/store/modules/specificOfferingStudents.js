@@ -65,16 +65,17 @@ const mutations = {
     },
     
     updateOfferingPayload (state, offeringPayload) {
-        // state.offeringPayloads[offering.id].studentId = offering.studentId
-        // state.offeringPayloads[offering.id].offeringTypeId = offering.offeringTypeId
-        // state.offeringPayloads[offering.id].offeringCost = offering.offeringCost
         const index = state.offeringPayloads.findIndex(o => o.offeringId == offeringPayload.offeringId)
-        state.offeringPayloads[index].studentId = offeringPayload.studentId
-        state.offeringPayloads[index].offeringTypeId = offeringPayload.offeringTypeId
-        state.offeringPayloads[index].offeringCost = offeringPayload.offeringCost
-        state.offeringPayloads[index].departmentId = offeringPayload.departmentId
-        state.offeringPayloads[index].offeredAt = offeringPayload.offeredAt
-        state.offeringPayloads[index].createdBy = offeringPayload.createdBy
+        
+        if (index !== -1){
+            state.offeringPayloads[index].studentId = offeringPayload.studentId
+            state.offeringPayloads[index].teacherId = offeringPayload.teacherId
+            state.offeringPayloads[index].offeringTypeId = offeringPayload.offeringTypeId
+            state.offeringPayloads[index].offeringCost = offeringPayload.offeringCost
+            state.offeringPayloads[index].departmentId = offeringPayload.departmentId
+            state.offeringPayloads[index].offeredAt = offeringPayload.offeredAt
+            state.offeringPayloads[index].createdBy = offeringPayload.createdBy
+        }
     },
 
     deleteOfferingPayload (state, id) {

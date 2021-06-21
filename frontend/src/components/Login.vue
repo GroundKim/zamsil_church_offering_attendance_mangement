@@ -64,6 +64,7 @@ export default {
 
 	created() {
     // check the client auth token is valid
+    console.log(`${this.$serverAddress}`)
     axios
       .get(`${this.$serverAddress}/Youth/login`, { withCredentials: true })
       .then(() => {

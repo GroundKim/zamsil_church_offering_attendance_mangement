@@ -141,6 +141,7 @@ export default {
       let date = this.date + moment().format().substr(10)
       let weekOfferingPayload = {
         studentId: null,
+        teacherId: null,
         offeringTypeId: 1,
         offeringCost: parseInt(this.weekOfferingCost.replace(',','')),
         departmentId: parseInt(this.departmentId),
