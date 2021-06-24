@@ -1,4 +1,4 @@
-export default function alertError (err) {
+export default function errorHandler (err) {
   console.log(err)
   let errStatusCode = err.response.status
   if (errStatusCode === 404) {
@@ -7,10 +7,8 @@ export default function alertError (err) {
   }
 
   if (errStatusCode === 403 || errStatusCode === 401) {
-      alert("로그인을 해주세요")
       this.$router.push("/login")
       return
   }
-
   alert("통신중 오류가 발생하였습니다 error: ", err)
 }
