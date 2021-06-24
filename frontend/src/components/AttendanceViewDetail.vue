@@ -158,7 +158,7 @@ export default {
           .patch(`${this.$serverAddress}/Youth/absence/${student.absence.absenceDiaryId}?reason=${student.absence.absenceReason}`, null, { withCredentials: true })
           .then(() => {})
           .catch((err) => {
-            this.alertError(err)
+            this.errorHandler(err)
           })
       }
     },
@@ -214,7 +214,7 @@ export default {
           .then(() => {
           })
           .catch((err) => {
-            this.alertError(err)
+            this.errorHandler(err)
           })
       }
 
@@ -249,7 +249,7 @@ export default {
             }
           })
           .catch((err) => {
-            this.alertError(err)
+            this.errorHandler(err)
           })
         
         if (absenceDiaryId !== null) {
@@ -277,7 +277,7 @@ export default {
           student.absence.isAbsent = true
         })
         .catch((err) => {
-          this.alertError(err)
+          this.errorHandler(err)
         })
       },
     
@@ -288,7 +288,7 @@ export default {
       .then(() => {})
       .catch((err) => {
         error = true
-        this.alertError(err)
+        this.errorHandler(err)
       })
       return error 
     }
@@ -302,7 +302,7 @@ export default {
         this.absenceTypes = res.data
       })
       .catch((err) => {
-        this.alertError(err)
+        this.errorHandler(err)
       })
 
     // get all classes
@@ -319,7 +319,7 @@ export default {
         })
       })
       .catch((err) => {
-        this.alertError(err)
+        this.errorHandler(err)
       })
 
     await axios
@@ -328,7 +328,7 @@ export default {
         this.studentsWithAttendance = res.data
       })
       .catch((err) => {
-        this.alertError(err)
+        this.errorHandler(err)
       })
 
     // split up the students with class

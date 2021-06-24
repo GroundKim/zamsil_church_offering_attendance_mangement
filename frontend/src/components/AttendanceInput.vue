@@ -280,7 +280,7 @@ export default {
         .then(() => {})
         .catch((err) => {
           postError = true
-          this.alertError(err)
+          this.errorHandler(err)
         })
       
       await axios
@@ -288,7 +288,7 @@ export default {
         .then(() => {})
         .catch((err) => {
           postError = true
-          this.alertError(err)
+          this.errorHandler(err)
         })
 
       if (!postError) {
@@ -319,7 +319,7 @@ export default {
         this.members = res.data
       })
       .catch((err) => {
-        this.alertError(err)
+        this.errorHandler(err)
       })
 
     // split students up with department
@@ -339,7 +339,7 @@ export default {
         this.absenceTypes = res.data
       })
       .catch((err) => {
-        this.alertError(err)
+        this.errorHandler(err)
       })
 
 

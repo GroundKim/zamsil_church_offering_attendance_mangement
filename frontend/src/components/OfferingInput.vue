@@ -173,7 +173,7 @@ export default {
           location.reload()   
         })
         .catch((err) => {
-          this.alertError(err)
+          this.errorHandler(err)
         })
     },
 
@@ -229,7 +229,7 @@ export default {
         this.$store.commit('setOfferingType', res.data)
       })
       .catch((err) => {
-        this.alertError(err)
+        this.errorHandler(err)
       })
     
     // get teachers
@@ -239,7 +239,7 @@ export default {
         this.$store.commit('setTeachers', res.data)
       })
       .catch((err) => {
-        this.alertError(err)
+        this.errorHandler(err)
       })
 
     // get all students
@@ -249,7 +249,7 @@ export default {
         this.students = res.data
       })
       .catch((err) => {
-        this.alertError(err)
+        this.errorHandler(err)
       })
 
     //split students into department 1 and 2

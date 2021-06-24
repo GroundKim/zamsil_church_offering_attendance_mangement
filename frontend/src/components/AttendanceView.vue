@@ -122,7 +122,7 @@ export default {
         this.distingushWithMonth(this.attendedAts)
       })
       .catch(err => {
-        this.alertError(err)
+        this.errorHandler(err)
       })
     },
 
@@ -155,7 +155,7 @@ export default {
         document.body.appendChild(link)
         link.click()
       }).catch(err => {
-        this.alertError(err)
+        this.errorHandler(err)
       })
     },
 

@@ -121,7 +121,7 @@ export default {
         this.distingushWithMonth(this.offeredAts)
       })
       .catch(err => {
-        this.alertError(err)
+        this.errorHandler(err)
       })
     },
 
@@ -155,7 +155,7 @@ export default {
         link.click()
       })
       .catch(err => {
-        this.alertError(err)
+        this.errorHandler(err)
       })
     },
 

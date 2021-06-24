@@ -325,7 +325,7 @@ export default {
           alert(`${item.name}(이)가 삭제되었습니다`)
         })
         .catch((err)=> {
-          this.alertError(err)
+          this.errorHandler(err)
         })
     },
 
@@ -347,7 +347,7 @@ export default {
           this.closeDialog()
         })
         .catch((err) => {
-          this.alertError(err)
+          this.errorHandler(err)
         })
     },
 
@@ -369,7 +369,7 @@ export default {
 
         })
         .catch((err) => {
-          this.alertError(err)
+          this.errorHandler(err)
         })
     },
 
@@ -437,7 +437,7 @@ export default {
         this.classes = res.data
       })
       .catch((err) => {
-        this.showError(err)
+        this.errorHandler(err)
       })
 
     // split up the members with department name. Department ID 와 Deparmartment name을 분간 할것 attendance Info 컴포넌트와 서버에서도 

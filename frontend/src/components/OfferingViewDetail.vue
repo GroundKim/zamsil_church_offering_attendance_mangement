@@ -289,7 +289,7 @@ export default {
 
 				})
 				.catch((err) => {
-					this.alertError(err)
+					this.errorHandler(err)
 				})
 		},
 
@@ -305,7 +305,7 @@ export default {
             this.getOfferingSummary()
 					})
 					.catch((err) => {
-						this.alertError(err)
+						this.errorHandler(err)
 					})
 			}
 		},
@@ -317,7 +317,7 @@ export default {
 					this.$nextTick(() => this.offeringSummary = res.data)
 				})
 				.catch((err) => {
-					this.alertError(err)
+					this.errorHandler(err)
 				})
 		}
 	},
@@ -333,7 +333,7 @@ export default {
 				this.offeringTypes = res.data
 			})
 			.catch((err) => {
-				this.alertError(err)
+				this.errorHandler(err)
 			})
 
 		// get offering Diary data with date from server
@@ -343,7 +343,7 @@ export default {
 				this.offeringData = res.data
 			})
 			.catch((err) => {
-				this.alertError(err)
+				this.errorHandler(err)
 			})
 
 		// get offering summary
