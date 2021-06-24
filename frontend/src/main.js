@@ -4,7 +4,7 @@ import axios from 'axios'
 import router from './router'
 import vuetify from './plugins/vuetify'
 import store from './store'
-import alertError from './assets/common.js'
+import errorHandler from './assets/common.js'
 import VueTheMask from 'vue-the-mask'
 import Vuelidate from 'vuelidate'
 
@@ -23,7 +23,7 @@ Vue.use(Vuelidate)
 
 Vue.mixin({
   methods: {
-    alertError
+    errorHandler
   }
 })
 
