@@ -49,6 +49,7 @@
               ></v-text-field>
 
               <v-text-field
+                id="offeringCost"
                 v-model="weekOfferingCost"
                 label="주일헌금"
                 prefix="₩"
@@ -118,7 +119,7 @@ export default {
     menu2: false,
     departmentId: null,
     departmentsLabel: ["1부", "2부"],
-    weekOfferingCost: null,
+    weekOfferingCost: 0,
     createdBy: null,
     offerings: [],
     offeringCount: 0,
@@ -191,6 +192,11 @@ export default {
       let index = this.offerings.findIndex(o => o.offeringId == id)
       this.$store.commit('deleteOfferingPayload', id)
       this.offerings.splice(index, 1)
+    },
+
+    // utilities
+    formatCurrency(input) {
+      return input.replace(/\D/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ",")
     }
   },
 
@@ -198,7 +204,6 @@ export default {
     getDeleteOfferingId: function () {
       return this.$store.getters.getDeleteOfferingId
     },
-
   },
 
   watch: {
@@ -214,11 +219,24 @@ export default {
       this.$store.commit('setCreatedBy', this.createdBy)
     },
 
-    weekOfferingCost: function(newValue) {
-      const result = newValue.replace(/\D/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ",")
-      this.$nextTick(() => this.weekOfferingCost = result)
-    }
+    // weekOfferingCost: function(newValue) {
+    //   const inputElem = document.getElementById('weekOfferingCost')
+    //   const result = this.formatCurrency(newValue)
+    //   const prevSelection = inputElem.selectionStart
 
+    //   this.$nextTick(() => {
+    //     this.weekOfferingCost = result
+
+    //     let selectionStart = prevSelection
+
+    //     if (inputElem.value.length == inputElem.selectionStart) {
+    //       selectionStart += 1
+    //     }
+        
+    //     inputElem.focus()
+    //     inputElem.setSelectionRange(selectionStart, selectionStart)
+    //   })          
+    // }
   },
   
   created: async function () {
@@ -270,7 +288,55 @@ export default {
       'type':SpecificOfferingInput,
       offeringId: this.offeringCount
     })
+
+    // offering cost delim
+    const weekOfferingCost = document.getElementById('offeringCost')
+    weekOfferingCost.addEventListener('blur', () => {
+      this.weekOfferingCost = this.formatCurrency(this.weekOfferingCost)
+    })
     
+    // weekOfferingCost.addEventListener('keydown', (e) => {
+    //   if (e.key === 'Backspace' || e.key === 'Delete') {
+    //     e.preventDefault()
+
+    //     let value = weekOfferingCost.value.replace(/,/g, '').split('')
+    //     let selectionStart = weekOfferingCost.selectionStart
+    //     let selectionEnd = weekOfferingCost.selectionEnd
+
+    //     if (selectionStart == selectionEnd) {
+    //       if (value.length >= 3) {
+    //         selectionStart -= parseInt(value.length / 3)
+    //       }
+  
+    //       if (value.length % 3 !== 0) {
+    //         selectionStart -= 1
+    //       }
+  
+    //       if (weekOfferingCost.value[weekOfferingCost.selectionStart] === ',') {
+    //         selectionStart += 1
+    //       }
+  
+    //       if (e.key === 'Delete') {
+    //         selectionStart += 1
+    //       } 
+  
+    //       if (selectionStart > -1) {
+    //         value.splice(selectionStart, 1)
+    //       }
+  
+    //       weekOfferingCost.value = this.formatCurrency(value.join(''))
+  
+    //       if (weekOfferingCost.value.replace(/,/g, '').length >= 3) {
+    //         selectionStart += parseInt(weekOfferingCost.value.replace(/,/g, '').length / 3)
+    //       }
+  
+    //       weekOfferingCost.setSelectionRange(selectionStart, selectionStart)
+    //     } else {
+    //       value.splice(selectionStart, selectionEnd)
+    //       weekOfferingCost.value = this.formatCurrency(value.join(''))
+    //     }
+    //   }
+    // })
   }
 }
 </script>

@@ -24,8 +24,9 @@
 
     <v-col class="py-0">
       <v-text-field
+        v-bind:id="'offeringCost' + offeringId"
         v-model="offeringCost"
-        label ="금액"
+        label="금액"
         prefix="₩"
         required
         :rules="[rules.offering]"
@@ -66,7 +67,7 @@ export default {
     offeringType: [],
     offeringTypeValue: null,
     offeror: null,
-    offeringCost: null,
+    offeringCost: 0,
     students: [],
     teachers: [],
     offerors: [],
@@ -114,6 +115,11 @@ export default {
     deleteOffering: function (offeringId) {
       this.$emit('delete', offeringId)
     },
+
+    //utilities
+    formatCurrency: function (input) {
+      return input.replace(/\D/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+    },
   },
 
   watch: {
@@ -139,7 +145,7 @@ export default {
       this.$store.commit('updateOfferingPayload', this.offeringPayload)
     },
 
-    offeringTypeValue: function() {
+    offeringTypeValue: function () {
       this.offeringPayload.offeringTypeId = this.offeringTypeValue
       this.$store.commit('updateOfferingPayload', this.offeringPayload)
 
@@ -161,9 +167,7 @@ export default {
       }
     },
 
-    offeringCost: function(newValue) {
-      const result = newValue.replace(/\D/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ",")
-      this.$nextTick(() => this.offeringCost = result)
+    offeringCost: function () {      
       this.offeringPayload.offeringCost = parseInt(this.offeringCost.replace(',', ''))
       this.$store.commit('updateOfferingPayload', this.offeringPayload)
     },
@@ -174,7 +178,13 @@ export default {
     }
   },
 
-  created() {
+  mounted() {
+    // offering cost delim
+    const offeringCost = document.getElementById(`offeringCost${this.offeringId}`)
+    offeringCost.addEventListener('blur', () => {
+      this.offeringCost = this.formatCurrency(this.offeringCost)
+    })
+
     this.offeringType = this.$store.getters.getOfferingType
     this.departmentId = this.getDepartmentId
     this.offerors = this.offerors.concat(this.$store.state.specificOfferingStudents.teachers)
