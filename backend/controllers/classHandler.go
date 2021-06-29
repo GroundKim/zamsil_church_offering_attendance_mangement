@@ -40,6 +40,4 @@ func PostClasses(c *gin.Context) {
 	} else {
 		// save new class
 	}
-	// 지석이한테 2021학년도 라벨링 해야 되는지 물어보기
-	// 문법 이상 있는지 없는지 물어보기
 }

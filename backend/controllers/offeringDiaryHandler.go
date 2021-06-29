@@ -56,3 +56,25 @@ func GetOfferingDiarySummary(c *gin.Context) {
 
 	c.JSON(http.StatusOK, offeringCostWrappers)
 }
+
+func PostOfferingDiary(c *gin.Context) {
+	var offeringDiaries []models.OfferingDiary
+	if err := c.Bind(&offeringDiaries); err != nil {
+		fmt.Println("Error in json bind: post specific offering diary", err)
+	}
+
+	for _, offeringDiary := range offeringDiaries {
+		offeringDiary.SaveOfferingDiary()
+	}
+
+	// log
+	models.AuthToken.User.ActiveStamp("Save attendanceDiary", fmt.Sprintf("createdBy: %s", offeringDiaries[0].CreatedBy))
+
+}
+
+func GetOfferingDiaryType(c *gin.Context) {
+	var offeringTypes []models.OfferingType
+	models.GetOfferingType(&offeringTypes)
+
+	c.JSON(200, offeringTypes)
+}

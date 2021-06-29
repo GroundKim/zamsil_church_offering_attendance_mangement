@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"fmt"
 	"net/http"
 	"strconv"
 	"time"
@@ -8,6 +9,36 @@ import (
 
 	"github.com/gin-gonic/gin"
 )
+
+// save attendance information into database
+func PostAttendanceDiary(c *gin.Context) {
+	var attendanceDiaries []models.AttendanceDiary
+	if err := c.Bind(&attendanceDiaries); err != nil {
+		fmt.Println("Error in json bind: post attendance diary ", err)
+		c.JSON(http.StatusBadRequest, gin.H{
+			"err": "fail in binding attendanceDiary",
+		})
+		return
+	}
+
+	for _, attendanceDiary := range attendanceDiaries {
+		// handling post attendanceDiary from attendanceViewDetail.vue
+		// and, if createdBy is null
+		if attendanceDiary.CreatedBy == "" {
+			attendanceDiary.CreatedBy = models.AuthToken.User.Name
+		}
+
+		if err := attendanceDiary.SaveAttendanceDiary(); err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"err": "fail in save attendance Diary",
+			})
+			return
+		}
+	}
+
+	// log
+	models.AuthToken.User.ActiveStamp("Save attendanceDiary", "")
+}
 
 func DeleteAttendanceDiary(c *gin.Context) {
 	var attendanceDiary models.AttendanceDiary
