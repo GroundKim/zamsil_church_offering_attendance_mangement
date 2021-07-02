@@ -19,7 +19,7 @@
               ></v-text-field>
             </v-card-text>
             <v-card-text v-if="errorMessage">
-              {{ errorMessage }}
+              <p class="red--text" :class="{'shake' : shakeAnimated}">{{ errorMessage }}</p>
             </v-card-text>
             <v-card-actions>
               <v-btn @click="sendPost" block large rounded color="primary" elevation="0"><strong>로그인</strong></v-btn>
@@ -31,7 +31,6 @@
   </v-container>
 </template>
 
-
 <script>
 import axios from 'axios'
 export default {
@@ -39,7 +38,8 @@ export default {
     return {
       id: null,
       password: null,
-      errorMessage: null,
+      errorMessage: false,
+      shakeAnimated: false,
     }
   },
 
@@ -58,9 +58,19 @@ export default {
           }
         )
         .catch(err => {
-          this.errorHandler(err)
+          if (err.response.status === 401) {
+            this.errorMessage = "아이디 및 암호를 잘못 입력하셨습니다."
+            this.shakeErrorMessage()
+          }
         })
-    }
+    },
+
+    shakeErrorMessage() {
+      this.shakeAnimated = true
+      setTimeout(() => {
+        this.shakeAnimated = false
+      }, 1000)
+    }    
   },
 
 	created() {
@@ -78,7 +88,28 @@ export default {
         
       })
       .catch(() => {})
-
 	}
 }
 </script>
+
+<style>
+.shake {
+  animation: shake 0.82s cubic-bezier(.36,.07,.19,.97) both;
+  transform: translate3d(0, 0, 0);
+}
+
+@keyframes shake {
+  10%, 90% {
+    transform: translate3d(-1px, 0, 0);
+  }
+  20%, 80% {
+    transform: translate3d(2px, 0, 0);
+  }
+  30%, 50%, 70% {
+    transform: translate3d(-4px, 0, 0);
+  }
+  40%, 60% {
+    transform: translate3d(4px, 0, 0);
+  }
+}
+</style>

@@ -32,5 +32,4 @@ html, body, #app, .v-application {
 html, body, #app, .v-application {
   font-family: 'Nanum Gothic', sans-serif;
 }
-
 </style>
