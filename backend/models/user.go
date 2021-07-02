@@ -1,6 +1,7 @@
 package models
 
 import (
+	"errors"
 	"time"
 
 	"golang.org/x/crypto/bcrypt"
@@ -9,7 +10,7 @@ import (
 type User struct {
 	ID       int
 	ClientID string `gorm:"not null" json:"clientId"`
-	Password string `gorm:"not null" json:"-"`
+	Password string `gorm:"not null" json:"password"`
 	Name     string `gorm:"not null" json:"userName"`
 	Role     string `gorm:"not null" json:"userStatus"`
 }
@@ -36,21 +37,31 @@ func (user *User) SaveUser() {
 
 func (user *User) ValidateUser() error {
 	type Result struct {
-		HashPassword string
-		ID           int
+		ID       int
+		Password string
 	}
 
+	// get valid id and pw with client ID
 	var result Result
-	if err := DB.Table("user").Select("password", "id").Where("client_id = ?", user.ClientID).Scan(&result).Error; err != nil {
+	if err := DB.Table("user").Select("id", "password").Where("client_id = ?", user.ClientID).Scan(&result).Error; err != nil {
 		return err
 	}
-	user.ID = result.ID
 
-	if err := bcrypt.CompareHashAndPassword([]byte(result.HashPassword), []byte(user.Password)); err != nil {
-		return err
+	// validate password
+	if result.ID != 0 {
+		user.ID = result.ID
+
+		if err := bcrypt.CompareHashAndPassword([]byte(result.Password), []byte(user.Password)); err != nil {
+			return err
+		} else {
+			return nil
+		}
+
 	} else {
-		return nil
+		err := errors.New("info from client is invalid")
+		return err
 	}
+
 }
 
 func (user *User) LoginStamp(IP string) {
