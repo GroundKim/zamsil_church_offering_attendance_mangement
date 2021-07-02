@@ -7,6 +7,7 @@ import store from './store'
 import errorHandler from './assets/common.js'
 import VueTheMask from 'vue-the-mask'
 import Vuelidate from 'vuelidate'
+import VueCookies from 'vue-cookies'
 
 Vue.config.productionTip = false
 Vue.prototype.$http = axios
@@ -20,6 +21,7 @@ Vue.prototype.$address = `${address}`
 
 Vue.use(VueTheMask)
 Vue.use(Vuelidate)
+Vue.use(VueCookies)
 
 Vue.mixin({
   methods: {

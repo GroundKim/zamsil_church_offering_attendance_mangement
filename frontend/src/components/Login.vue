@@ -54,6 +54,7 @@ export default {
         .then(()=> {
           alert("로그인 되었습니다!")
           this.$router.push('/attendance/input')
+          this.$store.commit('changeLoginStatus', true)
           }
         )
         .catch(err => {
@@ -64,7 +65,6 @@ export default {
 
 	created() {
     // check the client auth token is valid
-    console.log(`${this.$serverAddress}`)
     axios
       .get(`${this.$serverAddress}/Youth/login`, { withCredentials: true })
       .then(() => {
@@ -72,6 +72,10 @@ export default {
         // distinguish simple or not
         if (this.$route.name.includes('simple')) this.$router.push({ path: "/simple/attendance/view"});
         else this.$router.push({ path: "/attendance/input"})
+
+        // change login status to true
+        this.$store.commit('changeLoginStatus', true)
+        
       })
       .catch(() => {})
 

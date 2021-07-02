@@ -5,8 +5,18 @@ Vue.use(Vuex)
 
 const store = new Vuex.Store({
     modules: {
-        specificOfferingStudents,
+      specificOfferingStudents,
     },
+
+    state: {
+      isLogin: false
+    },
+
+    mutations: {
+      changeLoginStatus: (state, status) => {
+        state.isLogin = status
+      }
+    }
   })
 
 export default store
