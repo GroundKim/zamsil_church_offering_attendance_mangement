@@ -31,6 +31,14 @@
           년 출석부 기록
         </h1>
       </v-col>
+
+      <v-col>
+        <v-btn>
+          <v-icon>
+            mdi-application
+          </v-icon>
+        </v-btn>
+      </v-col>
     </v-row>
 
     <v-row

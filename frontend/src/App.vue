@@ -32,4 +32,6 @@ html, body, #app, .v-application {
 html, body, #app, .v-application {
   font-family: 'Nanum Gothic', sans-serif;
 }
+
+@import url('https://fonts.googleapis.com/icon?family=Material+Icons');
 </style>

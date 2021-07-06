@@ -8,6 +8,7 @@ import MemberManagement from './components/MemberManagement'
 import Login from './components/Login'
 import AttendanceViewDetail from './components/AttendanceViewDetail'
 import OfferingViewDetail from './components/OfferingViewDetail'
+import AttendanceStatistic from './components/AttendanceStatistic'
 
 Vue.use(VueRouter)
 
@@ -96,6 +97,12 @@ const router = new VueRouter({
       name: 'simpleOfferingViewDetail',
       component: OfferingViewDetail
     },
+
+    {
+      path:'/attendance/statistic',
+      name: 'attendanceStatistic',
+      component: AttendanceStatistic
+    }
 ]
 })
 
