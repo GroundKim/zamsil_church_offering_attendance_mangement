@@ -10,7 +10,7 @@
                   <v-radio label="1부" value="1"></v-radio>
                   <v-radio label="2부" value="2"></v-radio>
                 </v-radio-group>
-
+  
                 <v-menu
                   ref="menu"
                   v-model="menu"

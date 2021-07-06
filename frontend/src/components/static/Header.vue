@@ -126,13 +126,20 @@ export default {
     },
 
     setHeader() {
-      let componenetName = this.$router.currentRoute.name
+      let headerTabName = null
+      if (this.$store.state.headerActiveTabName !== null) {
+        headerTabName = this.$store.state.headerActiveTabName
 
-      if (componenetName === 'attendanceViewDetail') componenetName = 'attendanceView'
-      if (componenetName === 'offeringViewDetail') componenetName = 'offeringView'
-      if (componenetName === 'simpleAttendanceViewDetail') componenetName = 'simpleAttendanceView'
-      if (componenetName === 'simpleOfferingViewDetail') componenetName = 'simpleOfferingView'
-      const index = this.links.findIndex(l => l.target === componenetName)
+        // set state.headerActiveTabName null
+        this.$store.commit('changeHeaderActiveTabName', null)
+      } else {
+        headerTabName = this.$router.currentRoute.name
+
+        if (headerTabName.includes('attendanceView')) headerTabName = 'attendanceView'
+        if (headerTabName.includes('offeringView')) headerTabName = 'offeringView'
+      }
+
+      const index = this.links.findIndex(l => l.target === headerTabName)
       this.activeTab = index
     }
   },

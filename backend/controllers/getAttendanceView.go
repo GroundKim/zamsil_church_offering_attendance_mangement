@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"fmt"
 	"time"
 	"zamsil_church_offering_attendance_mangement/models"
 
@@ -86,4 +87,46 @@ func GetAttendanceViewList(c *gin.Context) {
 		models.GetAttendanceDiariesByDate(&attendanceDiaries, date)
 		c.JSON(200, attendanceDiaries)
 	}
+}
+
+func GetAttendanceNumberByMonth(c *gin.Context) {
+	type attendanceNumberByMonth struct {
+		Month                 int `json:"month"`
+		NumberOfDepartmentOne int `json:"numberOfDepartmentOne"`
+		NumberOfDepartmentTwo int `json:"numberOfDepartmentTwo"`
+	}
+
+	year := ""
+	// get year from query
+	if len(c.Query("year")) != 0 {
+		year = c.Query("year")
+	} else {
+		c.JSON(400, gin.H{
+			"err": "year from url paramemter is required",
+		})
+		return
+	}
+
+	//get count by month and department
+	var attendanceNumberByMonths []attendanceNumberByMonth
+	for i := 1; i < 13; i++ {
+		var attendanceDiaries []models.AttendanceDiary
+		date, _ := time.Parse("2006-01", fmt.Sprintf("%s-%02d", year, i))
+		models.GetAttendanceDiariesByMonth(&attendanceDiaries, date)
+
+		numberOfDepartmentOne := 0
+		numberOfDepartmentTwo := 0
+
+		for _, diary := range attendanceDiaries {
+			departmentID := diary.Student.Class.DepartmentID
+			if departmentID == 1 {
+				numberOfDepartmentOne++
+			} else if departmentID == 2 {
+				numberOfDepartmentTwo++
+			}
+		}
+		attendanceNumberByMonth := &attendanceNumberByMonth{Month: i, NumberOfDepartmentOne: numberOfDepartmentOne, NumberOfDepartmentTwo: numberOfDepartmentTwo}
+		attendanceNumberByMonths = append(attendanceNumberByMonths, *attendanceNumberByMonth)
+	}
+	c.JSON(200, attendanceNumberByMonths)
 }

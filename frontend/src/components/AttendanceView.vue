@@ -33,11 +33,16 @@
       </v-col>
 
       <v-col>
-        <v-btn>
-          <v-icon>
-            mdi-application
-          </v-icon>
-        </v-btn>
+        <v-btn
+            class="mx-2 mb-1 pa-5"
+            outlined
+            color="primary"
+            x-small
+            @click="moveToAttendanceStatistic(year)"
+          >
+            <span class="material-icons md-48">insights</span>
+            <h2>{{ year }}년 통계보기</h2>
+          </v-btn>
       </v-col>
     </v-row>
 
@@ -124,20 +129,25 @@ export default {
 
     getAttendedAtsByYear (year) {
       axios
-      .get(`${this.$serverAddress}/Youth/attendance/view/list?year=${year}`, {withCredentials: true})
-      .then(res => {
-        this.attendedAts = res.data.attendedAts
-        this.distingushWithMonth(this.attendedAts)
-      })
-      .catch(err => {
-        this.errorHandler(err)
-      })
+        .get(`${this.$serverAddress}/Youth/attendance/view/list?year=${year}`, {withCredentials: true})
+        .then(res => {
+          // catching attendedAt null error 
+          if (res.data.attendedAts !== null) {
+            this.attendedAts = res.data.attendedAts
+            this.distingushWithMonth(this.attendedAts)
+          }
+        })
+        .catch(err => {
+          this.errorHandler(err)
+        })
     },
 
     showAttendanceDetail (attendedAt) {
       if (this.$route.name.includes('simple')) this.$router.push(`/simple/attendance/view/detail?date=${attendedAt.substring(0,10)}`)
       else this.$router.push(`/attendance/view/detail?date=${attendedAt.substring(0,10)}`)
       
+      // set value of header active tab name
+      this.$store.commit('changeHeaderActiveTabName', 'attendanceView')
     },
 
     plusYear () {
@@ -195,6 +205,11 @@ export default {
 
     sortAttendedAts (attendedAts) {
       return attendedAts.sort()
+    },
+
+    moveToAttendanceStatistic (year) {
+      this.$router.push(`/attendance/view/statistic?year=${year}`)
+      this.$store.commit('changeHeaderActiveTabName', 'attendanceView')
     }
   },
 

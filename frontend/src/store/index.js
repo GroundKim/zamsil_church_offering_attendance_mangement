@@ -9,12 +9,17 @@ const store = new Vuex.Store({
     },
 
     state: {
-      isLogin: false
+      isLogin: false,
+      headerActiveTabName: null
     },
 
     mutations: {
       changeLoginStatus: (state, status) => {
         state.isLogin = status
+      },
+
+      changeHeaderActiveTabName: (state, activeTabName) => {
+        state.headerActiveTabName = activeTabName
       }
     }
   })

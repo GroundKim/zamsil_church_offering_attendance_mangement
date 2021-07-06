@@ -128,6 +128,9 @@ export default {
     showOfferingDiaryDetail (offeredAt) {
       if (this.$route.name.includes('simple')) this.$router.push(`/simple/offering/view/detail?date=${offeredAt.substring(0,10)}`)
       else this.$router.push(`/offering/view/detail?date=${offeredAt.substring(0,10)}`)
+
+      // set value of header active tab name
+      this.$store.commit('changeHeaderActiveTabName', 'offeringView')
     },
 
     plusYear () {

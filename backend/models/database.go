@@ -43,6 +43,7 @@ func Migrate(db *gorm.DB) {
 		authToken{},
 		AbsenceDiary{},
 		Log{},
+		AbsenceType{},
 	)
 	fmt.Println("Auto Migration has been executed")
 }

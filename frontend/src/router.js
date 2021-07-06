@@ -99,8 +99,8 @@ const router = new VueRouter({
     },
 
     {
-      path:'/attendance/statistic',
-      name: 'attendanceStatistic',
+      path:'/attendance/view/statistic',
+      name: 'attendanceViewStatistic',
       component: AttendanceStatistic
     }
 ]

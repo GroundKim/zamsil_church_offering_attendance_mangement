@@ -39,6 +39,19 @@ func GetAttendanceDiariesByDate(attendanceDiaries *[]AttendanceDiary, date time.
 	return nil
 }
 
+func GetAttendanceDiariesByMonth(attendanceDiaries *[]AttendanceDiary, month time.Time) (err error) {
+	parsedMonth := month.Format("2006-01") + "-01 00:00:00"
+	searchMonth := int(month.Month())
+
+	parsedMonthRange := parsedMonth[0:5] + fmt.Sprintf("%02d", searchMonth) + "-31 23:59:59"
+
+	if err = DB.Preload("Student").Preload("Student.Class").Where("attended_at BETWEEN ? AND ?", parsedMonth, parsedMonthRange).Find(&attendanceDiaries).Error; err != nil {
+		fmt.Println("Error in get attendance view by month")
+		return err
+	}
+	return nil
+}
+
 func GetAttendanceViewByDateWithoutDuplicatedStudentID(AttendanceDiaries *[]AttendanceDiary, date time.Time) (err error) {
 	theYear := date.Format("2006-01-02 ") + "00:00:00"
 	theYearRange := theYear[0:10] + " 23:59:59"

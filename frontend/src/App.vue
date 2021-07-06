@@ -22,16 +22,15 @@ export default {
 </script>
 
 <style>
-/* @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@200;300;600&display=swap');
-
-html, body, #app, .v-application {
-  font-family: 'Noto Sans KR', sans-serif;
-} */
-
 @import url('https://fonts.googleapis.com/css2?family=Nanum+Gothic&display=swap');
 html, body, #app, .v-application {
   font-family: 'Nanum Gothic', sans-serif;
 }
 
 @import url('https://fonts.googleapis.com/icon?family=Material+Icons');
+
+.material-icons.md-18 { font-size: 18px; }
+.material-icons.md-24 { font-size: 24px; }
+.material-icons.md-36 { font-size: 36px; }
+.material-icons.md-48 { font-size: 48px; }
 </style>
