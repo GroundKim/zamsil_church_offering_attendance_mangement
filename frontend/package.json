@@ -8,8 +8,9 @@
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
+    "@vue/composition-api": "^1.0.0-rc.13",
     "axios": "^0.21.1",
-    "chart.js": "^3.4.1",
+    "chart.js": "^2.9.4",
     "chartkick": "^4.0.4",
     "core-js": "^3.10.0",
     "hchs-vue-charts": "^1.2.8",
@@ -17,7 +18,7 @@
     "moment": "^2.29.1",
     "sass-loader": "^10.1.1",
     "vue": "^2.6.12",
-    "vue-chart-3": "^0.3.0",
+    "vue-chart-3": "^0.3.2",
     "vue-chartjs": "^3.5.1",
     "vue-chartkick": "^1.1.0",
     "vue-cli": "^2.9.6",

@@ -5,7 +5,7 @@
     </v-row>
     
     <v-row>
-      <barGraph/>
+      <barGraph :numberData="numberData"></barGraph>
     </v-row>
   </v-container>
 </template>
@@ -21,20 +21,28 @@ export default {
   data() {
     return {
       year: null,
-      data: null,
+      numberData: null,
     }
   },
+
   
-  mounted () {
-    this.renderChart()
-    
+  beforeMount: function () {    
     //get year from url parameter
     this.year = this.$route.query.year
     axios
       .get(`${this.$serverAddress}/Youth/attendance/view/statistic/number/month?year=${this.year}`, {withCredentials: true})
       .then((res) => {
-        this.data = res.data
-        console.log(this.data);
+        this.numberData = res.data
+        console.log(JSON.stringify(this.numberData));
+        
+              
+      this.numberData.forEach(d => {
+        this.chartdata.datasets[0].data.push(d.numberOfDepartmentOne)
+        this.chartdata.datasets[1].data.push(d.numberOfDepartmentTwo)
+      })
+      console.log(this.chartdata.datasets[0]);
+    
+
       })
       .catch((err) => {
         err
