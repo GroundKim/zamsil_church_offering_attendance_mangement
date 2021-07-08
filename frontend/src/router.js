@@ -8,7 +8,7 @@ import MemberManagement from './components/MemberManagement'
 import Login from './components/Login'
 import AttendanceViewDetail from './components/AttendanceViewDetail'
 import OfferingViewDetail from './components/OfferingViewDetail'
-import AttendanceStatistic from './components/AttendanceStatistic'
+import AttendanceStatistic from './components/AttendanceStat'
 
 Vue.use(VueRouter)
 
