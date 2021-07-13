@@ -9,6 +9,11 @@ import VueTheMask from 'vue-the-mask'
 import Vuelidate from 'vuelidate'
 import VueCookies from 'vue-cookies'
 
+import Chart from 'chart.js'
+import ChartDataLabels from 'chartjs-plugin-datalabels';
+
+Chart.plugins.register(ChartDataLabels)
+
 Vue.config.productionTip = false
 Vue.prototype.$http = axios
 //const protocol = 'http'

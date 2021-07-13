@@ -71,6 +71,7 @@ func CreateUrlMappings(conf *config.Config) {
 	Youth.GET("/offering/summary/:date", controllers.GetOfferingDiarySummary)
 	Youth.PUT("/offering", controllers.ChangeOfferingDiaryTypeAndCost)
 	Youth.DELETE("/offering/:id", controllers.DeleteOfferingDiary)
+	Youth.GET("/offering/view/statistic/summary", controllers.GetOfferingViewStatisticSummaryByYear)
 
 	Youth.GET("/classes", controllers.GetClasses)
 

@@ -1,12 +1,11 @@
 <template>
   <v-container>
     <v-row>
-      <h1 class="mt-5">{{ this.year }}년 통계자료</h1>
+      <h1 class="mt-5">{{ this.year }}년 헌금 통계자료</h1>
     </v-row>
 
     <v-row>
       <v-col>
-        <attendance-bar-graph :numberData="numberData"></attendance-bar-graph>
       </v-col>
 
       <v-col>
@@ -15,19 +14,18 @@
     </v-row>
   </v-container>
 </template>
+
 <script>
 import axios from 'axios'
-import attendanceBarGraph from './chart/attendanceBarGraph.vue'
 export default {
-  name: 'AttendanceStat',
+  name: 'OfferingStat',
   components:{
-    attendanceBarGraph
   },
 
   data() {
     return {
       year: null,
-      numberData: null,
+      offeringData: null,
     }
   },
 
@@ -35,12 +33,12 @@ export default {
     //get year from url parameter
     this.year = this.$route.query.year
     axios
-      .get(`${this.$serverAddress}/Youth/attendance/view/statistic/number/month?year=${this.year}`, {withCredentials: true})
+      .get(`${this.$serverAddress}/Youth/offering/view/statistic/summary?year=${this.year}`, {withCredentials: true})
       .then((res) => {
-        this.numberData = res.data
+        this.offeringData = res.data
       })
       .catch((err) => {
-        err
+        this.errorHandler(err)
       })
   },
 }

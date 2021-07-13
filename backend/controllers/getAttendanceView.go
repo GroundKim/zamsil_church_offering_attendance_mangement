@@ -15,8 +15,9 @@ type studentWithAttendance struct {
 
 func GetAttendanceView(c *gin.Context) {
 	date := c.Query("date")
-	var studentsWithAttendance []studentWithAttendance
+	year := c.Query("year")
 	if len(date) > 0 {
+		var studentsWithAttendance []studentWithAttendance
 		parsedDate, _ := time.Parse("2006-01-02", date)
 
 		var absenceDiaries []models.AbsenceDiary
@@ -48,9 +49,23 @@ func GetAttendanceView(c *gin.Context) {
 			}
 			studentsWithAttendance = append(studentsWithAttendance, studentWithAttendance)
 		}
+		c.JSON(200, studentsWithAttendance)
+		return
 	}
 
-	c.JSON(200, studentsWithAttendance)
+	if len(year) > 0 {
+		//get count by month and department
+		var attendanceDiaries []models.AttendanceDiary
+		parsedYear, _ := time.Parse("2006", year)
+		models.GetAttendanceViewByYear(&attendanceDiaries, parsedYear)
+
+		c.JSON(200, attendanceDiaries)
+		return
+	}
+
+	c.JSON(400, gin.H{
+		"err": "either year or date is required",
+	})
 }
 
 func GetAttendanceViewList(c *gin.Context) {

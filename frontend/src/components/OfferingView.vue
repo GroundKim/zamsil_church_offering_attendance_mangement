@@ -31,6 +31,18 @@
           년 헌금 기록
         </h1>
       </v-col>
+      <v-col>
+        <v-btn
+          class="mx-2 mb-1 pa-5"
+          outlined
+          color="primary"
+          x-small
+          @click="moveToOfferingStatistic(year)"
+        >
+          <span class="material-icons md-48">insights</span>
+          <h2>{{ year }}년 헌금 통계보기</h2>
+        </v-btn>
+      </v-col>
     </v-row>
     <v-row
       class="d-flex ma-5"
@@ -108,6 +120,11 @@ export default {
   },
 
   methods: {
+    moveToOfferingStatistic (year) {
+      this.$router.push(`/offering/view/statistic?year=${year}`)
+      this.$store.commit('changeHeaderActiveTabName', 'offeringView')
+    },
+
     getWeekOfMonth(date) {
       const weekOfMonth = (m) => m.week() - moment(m).startOf('month').week() + 1
       return weekOfMonth(moment(date))

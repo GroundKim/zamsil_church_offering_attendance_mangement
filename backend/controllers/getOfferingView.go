@@ -41,3 +41,32 @@ func GetOfferingView(c *gin.Context) {
 	models.GetOfferingDiaryByDate(&offeringDiaries, parsedDate)
 	c.JSON(200, offeringDiaries)
 }
+
+func GetOfferingViewStatisticSummaryByYear(c *gin.Context) {
+	type OfferingSummaryByMonth struct {
+		month int
+		weekTotalCost int
+		titheTotalCost int
+		seasonalTotalCost int
+		etcTotalCost int
+	}
+	year := c.Query("year")
+	// get year from query
+	if len(year) == 0 {
+		c.JSON(400, gin.H{
+			"err": "year from url paramemter is required",
+		})
+		return
+	}
+
+	// 월 별 금액, 총 금액, 누가 가장 많이 냈는지
+	var offeringDiaries []models.OfferingDiary
+	parsedTime, _ := time.Parse("2006", year)
+	models.GetOfferingDiaryByYear(&offeringDiaries, parsedTime)
+
+	for _, diary := range offeringDiaries {
+		diary.
+	}
+
+	c.JSON(200, offeringDiaries)
+}

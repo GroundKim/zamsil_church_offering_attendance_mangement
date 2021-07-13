@@ -9,7 +9,7 @@ export default {
       default: null
     },
   },
-
+  name: 'attendanceBarGraph',
   data: () => ({
     chartdata: {
       labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
@@ -24,7 +24,7 @@ export default {
           label: '2부 인원',
           data: [],
           backgroundColor: '#4B89DC',
-        }
+        },
       ]
     },
   
@@ -32,13 +32,13 @@ export default {
       scales: {
         yAxes: [{
           ticks: {
-            max: Math.max(40),
             beginAtZero: true
-          }
+          },
+          stacked: true,
         }],
 
         xAxes: [{
-          stacked:false,
+          stacked: true,
         }],
        
       },
@@ -54,18 +54,40 @@ export default {
         fontSize: 30,
         padding: 15
       },
+
+      plugins: {
+        datalabels: {
+          font: {
+            weight: 'bold',
+            size: 15
+          },
+          formatter: function (value) {
+            if (value === 0) {
+              return null
+            }
+          }
+        }
+      },
+
       responsive: true,
     }
   }),
 
   watch: {
+    numberData: async function() {
+      let largestNumber = 0
+      // split data
+      await this.numberData.forEach(d => {
+        if (largestNumber < d.numberOfDepartmentOne) largestNumber = d.numberOfDepartmentOne
+        if (largestNumber < d.numberOfDepartmentTwo) largestNumber = d.numberOfDepartmentTwo
+        this.chartdata.datasets[0].data.push(d.numberOfDepartmentOne)
+        this.chartdata.datasets[1].data.push(d.numberOfDepartmentTwo)
+      })
+      this.options.scales.yAxes[0].ticks.max = largestNumber + 10
 
+      // render graph 
+      this.renderChart(this.chartdata, this.options)
+    }
   },
-
-  mounted () {
-    console.log(JSON.stringify(this.numberData));
-    this.renderChart(this.chartdata, this.options)
-  }
 }
-
 </script>

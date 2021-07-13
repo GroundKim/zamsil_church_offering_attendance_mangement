@@ -9,6 +9,7 @@ import Login from './components/Login'
 import AttendanceViewDetail from './components/AttendanceViewDetail'
 import OfferingViewDetail from './components/OfferingViewDetail'
 import AttendanceStatistic from './components/AttendanceStat'
+import OfferingStatistic from './components/OfferingStat'
 
 Vue.use(VueRouter)
 
@@ -102,6 +103,12 @@ const router = new VueRouter({
       path:'/attendance/view/statistic',
       name: 'attendanceViewStatistic',
       component: AttendanceStatistic
+    },
+
+    {
+      path:'/offering/view/statistic',
+      name: 'offeringViewStatistic',
+      component: OfferingStatistic
     }
 ]
 })
