@@ -47,7 +47,16 @@ func GetOfferingDiaryByYear(offeringDiaries *[]OfferingDiary, date time.Time) (e
 		return err
 	}
 	return nil
+}
 
+func GetOfferingDiaryByMonth(offeringDiaries *[]OfferingDiary, date time.Time) (err error) {
+	theMonth := date.Format("2006-01") + "-01 00:00:00"
+	theMonthRange := theMonth[0:7] + "-31 23:59:59"
+	if err = DB.Preload("OfferingType").Preload("Student").Where("offered_at BETWEEN ? AND ?", theMonth, theMonthRange).Find(&offeringDiaries).Error; err != nil {
+		fmt.Println("Error in get Offering Diary by date")
+		return err
+	}
+	return nil
 }
 
 // dose not save with cost 0

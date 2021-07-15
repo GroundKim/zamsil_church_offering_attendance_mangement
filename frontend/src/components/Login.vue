@@ -78,7 +78,6 @@ export default {
     axios
       .get(`${this.$serverAddress}/Youth/login`, { withCredentials: true })
       .then(() => {
-        alert('이미 로그인 되어있습니다')
         // distinguish simple or not
         if (this.$route.name.includes('simple')) this.$router.push({ path: "/simple/attendance/view"});
         else this.$router.push({ path: "/attendance/input"})

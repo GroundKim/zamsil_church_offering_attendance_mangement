@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"fmt"
 	"time"
 	"zamsil_church_offering_attendance_mangement/models"
 
@@ -44,11 +45,13 @@ func GetOfferingView(c *gin.Context) {
 
 func GetOfferingViewStatisticSummaryByYear(c *gin.Context) {
 	type OfferingSummaryByMonth struct {
-		month int
-		weekTotalCost int
-		titheTotalCost int
-		seasonalTotalCost int
-		etcTotalCost int
+		Month             int `json:"month"`
+		WeekTotalCost     int `json:"weekTotalCost"`
+		TitheTotalCost    int `json:"titheTotalCost"`
+		ThanksTotalCost   int `json:"thanksTotalCost"`
+		SeasonalTotalCost int `json:"seasonalTotalCost"`
+		EtcTotalCost      int `json:"etcTotalCost"`
+		TotalCost         int `json:"totalCost"`
 	}
 	year := c.Query("year")
 	// get year from query
@@ -59,14 +62,33 @@ func GetOfferingViewStatisticSummaryByYear(c *gin.Context) {
 		return
 	}
 
+	var offeringDiariesByMonths []OfferingSummaryByMonth
+
 	// 월 별 금액, 총 금액, 누가 가장 많이 냈는지
-	var offeringDiaries []models.OfferingDiary
-	parsedTime, _ := time.Parse("2006", year)
-	models.GetOfferingDiaryByYear(&offeringDiaries, parsedTime)
+	for i := 1; i < 13; i++ {
+		offeringDiariesByMonth := &OfferingSummaryByMonth{Month: i}
 
-	for _, diary := range offeringDiaries {
-		diary.
+		date := year + "-" + fmt.Sprintf("%02d", i)
+		parsedTime, _ := time.Parse("2006-01", date)
+		var offeringDiaries []models.OfferingDiary
+		models.GetOfferingDiaryByMonth(&offeringDiaries, parsedTime)
+
+		for _, diary := range offeringDiaries {
+			offeringDiariesByMonth.TotalCost += diary.Cost
+			switch diary.OfferingType.OfferingTypeName {
+			case "주일헌금":
+				offeringDiariesByMonth.WeekTotalCost += diary.Cost
+			case "십일조헌금":
+				offeringDiariesByMonth.TitheTotalCost += diary.Cost
+			case "감사헌금":
+				offeringDiariesByMonth.ThanksTotalCost += diary.Cost
+			case "절기헌금":
+				offeringDiariesByMonth.SeasonalTotalCost += diary.Cost
+			case "기타헌금":
+				offeringDiariesByMonth.EtcTotalCost += diary.Cost
+			}
+		}
+		offeringDiariesByMonths = append(offeringDiariesByMonths, *offeringDiariesByMonth)
 	}
-
-	c.JSON(200, offeringDiaries)
+	c.JSON(200, offeringDiariesByMonths)
 }
