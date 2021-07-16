@@ -32,7 +32,8 @@ export default {
       scales: {
         yAxes: [{
           ticks: {
-            beginAtZero: true
+            beginAtZero: true,
+            max: 0,
           },
           stacked: true,
         }],

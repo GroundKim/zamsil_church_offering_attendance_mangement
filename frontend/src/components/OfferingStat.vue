@@ -20,6 +20,7 @@
 								<th>절기헌금</th>
 								<th>기타헌금</th>
 								<th>총합</th>
+                
 							</tr>
 						</thead>
 						<tbody>
@@ -36,7 +37,7 @@
                 <td>₩ {{ changeCostWithDelimeter(data.totalCost) }}</td>
               </tr>
 
-              <tr>
+              <tr class="font-weight-bold">
                 <td> 총합 </td>
                 <td>₩ {{ changeCostWithDelimeter(total.weekTotalCost) }} </td>
                 <td>₩ {{ changeCostWithDelimeter(total.titheTotalCost) }} </td>
@@ -50,14 +51,22 @@
 				</v-simple-table>
       </v-col>
     </v-row>
+
+    <v-row>
+      <v-col>
+        <offering-line-graph :offeringByMonth="offeringData"></offering-line-graph>
+      </v-col>
+    </v-row>
   </v-container>
 </template>
 
 <script>
 import axios from 'axios'
+import offeringLineGraph from './chart/offeringLineGraph.vue'
 export default {
   name: 'OfferingStat',
   components:{
+    offeringLineGraph,
   },
 
   data() {
