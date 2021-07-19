@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"fmt"
+	"strconv"
 	"time"
 	"zamsil_church_offering_attendance_mangement/models"
 
@@ -57,7 +58,7 @@ func GetAttendanceView(c *gin.Context) {
 		//get count by month and department
 		var attendanceDiaries []models.AttendanceDiary
 		parsedYear, _ := time.Parse("2006", year)
-		models.GetAttendanceViewByYear(&attendanceDiaries, parsedYear)
+		models.GetAttendanceDiariesByYear(&attendanceDiaries, parsedYear)
 
 		c.JSON(200, attendanceDiaries)
 		return
@@ -74,7 +75,7 @@ func GetAttendanceViewList(c *gin.Context) {
 		year := c.Query("year")
 		parsedYear, _ := time.Parse("2006", year)
 		var attendanceDiaries []models.AttendanceDiary
-		models.GetAttendanceViewByYear(&attendanceDiaries, parsedYear)
+		models.GetAttendanceDiariesByYear(&attendanceDiaries, parsedYear)
 
 		var attendedAts []time.Time
 		for i := 0; i < len(attendanceDiaries); i++ {
@@ -102,6 +103,95 @@ func GetAttendanceViewList(c *gin.Context) {
 		models.GetAttendanceDiariesByDate(&attendanceDiaries, date)
 		c.JSON(200, attendanceDiaries)
 	}
+}
+
+func GetAttendanceInfoByYear(c *gin.Context) {
+	type attendanceInfo struct {
+		Class    models.Class     `json:"class"`
+		Teachers []models.Teacher `json:"teachers"`
+		Students []models.Student `json:"students"`
+	}
+
+	type attendanceInfoByDate struct {
+		Date            time.Time        `json:"date"`
+		AttendanceInfos []attendanceInfo `json:"attendanceInfo"`
+	}
+
+	// get year from query
+	year := ""
+	if len(c.Query("year")) != 0 {
+		year = c.Query("year")
+	} else {
+		c.JSON(400, gin.H{
+			"err": "year from url paramemter is required",
+		})
+		return
+	}
+
+	parsedYear, _ := strconv.Atoi(year)
+	// get class with year
+	var classes []models.Class
+	models.GetClassesWithYear(&classes, parsedYear)
+
+	// get teacher with year
+	var teachers []models.Teacher
+	models.GetTeachersByYear(&teachers, parsedYear)
+
+	// get attendance diaries with year
+	var attendanceDiaries []models.AttendanceDiary
+	timeParsedYear, _ := time.Parse("2006", year)
+	models.GetAttendanceDiariesByYear(&attendanceDiaries, timeParsedYear)
+
+	var attendanceInfoByDates []attendanceInfoByDate
+
+	// fill attendance diaries
+	for _, diary := range attendanceDiaries {
+		isDateExisted := false
+		for i, info := range attendanceInfoByDates {
+			if info.Date == diary.AttendedAt {
+				isDateExisted = true
+
+				// check if the class is existed
+				// if there is existed class
+				isClassExisted := false
+				for j, attendanceInfo := range info.AttendanceInfos {
+					if attendanceInfo.Class.ID == diary.Student.ClassID {
+						isClassExisted = true
+						info.AttendanceInfos[j].Students = append(info.AttendanceInfos[j].Students, diary.Student)
+					}
+				}
+
+				// no class existed, then push student with class
+				if !isClassExisted {
+					attendedStudent := diary.Student
+					attendanceInfo := &attendanceInfo{Class: diary.Student.Class}
+					attendanceInfo.Students = append(attendanceInfo.Students, attendedStudent)
+					attendanceInfoByDates[i].AttendanceInfos = append(attendanceInfoByDates[i].AttendanceInfos, *attendanceInfo)
+				}
+			}
+		}
+
+		if !isDateExisted {
+			// get teachers with class
+			var infoTeachers []models.Teacher
+			for _, teacher := range teachers {
+				if teacher.ClassID == diary.Student.ClassID {
+					infoTeachers = append(infoTeachers, teacher)
+				}
+			}
+
+			// push teacher, class, and student
+			attendanceInfo := attendanceInfo{Class: diary.Student.Class, Teachers: infoTeachers}
+			attendanceInfo.Students = append(attendanceInfo.Students, diary.Student)
+			attendanceInfoByDate := &attendanceInfoByDate{Date: diary.AttendedAt}
+			attendanceInfoByDate.AttendanceInfos = append(attendanceInfoByDate.AttendanceInfos, attendanceInfo)
+			attendanceInfoByDates = append(attendanceInfoByDates, *attendanceInfoByDate)
+		}
+	}
+
+	// fill classes
+
+	c.JSON(200, attendanceInfoByDates)
 }
 
 func GetAttendanceNumberByMonth(c *gin.Context) {

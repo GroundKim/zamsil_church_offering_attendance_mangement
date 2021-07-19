@@ -51,6 +51,7 @@ func CreateUrlMappings(conf *config.Config) {
 	Youth.GET("/attendance/view", controllers.GetAttendanceView)
 	Youth.GET("/attendance/view/list", controllers.GetAttendanceViewList)
 	Youth.GET("/attendance/view/excel", controllers.GetAttendanceExcel)
+	Youth.GET("/attendance/view/statistic", controllers.GetAttendanceInfoByYear)
 	Youth.GET("/attendance/view/statistic/number/month", controllers.GetAttendanceNumberByMonth)
 
 	Youth.GET("/members", controllers.GetMembers)

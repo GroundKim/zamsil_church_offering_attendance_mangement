@@ -82,12 +82,8 @@ export default ({
     offeringByMonth: async function () {
       let largestNumber = 0
       await this.offeringByMonth.forEach(offering => {
-        let totalCost = 0
-        for (const property in offering) {
-          if (property !== 'month') totalCost += offering[property]
-        }
-        if (largestNumber < totalCost) largestNumber = totalCost 
-        this.chartdata.datasets[0].data.push(totalCost)
+        if (largestNumber < offering.totalCost) largestNumber = offering.totalCost
+        this.chartdata.datasets[0].data.push(offering.totalCost)
       })
       
       let firstDigit = parseInt(largestNumber.toString()[0]) + 1

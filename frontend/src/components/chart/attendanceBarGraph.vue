@@ -25,6 +25,23 @@ export default {
           data: [],
           backgroundColor: '#4B89DC',
         },
+
+        {
+          label: 'total',
+          data: [],
+          display: false,
+          backgroundColor: 'rgba(24,91,62,0)',
+          datalabels: {
+            backgroundColor: () => 'white',
+            formatter: (item) => {
+              if (item == 0) return null
+              else return '총 ' + item + '명'
+            },
+            align: 'top',
+            anchor: 'start',
+            padding: 0,
+          },
+        },
       ]
     },
   
@@ -41,11 +58,25 @@ export default {
         xAxes: [{
           stacked: true,
         }],
-       
+      },
+
+      tooltips: {
+        filter: (tooltipItem) => {
+          if (tooltipItem.datasetIndex === 2) {
+            return false
+          } else {
+            return true
+          }
+        }
       },
 
       legend: {
-        position: 'bottom'
+        position: 'bottom',
+        labels: {
+          filter: (item) => {
+            return !item.text.includes('total')
+          }
+        }
       },
 
       title: {
@@ -65,6 +96,8 @@ export default {
           formatter: function (value) {
             if (value === 0) {
               return null
+            } else {
+              return value
             }
           }
         }
@@ -79,12 +112,13 @@ export default {
       let largestNumber = 0
       // split data
       await this.numberData.forEach(d => {
-        if (largestNumber < d.numberOfDepartmentOne) largestNumber = d.numberOfDepartmentOne
-        if (largestNumber < d.numberOfDepartmentTwo) largestNumber = d.numberOfDepartmentTwo
+        if (largestNumber < (d.numberOfDepartmentOne + d.numberOfDepartmentTwo)) largestNumber = d.numberOfDepartmentOne + d.numberOfDepartmentTwo
         this.chartdata.datasets[0].data.push(d.numberOfDepartmentOne)
         this.chartdata.datasets[1].data.push(d.numberOfDepartmentTwo)
+        this.chartdata.datasets[2].data.push((d.numberOfDepartmentOne + d.numberOfDepartmentTwo))
+        
       })
-      this.options.scales.yAxes[0].ticks.max = largestNumber + 10
+      this.options.scales.yAxes[0].ticks.max = largestNumber + 15
 
       // render graph 
       this.renderChart(this.chartdata, this.options)

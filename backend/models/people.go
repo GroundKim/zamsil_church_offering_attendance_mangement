@@ -5,6 +5,7 @@ package models
 import (
 	"encoding/json"
 	"fmt"
+	"strconv"
 	"time"
 
 	"gorm.io/gorm"
@@ -27,6 +28,8 @@ type Student struct {
 	ClassAssignedAt *time.Time     `gorm:"null" json:"classAssignedAt"`
 	DeletedAt       gorm.DeletedAt `json:"-"`
 
+	Year int `gorm:"not null; type:year" json:"-"`
+
 	Class Class `gorm:"references:ID" json:"class"`
 }
 
@@ -36,6 +39,8 @@ type Teacher struct {
 	ClassID     int       `gorm:"not null;" json:"classId"`
 	CreatedAt   time.Time `gorm:"not null;" json:"createdAt"`
 	PhoneNumber *string   `gorm:"null" json:"phoneNumber"`
+
+	Year int `gorm:"not null; type:year" json:"-"`
 
 	ClassAssignedAt *time.Time     `gorm:"null" json:"classAssignedAt"`
 	DeletedAt       gorm.DeletedAt `json:"-"`
@@ -114,6 +119,14 @@ func GetStudentsWithDepartment(students *[]StudentsWithDepartment) (err error) {
 
 func GetTeachers(teachers *[]Teacher) (err error) {
 	if err = DB.Find(teachers).Error; err != nil {
+		fmt.Println("Error in getAllTeacher")
+		return err
+	}
+	return nil
+}
+
+func GetTeachersByYear(teachers *[]Teacher, year int) (err error) {
+	if err = DB.Where("year = ?", strconv.Itoa(year)).Find(teachers).Error; err != nil {
 		fmt.Println("Error in getAllTeacher")
 		return err
 	}
