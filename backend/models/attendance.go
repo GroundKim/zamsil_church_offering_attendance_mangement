@@ -15,6 +15,19 @@ type AttendanceDiary struct {
 	Student Student `gorm:"references:ID" json:"student"`
 }
 
+func (attendanceDiary *AttendanceDiary) ExistedIdenticalDiary() (existed bool, err error) {
+	var existedDiary []AttendanceDiary
+	if err = DB.Where("attended_at = ?", attendanceDiary.AttendedAt.Format("2006-01-02")).Where("student_id = ?", attendanceDiary.StudentID).Find(&existedDiary).Error; err != nil {
+		return false, err
+	}
+
+	if len(existedDiary) == 0 {
+		return false, nil
+	} else {
+		return true, nil
+	}
+}
+
 func (attendanceDiary *AttendanceDiary) SaveAttendanceDiary() (err error) {
 	if err = DB.Create(&attendanceDiary).Error; err != nil {
 		return err

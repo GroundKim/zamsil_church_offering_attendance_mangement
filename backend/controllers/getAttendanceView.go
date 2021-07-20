@@ -235,3 +235,86 @@ func GetAttendanceNumberByMonth(c *gin.Context) {
 	}
 	c.JSON(200, attendanceNumberByMonths)
 }
+
+func GetAttendanceSummaryByYear(c *gin.Context) {
+	year := ""
+	// get year from query
+	if len(c.Query("year")) != 0 {
+		year = c.Query("year")
+	} else {
+		c.JSON(400, gin.H{
+			"err": "year from url paramemter is required",
+		})
+		return
+	}
+
+	parsedYear, _ := strconv.Atoi(year)
+	timeParsedYear, _ := time.Parse("2006", year)
+	var classes []models.Class
+	models.GetClassesWithYear(&classes, parsedYear)
+
+	var teachers []models.Teacher
+	models.GetTeachersByYear(&teachers, parsedYear)
+
+	var attendanceDiaries []models.AttendanceDiary
+	models.GetAttendanceDiariesByYear(&attendanceDiaries, timeParsedYear)
+
+	// json formatting
+	type numberByDate struct {
+		Date   string `json:"date"`
+		Number int    `json:"number"`
+	}
+
+	type attendanceSummary struct {
+		Class          models.Class     `json:"class"`
+		ClassHeadcount int              `json:"classHeadcount"`
+		Teachers       []models.Teacher `json:"teachers"`
+		NumberByDates  []numberByDate   `json:"numberByDates"`
+	}
+
+	var attendanceSummaries []attendanceSummary
+
+	// formatting by class
+	for _, class := range classes {
+		// get class headcount
+		var student []models.Student
+		models.GetStudentsByClass(&student, class)
+
+		// initialize attendance summary with class and headcount
+		attendanceSummary := &attendanceSummary{Class: class, ClassHeadcount: len(student)}
+
+		// get teachers
+		for _, teacher := range teachers {
+			if class.ID == teacher.ClassID {
+				attendanceSummary.Teachers = append(attendanceSummary.Teachers, teacher)
+			}
+		}
+
+		// get number by date
+		for _, diary := range attendanceDiaries {
+			if diary.Student.ClassID == class.ID {
+				existed := false
+				// check if existed attend at
+				for _, numberByDate := range attendanceSummary.NumberByDates {
+					if numberByDate.Date == diary.AttendedAt.Format("2006-01-02") {
+						existed = true
+						numberByDate.Number++
+						break
+					}
+					if existed {
+						break
+					}
+				}
+
+				if !existed {
+					numberByDate := &numberByDate{Date: diary.AttendedAt.Format("2006-01-02"), Number: 1}
+					attendanceSummary.NumberByDates = append(attendanceSummary.NumberByDates, *numberByDate)
+				}
+			}
+		}
+
+		attendanceSummaries = append(attendanceSummaries, *attendanceSummary)
+	}
+
+	c.JSON(200, attendanceSummaries)
+}

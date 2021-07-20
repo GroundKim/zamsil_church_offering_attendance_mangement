@@ -22,6 +22,13 @@ func PostAttendanceDiary(c *gin.Context) {
 	}
 
 	for _, attendanceDiary := range attendanceDiaries {
+		existed, _ := attendanceDiary.ExistedIdenticalDiary()
+
+		// check if there is identical attended at diary, skip saving attendance diary
+		if existed {
+			break
+		}
+
 		// handling post attendanceDiary from attendanceViewDetail.vue
 		// and, if createdBy is null
 		if attendanceDiary.CreatedBy == "" {

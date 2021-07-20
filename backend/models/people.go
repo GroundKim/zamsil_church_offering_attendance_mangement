@@ -64,6 +64,14 @@ func GetStudents(students *[]Student) (err error) {
 	return nil
 }
 
+func GetStudentsByClass(students *[]Student, class Class) (err error) {
+	if err = DB.Preload("Class").Where("class_id = ?", class.ID).Find(&students).Error; err != nil {
+		fmt.Println("Error in GetStudentsByClass")
+		return err
+	}
+	return err
+}
+
 func SaveStudents(students *[]Student) (err error) {
 	if err = DB.Create(&students).Error; err != nil {
 		fmt.Println("Error in SaveStudent")
