@@ -290,18 +290,15 @@ func GetAttendanceSummaryByYear(c *gin.Context) {
 			}
 		}
 
-		// get number by date
+		// get number by attendance diaries with date
 		for _, diary := range attendanceDiaries {
 			if diary.Student.ClassID == class.ID {
 				existed := false
 				// check if existed attend at
-				for _, numberByDate := range attendanceSummary.NumberByDates {
+				for i, numberByDate := range attendanceSummary.NumberByDates {
 					if numberByDate.Date == diary.AttendedAt.Format("2006-01-02") {
+						attendanceSummary.NumberByDates[i].Number++
 						existed = true
-						numberByDate.Number++
-						break
-					}
-					if existed {
 						break
 					}
 				}
@@ -309,6 +306,7 @@ func GetAttendanceSummaryByYear(c *gin.Context) {
 				if !existed {
 					numberByDate := &numberByDate{Date: diary.AttendedAt.Format("2006-01-02"), Number: 1}
 					attendanceSummary.NumberByDates = append(attendanceSummary.NumberByDates, *numberByDate)
+
 				}
 			}
 		}
